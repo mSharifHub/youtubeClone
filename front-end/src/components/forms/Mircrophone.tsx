@@ -3,8 +3,12 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 export default function Microphone() {
   return (
-    <div className=" min-w-[3rem] min-h-[3rem] flex justify-center items-center rounded-full bg-slate-200">
-      <FontAwesomeIcon icon={faMicrophone} size="xl" className="text-black" />
+    <div className=" min-w-[2.5rem] min-h-[2.5rem] flex justify-center items-center rounded-full bg-slate-200">
+      <FontAwesomeIcon
+        icon={faMicrophone}
+        size="lg"
+        className="text-black p-2"
+      />
     </div>
   );
 }

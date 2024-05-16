@@ -4,8 +4,8 @@ import Microphone from './Mircrophone.tsx';
 
 export default function searchInput() {
   return (
-    <div className="w-full h-full  hidden md:flex justify-center items-center  space-x-10 border-2">
-      <div className="relative h-12 w-full max-w-lg rounded-full border-2 ">
+    <div className="w-full h-full  hidden sm:flex justify-center items-center  space-x-10 ">
+      <div className="relative h-10 w-full max-w-lg rounded-full border-2 ">
         <input
           type="text"
           name="search-bar"
@@ -14,7 +14,7 @@ export default function searchInput() {
           className="h-full w-full p-2 pl-8 pr-10 rounded-full placeholder:font-bold placeholder:text-lg placeholder:text-slate-300 focus:outline-none "
         />
         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[20%] h-full flex justify-center items-center  bg-slate-100 rounded-r-full">
-          <FontAwesomeIcon icon={faSearch} size="xl" />
+          <FontAwesomeIcon icon={faSearch} size="lg" />
         </div>
       </div>
       <Microphone />
