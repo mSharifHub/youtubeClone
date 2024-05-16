@@ -2,15 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-
-*{
-    margin: 0;
-    padding: 0;
-    background: white;
+* {
+  margin: 0;
+  padding: 0;
 }
 
 ul[class],
-ol[class]{
-    list-style: none;
+ol[class] {
+  list-style: none;
 }
-

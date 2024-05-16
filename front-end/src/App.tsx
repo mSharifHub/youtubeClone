@@ -1,25 +1,23 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import MainLayout from './components/layouts/MainLayout.tsx';
+import Home from './components/pages/Home.tsx';
+import NotFound from './components/pages/NotFound.tsx';
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false;
 
 function App() {
-  const [message,setMessage] = useState('');
-
-  useEffect(() => {
-    axios
-      .get(' http://127.0.0.1:8000/api/test-local/')
-      .then((response) => {
-        setMessage(response.data.payload);
-        console.log(message);
-      })
-      .catch((err) => {
-        console.error('error', err);
-      });
-  }, []);
-
   return (
-    <>
-      <div>{message}</div>
-    </>
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 
