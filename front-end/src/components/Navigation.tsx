@@ -41,7 +41,7 @@ export default function NavigationBar() {
           <img
             src={videoIconPath}
             alt={videoIconPath.split('/').pop()?.split('.')[0]}
-            className="min-w-7 min-h-6 w-7 h-6"
+            className="min-w-7 min-h-7 w-7 h-7"
           />
         </div>
         {/* bell component content */}

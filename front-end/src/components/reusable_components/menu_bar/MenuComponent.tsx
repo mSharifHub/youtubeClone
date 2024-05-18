@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
-import {
-  FontAwesomeIcon,
-  FontAwesomeIconProps,
-} from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 
 // interface props for menu bar component
 interface MenuComponentProps {
@@ -32,7 +29,7 @@ export default function MenuComponent({
         className={` w-[80%] h-12  flex flex-col md:flex-row justify-center items-center rounded-lg transition-colors duration-100 ease-out hover:bg-neutral-200`}
       >
         <div
-          className={`w-10 h-full flex ${isOrderReverse ? 'hidden md:flex-grow justify-start' : 'justify-center'}  items-center  ${isOrderReverse ? 'order-last' : 'order-first'}`}
+          className={`w-10 h-full ${isOrderReverse ? 'hidden  md:flex md:flex-grow justify-start' : ' flex justify-center'}  items-center  ${isOrderReverse ? 'order-last' : 'order-first'}`}
         >
           {icon && <FontAwesomeIcon icon={icon} />}
           {customIconSrc && (
