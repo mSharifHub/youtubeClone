@@ -4,5 +4,27 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const utilities = {
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+
+        '.no-scrollbar': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+        },
+
+        '.show-scrollbar::-webkit-scrollbar': {
+          display: 'block',
+        },
+        '.show-scrollbar': {
+          '-ms-overflow-style': 'auto',
+          'scrollbar-width': 'auto',
+        },
+      };
+      addUtilities(utilities);
+    },
+  ],
 };

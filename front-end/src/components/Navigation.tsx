@@ -1,5 +1,4 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
   faBars,
   faUser,
@@ -7,20 +6,27 @@ import {
   faMicrophone,
 } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
-
+import smartPlayIconPath from '../assets/navigation_icons/smart_play_logo.png';
 import videoIconPath from '../assets/navigation_icons/add-video.png';
 import bellIconPath from '../assets/navigation_icons/bell.png';
 
 export default function NavigationBar() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2 mt-2  ">
+    <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2 mt-2  ">
       {/*left*/}
       <div className="col-span-1 col-start-1 row-start-1 row-span-1 flex justify-start items-center ">
         <div className="flex justify-center items-center mx-4">
           <FontAwesomeIcon icon={faBars} size="lg" className="mr-8" />
-          <FontAwesomeIcon icon={faYoutube} className="text-2xl text-red-600" />
-          <span className="hidden md:flex text-lg font-black capitalize p-1 ">
-            YouTube
+          {/* logo icon*/}
+          <div>
+            <img
+              src={smartPlayIconPath}
+              alt={smartPlayIconPath.split('/').pop()?.split('.')[0]}
+              className="h-10 w-10  min-w-10"
+            />
+          </div>
+          <span className="hidden md:flex  md:text-lg text-nowrap  text-neutral-600 font-black capitalize p-1 ">
+            smart clips
           </span>
         </div>
       </div>
@@ -66,6 +72,6 @@ export default function NavigationBar() {
           />
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
