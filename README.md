@@ -1,4 +1,4 @@
-# Youtube Clone:
+# smart_clips:
     Full stack application to make an application similar to youtube
 
 

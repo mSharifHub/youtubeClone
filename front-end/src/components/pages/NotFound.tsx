@@ -1,4 +1,4 @@
-import monkeyImage from '../../assets/monkey.png';
+import monkeyImage from '../../assets/menu_bar_icons/monkey.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 
