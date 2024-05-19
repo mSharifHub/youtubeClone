@@ -8,17 +8,17 @@ export default function MainLayout() {
   return (
     <div className=" h-screen w-screen flex flex-col  px-4 py-4">
       <NavigationBar />
-      <main className="h-full w-full overflow-hidden flex flex-row  ">
+      <main className="h-full w-full flex flex-row ">
         <MenuBar />
-        <div className=" flex flex-col flex-grow w-full ">
+        <div className=" flex flex-col flex-grow overflow-hidden">
           {/* Scroll-x  MLL suggestions container */}
-          <section className="relative ">
+          <div className="relative">
             <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
             <ScrollContainerHorizontal>
               <RecommendationsFilters />
             </ScrollContainerHorizontal>
             <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
-          </section>
+          </div>
           <Outlet />
         </div>
       </main>
