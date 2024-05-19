@@ -1,23 +1,27 @@
 import { Outlet } from 'react-router-dom';
 import NavigationBar from '../Navigation.tsx';
 import MenuBar from '../MenuBar.tsx';
+import ScrollContainerHorizontal from '../reusable_components/helpers_components/ScrollContainerHorizontal.tsx';
+import RecommendationsFilters from '../RecommendationsFilters.tsx';
 
 export default function MainLayout() {
   return (
-    <div className="h-screen w-screen">
-      <div className="flex flex-col flex-grow h-full px-4 py-4">
-        <NavigationBar />
-        <div className="flex flex-row flex-grow ">
-          <MenuBar />
-          {/*suggestion bars and main content section*/}
-          <section className=" flex flex-col  flex-grow overflow-hidden">
-            <div className="overflow-x-auto border-2">place holder</div>
-            <div className="flex-grow overflow-auto w-full border-2">
-              <Outlet />
-            </div>
+    <div className=" h-screen w-screen flex flex-col  px-4 py-4">
+      <NavigationBar />
+      <main className="h-full w-full overflow-hidden flex flex-row  ">
+        <MenuBar />
+        <div className=" flex flex-col flex-grow w-full ">
+          {/* Scroll-x  MLL suggestions container */}
+          <section className="relative ">
+            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
+            <ScrollContainerHorizontal>
+              <RecommendationsFilters />
+            </ScrollContainerHorizontal>
+            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
           </section>
+          <Outlet />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

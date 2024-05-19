@@ -32,7 +32,7 @@ import { Link } from 'react-router-dom';
 
 export default function MenuBar() {
   return (
-    <div className="hidden sm:block h-full w-[5rem] md:w-[12rem] overflow-y-auto scroll-smooth  overflow-hidden no-scrollbar md:show-scrollbar">
+    <div className="hidden sm:block sm:min-w-[5rem] h-full w-[5rem] md:min-w-[12rem]  overflow-y-auto scroll-smooth  overflow-hidden no-scrollbar md:show-scrollbar">
       <div className=" max-h-screen grid grid-cols-1 grid-rows-[0.25fr_0.5fr_0.25fr_1fr_0.25fr_0.25fr_0.25fr]">
         {/* row-1  Home Shorts Subscriptions */}
         <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
