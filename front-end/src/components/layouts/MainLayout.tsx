@@ -18,6 +18,7 @@ export default function MainLayout() {
             <ScrollContainerHorizontal>
               <RecommendationsFilters />
             </ScrollContainerHorizontal>
+            {/* fading effect*/}
             <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
           </section>
           <Outlet />
