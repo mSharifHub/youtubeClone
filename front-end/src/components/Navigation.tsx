@@ -25,9 +25,6 @@ export default function NavigationBar() {
               className="h-10 w-10  min-w-10"
             />
           </div>
-          <span className="hidden md:flex  md:text-lg text-nowrap  text-neutral-600 font-black capitalize p-1 ">
-            smart clips
-          </span>
         </div>
       </div>
       {/*middle*/}
@@ -41,7 +38,7 @@ export default function NavigationBar() {
           <img
             src={videoIconPath}
             alt={videoIconPath.split('/').pop()?.split('.')[0]}
-            className="min-w-7 min-h-7 w-7 h-7"
+            className="min-w-6 min-h-6 w-6 h-6"
           />
         </div>
         {/* bell component content */}

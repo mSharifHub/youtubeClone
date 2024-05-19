@@ -4,7 +4,7 @@ import Microphone from './Mircrophone.tsx';
 
 export default function searchInput() {
   return (
-    <div className="w-full h-full  hidden sm:flex justify-center items-center  space-x-10 ">
+    <div className="w-full h-full  hidden sm:flex justify-center items-center  space-x-8 ">
       <div className="relative h-10 w-full max-w-lg rounded-full border-2 ">
         <input
           type="text"
