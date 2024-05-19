@@ -32,7 +32,7 @@ import { Link } from 'react-router-dom';
 
 export default function MenuBar() {
   return (
-    <div className="hidden sm:block md:w-[5rem] md:min-w-[5rem] h-full  lg:min-w-[12rem] lg:w-[12rem] overflow-y-auto scroll-smooth  overflow-hidden no-scrollbar md:show-scrollbar">
+    <div className="hidden sm:block md:w-[5rem] md:min-w-[5rem] lg:w-[12rem] lg:max-w-[12rem]  h-full   overflow-y-auto scroll-smooth  overflow-hidden no-scrollbar md:show-scrollbar">
       <div className=" max-h-screen grid grid-cols-1 grid-rows-[0.25fr_0.5fr_0.25fr_1fr_0.25fr_0.25fr_0.25fr]">
         {/* row-1  Home Shorts Subscriptions */}
         <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
@@ -88,8 +88,8 @@ export default function MenuBar() {
           />
         </div>
         {/* row-3 Subscriptions */}
-        <div className="hidden lg:flex  flex-col space-y-4 border-b-2 pt-2 pb-2">
-          <h1 className=" flex  justify-center items-center  text-xs lg:text-lg  capitalize ">
+        <div className=" hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+          <h1 className=" flex  justify-center items-center  text-xs md:text-lg  capitalize ">
             subscriptions
           </h1>
           <MenuComponent
@@ -100,7 +100,7 @@ export default function MenuBar() {
         </div>
         {/* row-4 Explore */}
         <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
-          <h1 className="flex  justify-center items-center  text-xs lg:text-lg  capitalize ">
+          <h1 className="flex  justify-center items-center  text-xs md:text-lg  capitalize">
             explore
           </h1>
           <MenuComponent
@@ -153,7 +153,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-5 Settings */}
-        <div className="flex  flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <MenuComponent
             customIconSrc={settingsIconPath}
             title="settings"
@@ -172,9 +172,9 @@ export default function MenuBar() {
           />
         </div>
         {/* row-6 Terms Of Usage*/}
-        <div className="hidden lg:flex  flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <section>
-            <h1 className="flex  justify-center items-center  text-xs lg:text-lg  capitalize ">
+            <h1 className="flex justify-center items-center  text-xs md:text-lg  capitalize ">
               terms of usage
             </h1>
             <div>
