@@ -49,7 +49,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-2 You */}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <MenuComponent
             icon={faChevronRight}
             title="you"
@@ -88,7 +88,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-3 Subscriptions */}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className=" hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <h1 className=" flex  justify-center items-center  text-xs md:text-lg  capitalize ">
             subscriptions
           </h1>
@@ -99,7 +99,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-4 Explore */}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <h1 className="flex  justify-center items-center  text-xs md:text-lg  capitalize">
             explore
           </h1>
@@ -172,7 +172,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-6 Terms Of Usage*/}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
           <section>
             <h1 className="flex justify-center items-center  text-xs md:text-lg  capitalize ">
               terms of usage
