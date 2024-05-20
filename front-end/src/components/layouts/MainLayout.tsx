@@ -8,7 +8,7 @@ export default function MainLayout() {
   return (
     <div className=" h-screen w-screen flex flex-col  px-4 py-4">
       <NavigationBar />
-      <main className="h-full w-full  flex flex-row  overflow-hidden">d
+      <main className="h-full w-full  flex flex-row  overflow-hidden">
         <MenuBar />
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
           {/* Scroll-x  MLL suggestions container */}
