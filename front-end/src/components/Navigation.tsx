@@ -1,24 +1,24 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBars,
-  faUser,
-  faSearch,
-  faMicrophone,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
 import smartPlayIconPath from '../assets/navigation_icons/smart_play_logo.png';
 import videoIconPath from '../assets/navigation_icons/add-video.png';
 import bellIconPath from '../assets/navigation_icons/bell.png';
+import Microphone from './forms/Mircrophone.tsx';
+import IconSearch from './forms/IconSearch.tsx';
 
 export default function NavigationBar() {
   return (
-    <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2 mt-2  ">
+    <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1  px-2  ">
       {/*left*/}
       <div className="col-span-1 col-start-1 row-start-1 row-span-1 flex justify-start items-center ">
         <div className="flex justify-center items-center mx-4">
-          <FontAwesomeIcon icon={faBars} size="lg" className="mr-8" />
-          {/* logo icon*/}
-          <div>
+          <FontAwesomeIcon
+            icon={faBars}
+            size="xl"
+            className="mr-8 text-neutral-400"
+          />
+          <div className="flex justify-center items-center">
             <img
               src={smartPlayIconPath}
               alt={smartPlayIconPath.split('/').pop()?.split('.')[0]}
@@ -28,11 +28,20 @@ export default function NavigationBar() {
         </div>
       </div>
       {/*middle*/}
-      <div className="col-span-1 col-start-2 row-start-1 row-span-1 flex justify-center items-center">
+      <div className="col-span-1 md:col-start-2 row-start-1 row-span-1 flex justify-center items-center">
         <SearchInput />
       </div>
       {/*right*/}
-      <div className="col-span-1 col-start-3  row-start-1 row-span-1  flex justify-end items-center px-4 space-x-6 ">
+      <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end items-center   ">
+        {/*icon search*/}
+        <div className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+          <IconSearch />
+        </div>
+        {/*microphone*/}
+        <div className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+          <Microphone />
+        </div>
+
         {/* Add-video component content */}
         <div className="h-10 w-10 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
           <img
@@ -50,23 +59,8 @@ export default function NavigationBar() {
           />
         </div>
         {/* profile component content */}
-        <div className="min-w-8 min-h-8  flex justify-center items-center rounded-full  hover:bg-neutral-200">
+        <div className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200">
           <FontAwesomeIcon icon={faUser} className="text-black" />
-        </div>
-      </div>
-      {/*sm: hidden components for microphone and search icons*/}
-      <div className="col-start-2 col-span-1  row-start-1 flex  sm:hidden justify-end items-center space-x-4  ">
-        <div className=" min-h-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
-          <FontAwesomeIcon
-            icon={faSearch}
-            className="text-slate-300  text-xl "
-          />
-        </div>
-        <div className="min-h-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
-          <FontAwesomeIcon
-            icon={faMicrophone}
-            className="text-slate-300  text-xl "
-          />
         </div>
       </div>
     </nav>

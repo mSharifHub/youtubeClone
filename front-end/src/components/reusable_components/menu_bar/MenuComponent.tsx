@@ -26,10 +26,10 @@ export default function MenuComponent({
   return (
     <Link to={link}>
       <div
-        className={` w-[80%] h-12  flex flex-col lg:flex-row justify-center items-center rounded-lg transition-colors duration-100 ease-out hover:bg-neutral-200`}
+        className={` w-[80%] h-10  flex flex-col xl:flex-row justify-center items-center rounded-lg transition-colors duration-100 ease-out hover:bg-neutral-100`}
       >
         <div
-          className={`w-10 h-full ${isOrderReverse ? 'hidden  lg:flex lg:flex-grow justify-start' : ' flex justify-center'}  items-center  ${isOrderReverse ? 'order-last' : 'order-first'}`}
+          className={`w-10 h-full ${isOrderReverse ? 'hidden  xl:flex xl:flex-grow justify-start' : ' flex justify-center'}  items-center  ${isOrderReverse ? 'order-last' : 'order-first'}`}
         >
           {icon && <FontAwesomeIcon icon={icon} />}
           {customIconSrc && (
@@ -43,7 +43,7 @@ export default function MenuComponent({
         <div
           className={`h-full flex ${!isOrderReverse ? 'flex-grow' : 'w-12 justify-center'}  justify-start px-4 items-center  ${isOrderReverse ? 'order-first' : 'order-last'}`}
         >
-          <span className="capitalize text-nowrap  text-center text-[10px] lg:text-sm">
+          <span className="capitalize text-nowrap  text-center text-[10px] xl:text-sm">
             {title}
           </span>
         </div>
