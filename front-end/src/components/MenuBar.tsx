@@ -7,7 +7,6 @@ import homeIconPath from '../assets/menu_bar_icons/home.png';
 import subscriptionIconPath from '../assets/menu_bar_icons/subscription.png';
 import yourChannelPath from '../assets/menu_bar_icons/channel.png';
 import historyIconPath from '../assets/menu_bar_icons/history.png';
-import aiBotIconPath from '../assets/menu_bar_icons/ai_bot.png';
 import playListPath from '../assets/menu_bar_icons/playlist.png';
 import watchLaterPath from '../assets/menu_bar_icons/watch-later.png';
 import thumbsUpIconPath from '../assets/menu_bar_icons/thumbs-up.png';
@@ -32,10 +31,10 @@ import { Link } from 'react-router-dom';
 
 export default function MenuBar() {
   return (
-    <div className="hidden sm:block md:w-[5rem] md:min-w-[5rem] lg:w-[12rem] lg:min-w-[12rem]  h-full   overflow-y-auto scroll-smooth  overflow-hidden no-scrollbar md:show-scrollbar">
-      <div className=" max-h-screen grid grid-cols-1 grid-rows-[0.25fr_0.5fr_0.25fr_1fr_0.25fr_0.25fr_0.25fr]">
+    <div className="hidden sm:block md:w-[5rem] md:min-w-[5rem] xl:w-[14rem] xl:min-w-[14rem]  h-full   lg:overflow-y-auto lg:scroll-smooth  overflow-hidden no-scrollbar lg:show-scrollbar  mr-10  ">
+      <div className=" max-h-screen grid grid-cols-1 grid-rows-[0.25fr_0.5fr_0.25fr_1fr_0.25fr_0.25fr_0.25fr] space-y-4">
         {/* row-1  Home Shorts Subscriptions */}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="flex flex-col  xl:border-b-2 pb-2  ">
           <MenuComponent customIconSrc={homeIconPath} title="home" link="/" />
           <MenuComponent
             title="shorts"
@@ -49,18 +48,14 @@ export default function MenuBar() {
           />
         </div>
         {/* row-2 You */}
-        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden xl:flex flex-col  border-b-2 pt-2 pb-2">
           <MenuComponent
             icon={faChevronRight}
             title="you"
             order="reverse"
             link="#"
           />
-          <MenuComponent
-            customIconSrc={aiBotIconPath}
-            title="ask AI bot"
-            link="#"
-          />
+
           <MenuComponent
             customIconSrc={yourChannelPath}
             title="your channel"
@@ -88,8 +83,8 @@ export default function MenuBar() {
           />
         </div>
         {/* row-3 Subscriptions */}
-        <div className=" hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
-          <h1 className=" flex  justify-center items-center  text-xs md:text-lg  capitalize ">
+        <div className=" hidden xl:flex flex-col  border-b-2 pt-2 pb-2">
+          <h1 className=" flex  justify-start   items-center  mx-4 text-xs md:text-lg  capitalize ">
             subscriptions
           </h1>
           <MenuComponent
@@ -99,8 +94,8 @@ export default function MenuBar() {
           />
         </div>
         {/* row-4 Explore */}
-        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
-          <h1 className="flex  justify-center items-center  text-xs md:text-lg  capitalize">
+        <div className="hidden xl:flex flex-col  border-b-2 pt-2 pb-2">
+          <h1 className="flex  justify-start items-center mx-4 text-xs md:text-lg  capitalize">
             explore
           </h1>
           <MenuComponent
@@ -153,7 +148,7 @@ export default function MenuBar() {
           />
         </div>
         {/* row-5 Settings */}
-        <div className="flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden xl:flex flex-col  border-b-2 pt-2 pb-2">
           <MenuComponent
             customIconSrc={settingsIconPath}
             title="settings"
@@ -172,12 +167,12 @@ export default function MenuBar() {
           />
         </div>
         {/* row-6 Terms Of Usage*/}
-        <div className="hidden lg:flex flex-col space-y-4 border-b-2 pt-2 pb-2">
+        <div className="hidden xl:flex flex-col   pt-2 pb-2">
           <section>
-            <h1 className="flex justify-center items-center  text-xs md:text-lg  capitalize ">
+            <h1 className="flex justify-start items-center mx-4 text-xs md:text-lg  capitalize ">
               terms of usage
             </h1>
-            <div>
+            <div className="mx-4">
               <ul className="mt-2">
                 <li className=" flex flex-col flex-grow  justify-start items-start space-y-2 capitalize text-xs md:text-md ">
                   <Link to="#">license</Link>

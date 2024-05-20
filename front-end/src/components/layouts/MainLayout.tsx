@@ -12,14 +12,14 @@ export default function MainLayout() {
         <MenuBar />
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
           {/* Scroll-x  MLL suggestions container */}
-          <section className="relative ">
+          <section className="relative">
             {/* fading effect*/}
-            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-[rgba(255,255,255,0.5)]  to-transparent pointer-events-none z-10 " />
             <ScrollContainerHorizontal>
               <RecommendationsFilters />
             </ScrollContainerHorizontal>
             {/* fading effect*/}
-            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10 " />
           </section>
           <Outlet />
         </div>
