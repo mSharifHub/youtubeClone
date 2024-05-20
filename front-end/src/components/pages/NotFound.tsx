@@ -1,5 +1,5 @@
 import monkeyImage from '../../assets/menu_bar_icons/monkey.png';
-import logoPath from '../../assets/navigation_icons/smart_play_logo.png';
+import logoPath from '../../assets/navigation_icons/youtube-logo.png';
 import { useLocation } from 'react-router-dom';
 
 export default function NotFound() {

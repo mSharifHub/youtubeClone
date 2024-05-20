@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
-import smartPlayIconPath from '../assets/navigation_icons/smart_play_logo.png';
+import youtubeIconPath from '../assets/navigation_icons/youtube-logo.png';
 import videoIconPath from '../assets/navigation_icons/add-video.png';
 import bellIconPath from '../assets/navigation_icons/bell.png';
 import Microphone from './forms/Mircrophone.tsx';
@@ -20,8 +20,8 @@ export default function NavigationBar() {
           />
           <div className="flex justify-center items-center">
             <img
-              src={smartPlayIconPath}
-              alt={smartPlayIconPath.split('/').pop()?.split('.')[0]}
+              src={youtubeIconPath}
+              alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
               className="h-10 w-10  min-w-10"
             />
           </div>
@@ -55,7 +55,7 @@ export default function NavigationBar() {
           <img
             src={bellIconPath}
             alt={videoIconPath.split('/').pop()?.split('.')[0]}
-            className="min-w-8 min-h-8 w-8 h-8"
+            className="min-w-6 min-h-6 w-6 h-6"
           />
         </div>
         {/* profile component content */}
