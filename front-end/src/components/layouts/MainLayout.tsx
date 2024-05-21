@@ -1,8 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import NavigationBar from '../Navigation.tsx';
 import MenuBar from '../MenuBar.tsx';
-import ScrollContainerHorizontal from '../reusable_components/helpers_components/ScrollContainerHorizontal.tsx';
-import RecommendationsFilters from '../RecommendationsFilters.tsx';
+import Suggestions from '../Suggestions.tsx';
 
 export default function MainLayout() {
   return (
@@ -10,17 +9,10 @@ export default function MainLayout() {
       <NavigationBar />
       <main className="h-full w-full  flex flex-row  overflow-hidden">
         <MenuBar />
+        {/* main div*/}
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
-          {/* Scroll-x  MLL suggestions container */}
-          <section className="relative">
-            {/* fading effect*/}
-            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-[rgba(255,255,255,0.5)]  to-transparent pointer-events-none z-10 " />
-            <ScrollContainerHorizontal>
-              <RecommendationsFilters />
-            </ScrollContainerHorizontal>
-            {/* fading effect*/}
-            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10 " />
-          </section>
+          {/* MLL suggestions container */}
+          <Suggestions />
           <Outlet />
         </div>
       </main>

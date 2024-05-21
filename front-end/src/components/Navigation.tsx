@@ -12,18 +12,21 @@ export default function NavigationBar() {
     <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1  px-2  ">
       {/*left*/}
       <div className="col-span-1 col-start-1 row-start-1 row-span-1 flex justify-start items-center ">
-        <div className="flex justify-center items-center mx-4">
+        <div className="flex justify-center items-center mx-4 space-x-8">
           <FontAwesomeIcon
             icon={faBars}
             size="xl"
-            className="mr-8 text-neutral-400"
+            className=" text-neutral-400"
           />
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center space-x-2">
             <img
               src={youtubeIconPath}
               alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
-              className="h-10 w-10  min-w-10"
+              className="h-12 w-12  min-w-12"
             />
+            <h3 className="hidden md:inline-block font-bold text-lg">
+              YouTube
+            </h3>
           </div>
         </div>
       </div>
