@@ -26,10 +26,10 @@ export default function Suggestions() {
     { title: 'dummyData', link: '#' },
   ].map((item, index) => ({ ...item, index }));
 
-  const toolTipMouseEnter = useCallback((event, text = null) => {
-    const target = event.currentTarget;
+  const toolTipMouseEnter = useCallback((event:React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
+    const target = event.currentTarget as HTMLDivElement;
     const toolTipText = text || target.innerText.trim();
-    const rect = event.target.getBoundingClientRect();
+    const rect = target.getBoundingClientRect();
 
     if (!toolTipText || !rect) {
       setShowTooltip(false);
