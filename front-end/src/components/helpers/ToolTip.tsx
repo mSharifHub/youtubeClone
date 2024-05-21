@@ -1,16 +1,29 @@
 import React from 'react';
+import Portal from './Portal.ts';
 
 interface ToolTipProps {
   text: string;
   visible: boolean;
+  position: { top: number; left: number };
 }
 
-export const ToolTip: React.FC<ToolTipProps> = ({ text, visible }) => {
+export const ToolTip: React.FC<ToolTipProps> = ({
+  text,
+  visible,
+  position,
+}) => {
   if (!visible) return null;
 
+  const { top, left } = position;
+
   return (
-    <div className="absolute  top-full -right-5 bg-slate-500 text-white text-xs px-1.5 py-1.5  text-center rounded-md  z-20">
-      {text}
-    </div>
+    <Portal>
+      <div
+        className="absolute  bg-slate-500 text-white text-xs px-[2px] py-[2px]   text-center  z-20"
+        style={{ top: top, left: left }}
+      >
+        {text}
+      </div>
+    </Portal>
   );
 };

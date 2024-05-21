@@ -1,4 +1,4 @@
-import MenuComponent from './reusable_components/menu_bar/MenuComponent.tsx';
+import MenuComponent from './reusable_components/MenuComponent.tsx';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 // importing the path for the customs icons
