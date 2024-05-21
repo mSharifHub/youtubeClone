@@ -6,6 +6,7 @@ import RecommendationsFilter from './reusable_components/RecommendationsFilter.t
 
 export default function Suggestions() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<number | null>(null);
   const [isStart, setIsStart] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -26,24 +27,37 @@ export default function Suggestions() {
     { title: 'dummyData', link: '#' },
   ].map((item, index) => ({ ...item, index }));
 
-  const toolTipMouseEnter = useCallback((event:React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
-    const target = event.currentTarget as HTMLDivElement;
-    const toolTipText = text || target.innerText.trim();
-    const rect = target.getBoundingClientRect();
+  const toolTipMouseEnter = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
+      const target = event.currentTarget as HTMLDivElement;
+      const toolTipText = text || target.innerText.trim();
+      const rect = target.getBoundingClientRect();
 
-    if (!toolTipText || !rect) {
-      setShowTooltip(false);
-      return;
+      if (!toolTipText || !rect) {
+        setShowTooltip(false);
+        return;
+      }
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      setTooltipPosition({ top: rect.top + 30, left: rect.left + 30 });
+      setToolTipText(toolTipText);
+
+      timerRef.current = setTimeout(() => {
+        setShowTooltip(true);
+      }, 1000);
+    },
+    [],
+  );
+
+  const toolTipMouseLeave = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-
-    setTooltipPosition({ top: rect.top + 30, left: rect.left + 30 });
-    setToolTipText(toolTipText);
-    setShowTooltip(true);
-  }, []);
-
-  const toolTipMouseLeave = () => {
     setShowTooltip(false);
-  };
+  },[]);
 
   const handleScroll = useCallback(() => {
     const div = scrollRef.current;
@@ -120,7 +134,7 @@ export default function Suggestions() {
 
         {/* right arrow */}
         <div
-          className={`h-8 w-10 ${isEnd ? 'hidden' : 'flex'} justify-center items-center`}
+          className={`h-10 w-10 ${isEnd ? 'hidden' : 'flex'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`}
         >
           <FontAwesomeIcon icon={faChevronRight} />
         </div>

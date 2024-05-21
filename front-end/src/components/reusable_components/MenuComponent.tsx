@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
+import {
+  FontAwesomeIcon,
+  FontAwesomeIconProps,
+} from '@fortawesome/react-fontawesome';
 
 // interface props for menu bar component
 interface MenuComponentProps {
