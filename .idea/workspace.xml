@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2efc466a-d32c-48c1-92e7-0aa483f630ce" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/application/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/backend/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front-end/src/assets/navigation_icons/youtube-logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/front-end/src/assets/navigation_icons/youtube-logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front-end/src/components/Navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/front-end/src/components/Navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front-end/src/components/Suggestions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/front-end/src/components/Suggestions.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="setting-views" />
+                    <option name="lastUsedInstant" value="1716332618" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dev" />
+                    <option name="lastUsedInstant" value="1716332573" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="recommendations-filter" />
+                    <option name="lastUsedInstant" value="1716323996" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="menu-bar" />
+                    <option name="lastUsedInstant" value="1716109451" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="navigation-bar" />
+                    <option name="lastUsedInstant" value="1716109378" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2gWAwyAWPdBjGdoXBPAfLEpO31f" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;setting-views&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.1.0&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;20.12.12&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/mohamedsharif/youtubeClone&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.29344434&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/mohamedsharif/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/front-end/src/assets/navigation_icons" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/front-end/src/assets/navigation_icons" />
+      <recent name="$PROJECT_DIR$/front-end/src/assets/menu_bar_icons" />
+      <recent name="$PROJECT_DIR$/front-end/src/components/reusable_components" />
+      <recent name="$PROJECT_DIR$/front-end/src/assets" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-WS-241.17011.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2efc466a-d32c-48c1-92e7-0aa483f630ce" name="Changes" comment="" />
+      <created>1715803201447</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1715803201447</updated>
+      <workItem from="1715803202321" duration="1769000" />
+      <workItem from="1715809344283" duration="1618000" />
+      <workItem from="1715812347391" duration="4000" />
+      <workItem from="1715812808491" duration="287000" />
+      <workItem from="1715835986661" duration="20744000" />
+      <workItem from="1715892026529" duration="24384000" />
+      <workItem from="1715997067739" duration="2211000" />
+      <workItem from="1716001131722" duration="43412000" />
+      <workItem from="1716171602987" duration="212000" />
+      <workItem from="1716171819132" duration="40650000" />
+      <workItem from="1716320969313" duration="43000" />
+      <workItem from="1716321086009" duration="4171000" />
+      <workItem from="1716330746491" duration="4143000" />
+      <workItem from="1716566858338" duration="25000" />
+      <workItem from="1717825515857" duration="34000" />
+      <workItem from="1717825552201" duration="55000" />
+      <workItem from="1717825637916" duration="50000" />
+      <workItem from="1717825691763" duration="22000" />
+      <workItem from="1717825752720" duration="610000" />
+      <workItem from="1717826376907" duration="97000" />
+      <workItem from="1717826476646" duration="83000" />
+      <workItem from="1717826740592" duration="92000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/recommendations-filter" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

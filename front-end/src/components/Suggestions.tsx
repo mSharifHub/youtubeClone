@@ -134,6 +134,8 @@ export default function Suggestions() {
 
         {/* right arrow */}
         <div
+          onMouseEnter={(e) => toolTipMouseEnter(e,"next")}
+          onMouseLeave={toolTipMouseLeave}
           className={`h-10 w-10 ${isEnd ? 'hidden' : 'flex'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`}
         >
           <FontAwesomeIcon icon={faChevronRight} />

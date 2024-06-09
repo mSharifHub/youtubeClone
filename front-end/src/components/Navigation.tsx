@@ -18,11 +18,11 @@ export default function NavigationBar() {
             size="xl"
             className=" text-neutral-400"
           />
-          <div className="flex justify-center items-center space-x-2">
+          <div className="flex justify-center items-center">
             <img
               src={youtubeIconPath}
               alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
-              className="h-12 w-12  min-w-12"
+              className="h-10 w-10  min-w-10"
             />
             <h3 className="hidden md:inline-block font-bold text-lg">
               YouTube
