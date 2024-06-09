@@ -9,14 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
+
 from pathlib import Path
+import firebase_admin
+from firebase_admin import credentials
 
-from django.template.context_processors import static
-from dotenv import load_dotenv
-
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
+from api import videos
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = "django-insecure-g*((eih=gh35!1w1z7k13r&%ydh6yg^#t$+lvz!jy^u%4wjxa#"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -41,9 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
+    'rest_framework',
+    'graphene_django',
     "api",
-
+    "api.videos",
 ]
 
 MIDDLEWARE = [
@@ -87,6 +86,10 @@ DATABASES = {
     }
 }
 
+GRAPHENE = {
+    'SCHEMA': 'youtube_clone.schema.schema'
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -121,15 +124,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-MEDIA_URL = "/media/"
-
-MEDIA_ROOT = BASE_DIR / "media"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# cred = credentials.Certificate('./')
+# firebase_admin.initialize_app(cred)

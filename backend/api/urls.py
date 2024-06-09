@@ -1,7 +1,7 @@
+from django.contrib import admin
 from django.urls import path, include
-
-from api import views
+from .views import get_root
 
 urlpatterns = [
-    path('', views.Root.as_view(), name='root'),
+    path('', get_root, name='root'),
 ]
