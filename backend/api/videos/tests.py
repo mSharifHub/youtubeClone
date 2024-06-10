@@ -43,7 +43,7 @@ class VideoTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class LikeTestCase(APITestCase):
+class CommentTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testUser', email='<EMAIL>', password='<PASSWORD>')
         self.video = Video.objects.create(
@@ -79,3 +79,41 @@ class LikeTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+
+class LikeTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testUser', email='<EMAIL>', password='<PASSWORD>')
+        self.video = Video.objects.create(
+            title="Test Video",
+            description="Test Description",
+            file_url="http://example.com/test.mp4",
+            thumbnail_url="http://example.com/test.jpg",
+            user=self.user
+        )
+
+        self.like = Like.objects.create(
+            video=self.video,
+            user=self.user,
+        )
+
+    def test_get_like_list(self):
+        url = reverse('like_list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Like.objects.count(), 1)
+
+    def test_create_like(self):
+        url = reverse('like_list')
+        data = {
+            'video': self.video.id,
+            'user': self.user.id,
+        }
+        response = self.client.post(url,data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Like.objects.count(), 2)
+
+    def test_delete_like(self):
+        url = reverse('like_detail', kwargs={'like_id': self.like.id})
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Like.objects.count(), 0)

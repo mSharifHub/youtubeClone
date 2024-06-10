@@ -87,7 +87,7 @@ DATABASES = {
 }
 
 GRAPHENE = {
-    'SCHEMA': 'youtube_clone.schema.schema'
+    'SCHEMA': 'backend.schema.schema'
 }
 
 # Password validation
