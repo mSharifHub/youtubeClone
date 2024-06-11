@@ -1,11 +1,22 @@
 import graphene
+from django.contrib.auth.models import User
 from graphene_django.types import DjangoObjectType
 from api.videos.models import Video, Comment, Like
 
 
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+
+
 class VideoType(DjangoObjectType):
+    user = graphene.Field(UserType)
+
     class Meta:
         model = Video
+
+    def resolve_user(self, info):
+        return self.user
 
 
 class CommentType(DjangoObjectType):
@@ -52,14 +63,14 @@ class CreateVideo(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
         description = graphene.String(required=True)
-        file_url = graphene.String(reuired=True)
-        thumbnail_url = graphene.String(reuired=True)
+        file_url = graphene.String(required=True)
+        thumbnail_url = graphene.String(required=True)
 
     video = graphene.Field(VideoType)
 
     def mutate(self, info, title, description, file_url, thumbnail_url):
         user = info.context.user
-        video = Video(title=title, description=description, file_url=file_url, thumbnail_url=thumbnail_url)
+        video = Video(title=title, description=description, file_url=file_url, thumbnail_url=thumbnail_url, user=user)
         video.save()
         return CreateVideo(video=video)
 
@@ -74,7 +85,7 @@ class CreateComment(graphene.Mutation):
     def mutate(self, info, video_slug, content):
         user = info.context.user
         video = Video.objects.get(slug=video_slug)
-        comment = Comment(video=video, content=content)
+        comment = Comment(video=video, user=user, content=content)
         comment.save()
         return CreateComment(comment=comment)
 
@@ -99,4 +110,4 @@ class Mutation(graphene.ObjectType):
     create_like = CreateLike.Field()
 
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
