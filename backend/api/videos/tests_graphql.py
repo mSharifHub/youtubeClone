@@ -1,15 +1,66 @@
+import graphene
+from django.core.files.uploadedfile import SimpleUploadedFile
 from graphene_django.utils.testing import GraphQLTestCase
-from django.contrib.auth.models import User
-from api.videos.models import Video
-
+from api.videos.models import Video, User
+from backend.schema import schema
 import json
+
+
+class UserGraphQlTestCase(GraphQLTestCase):
+    GRAPHQL_URL = "/graphql/"
+    GRAPHQL_SCHEMA = schema
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='password123',
+            email='testuser@example.com',
+            bio='This is a test bio.',
+            profile_picture=SimpleUploadedFile(name='test_image.jpg', content=b'', content_type='image/jpeg')
+        )
+
+    def test_create_user_mutation(self):
+        response = self.query(
+            '''
+            mutation createUser($username: String!, $email: String!, $password: String!, $bio: String, $profilePicture: String) {
+                createUser(username: $username, email: $email, password: $password, bio: $bio, profilePicture: $profilePicture) {
+                    user {
+                        username
+                        email
+                        bio
+                        profilePicture
+                    }
+                }
+            }
+            ''',
+
+            variables={
+                'username': 'newuser',
+                'email': 'newuser@example.com',
+                'password': 'newpassword123',
+                'bio': 'This is a new user bio',
+                'profilePicture': None
+            }
+        )
+
+        content = json.loads(response.content)
+        print(json.dumps(content, indent=2))
+        self.assertResponseNoErrors(response)
 
 
 class VideoGraphQLTestCase(GraphQLTestCase):
     GRAPHQL_URL = "/graphql/"
+    GRAPHQL_SCHEMA = schema
 
     def setUp(self):
-        self.user = User.objects.create_user(username='test', password='password')
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='password123',
+            email='testuser@example.com',
+            bio='This is a test bio.',
+            profile_picture=SimpleUploadedFile(name='test_image.jpg', content=b'', content_type='image/jpeg')
+        )
+
         self.video = Video.objects.create(
             title="test video",
             description="test description",

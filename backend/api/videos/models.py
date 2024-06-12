@@ -1,9 +1,15 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
+
+
+class User(AbstractUser):
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True)
+    subscribers = models.ManyToManyField('self', symmetrical=False, related_name='subscribed_to', blank=True)
+
+    def __str__(self):
+        return self.username
 
 
 class Video(models.Model):
@@ -13,7 +19,7 @@ class Video(models.Model):
     thumbnail_url = models.URLField(max_length=200, null=True, blank=True)
     upload_at = models.DateTimeField(auto_now_add=True)
     views = models.PositiveIntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="videos")
     slug = models.SlugField(unique=True, blank=True, max_length=255)
 
     def save(self, *args, **kwargs):
