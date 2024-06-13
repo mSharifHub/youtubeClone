@@ -5,6 +5,11 @@ from .models import Video, Comment, Like
 from .serializers import VideoSerializer, CommentSerializer, LikeSerializer
 
 
+@api_view(['GET'])
+def home(request):
+    return JsonResponse({"message": "root"})
+
+
 @api_view(['GET', 'POST'])
 def video_feed(request):
     if request.method == 'GET':

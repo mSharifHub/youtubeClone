@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 ]
 
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -90,7 +91,7 @@ DATABASES = {
 }
 
 GRAPHENE = {
-    'SCHEMA': 'backend.schema.schema'
+    'SCHEMA': 'api.schema.schema'
 }
 
 AUTH_USER_MODEL = 'api.User'

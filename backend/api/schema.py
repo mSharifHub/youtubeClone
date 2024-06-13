@@ -18,6 +18,11 @@ def validate_file_size(file, max_size):
         raise ValidationError(f"file size should not exceed {max_size / (1024 * 1024)} MB")
 
 
+def validate_username_length(username, min_length=3):
+    if len(username) < min_length:
+        raise ValidationError(f"Username must be at least {min_length} characters long")
+
+
 class VideoType(DjangoObjectType):
     user = graphene.Field(UserType)
 
@@ -90,22 +95,29 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(UserType)
 
     def mutate(self, info, username, email, password, bio=None, profile_picture=None):
-
         try:
+            validate_username_length(username, min_length=3)
+
+            # Create a new user instance
             user = User(
                 username=username,
                 email=email,
                 bio=bio,
             )
+
             if profile_picture:
                 validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
                 file_name = f"{username}_profile_picture.{profile_picture.name.split('.')[-1]}"
                 user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+
+            # Set user password
             user.set_password(password)
             user.save()
             return CreateUser(user=user)
         except ValidationError as e:
             raise GraphQLError(f'400:{e.message}')
+        except Exception as e:
+            raise GraphQLError(f'500: An error occurred while creating the user. {str(e)}')
 
 
 class UpdateUser(graphene.Mutation):

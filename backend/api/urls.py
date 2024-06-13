@@ -2,7 +2,8 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path("api/", video_feed, name="video_feed"),
+    path("", home, name="home"),
+    path("api/video-feed/", video_feed, name="video_feed"),
     path("api/<slug:slug>/", video_detail, name="video_detail"),
     path("api/<slug:video_slug>/comments/", comment_list, name="comment_list"),
     path("comments/<int:pk>/", comment_detail, name="comment_detail"),
