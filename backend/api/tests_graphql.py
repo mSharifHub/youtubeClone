@@ -1,10 +1,9 @@
 import json
 import os
-
 from graphene_django.utils.testing import GraphQLTestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from .models import User
+from .models import User, Video
 
 
 class UserGraphQlTestCase(GraphQLTestCase):

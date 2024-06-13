@@ -4,8 +4,7 @@ from django.core.files.base import ContentFile
 from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
-
-from api import Video, Comment, Like, User
+from api.models import Video, User, Comment, Like
 
 
 class UserType(DjangoObjectType):
