@@ -14,7 +14,11 @@ from pathlib import Path
 import firebase_admin
 from django.contrib import staticfiles
 from firebase_admin import credentials
-from api import videos
+import api
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-g*((eih=gh35!1w1z7k13r&%ydh6yg^#t$+lvz!jy^u%4wjxa#"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -42,7 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'graphene_django',
     "api",
-    "api.videos",
+
 ]
 
 MIDDLEWARE = [
@@ -90,7 +94,7 @@ GRAPHENE = {
     'SCHEMA': 'backend.schema.schema'
 }
 
-AUTH_USER_MODEL = 'videos.User'
+AUTH_USER_MODEL = 'api.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

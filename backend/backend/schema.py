@@ -1,11 +1,22 @@
 import graphene
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
-from api.videos.models import Video, Comment, Like, User
+from graphql import GraphQLError
+
+from api import Video, Comment, Like, User
 
 
 class UserType(DjangoObjectType):
     class Meta:
         model = User
+
+
+def validate_file_size(file, max_size):
+    print(f"Validating file size: {file.size} bytes, max size: {max_size} bytes")
+    if file.size > max_size:
+        raise ValidationError(f"file size should not exceed {max_size / (1024 * 1024)} MB")
 
 
 class VideoType(DjangoObjectType):
@@ -75,19 +86,55 @@ class CreateUser(graphene.Mutation):
         email = graphene.String(required=True)
         password = graphene.String(required=True)
         bio = graphene.String()
-        profile_picture = graphene.String()
+        profile_picture = Upload(required=False)
+
     user = graphene.Field(UserType)
 
     def mutate(self, info, username, email, password, bio=None, profile_picture=None):
-        user = User(
-            username=username,
-            email=email,
-            bio=bio,
-            profile_picture=profile_picture
-        )
-        user.set_password(password)
+
+        try:
+            user = User(
+                username=username,
+                email=email,
+                bio=bio,
+            )
+            if profile_picture:
+                validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
+                file_name = f"{username}_profile_picture.{profile_picture.name.split('.')[-1]}"
+                user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+            user.set_password(password)
+            user.save()
+            return CreateUser(user=user)
+        except ValidationError as e:
+            raise GraphQLError(f'400:{e.message}')
+
+
+class UpdateUser(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+        username = graphene.String()
+        email = graphene.String()
+        password = graphene.String()
+        bio = graphene.String()
+        profile_picture = Upload(required=False)
+
+    user = graphene.Field(UserType)
+
+    def mutate(self, info, id, username=None, email=None, password=None, bio=None, profile_picture=None):
+        user = User.objects.get(pk=id)
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+        if bio:
+            user.bio = bio
+
+        if profile_picture:
+            validate_file_size(profile_picture, max_size=2 * 1024 * 1024)  # 2MB
+            file_name = f"{username}_profile_picture.{profile_picture.name.split('.')[-1]}"
+            user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
         user.save()
-        return CreateUser(user=user)
+        return UpdateUser(user=user)
 
 
 class CreateVideo(graphene.Mutation):
@@ -140,6 +187,7 @@ class CreateLike(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
+    update_user = UpdateUser.Field()
     create_video = CreateVideo.Field()
     create_comment = CreateComment.Field()
     create_like = CreateLike.Field()
