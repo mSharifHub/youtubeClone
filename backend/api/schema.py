@@ -51,6 +51,7 @@ class Query(graphene.ObjectType):
     comments_by_video_slug = graphene.List(CommentType, video_slug=graphene.String(required=True))
     user_by_user_name = graphene.Field(UserType, username=graphene.String(required=True))
     all_users = graphene.List(UserType)
+    staff_users = graphene.List(UserType)
 
     def resolve_all_videos(self, info, **kwargs):
         return Video.objects.all()
@@ -76,6 +77,9 @@ class Query(graphene.ObjectType):
 
     def resolve_all_user(self, info, **kwargs):
         return User.objects.all()
+
+    def resolve_staff_users(self, info, **kwargs):
+        return User.objects.filter(is_staff=True)
 
     def resolve_user_by_user_name(self, info, username):
         try:
@@ -118,6 +122,28 @@ class CreateUser(graphene.Mutation):
             raise GraphQLError(f'400:{e.message}')
         except Exception as e:
             raise GraphQLError(f'500: An error occurred while creating the user. {str(e)}')
+
+
+class DeleteUser(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+    user = graphene.Field(UserType)
+
+    def mutate(self, info, id):
+        try:
+            user = User.objects.get(pk=id)
+            username = user.username
+            user.delete()
+            try:
+                User.objects.get(pk=id)
+                raise GraphQLError(f'500: An error occurred while deleting the user')
+            except User.DoesNotExist:
+                return DeleteUser(success=True,message=f'User {username} deleted successfully')
+        except User.DoesNotExist:
+            raise GraphQLError(f'400: user not found')
 
 
 class UpdateUser(graphene.Mutation):
@@ -188,7 +214,8 @@ class CreateLike(graphene.Mutation):
 
     like = graphene.Field(LikeType)
 
-    def mutate(self, info, video_id, user_id):
+    @classmethod
+    def mutate(cls, root, info, video_id, user_id):
         user = User.objects.get(id=user_id)
         video = Video.objects.get(id=video_id)
         like = Like(video=video, user=user)
@@ -198,6 +225,7 @@ class CreateLike(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
+    delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()
     create_video = CreateVideo.Field()
     create_comment = CreateComment.Field()

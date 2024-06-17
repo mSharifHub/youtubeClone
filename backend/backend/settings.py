@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
-import firebase_admin
 from django.contrib import staticfiles
-from firebase_admin import credentials
 from dotenv import load_dotenv
 
 env_path = Path('.') / '.env'
@@ -90,9 +88,9 @@ DATABASES = {
     }
 }
 
-GRAPHENE = {
-    'SCHEMA': 'api.schema.schema'
-}
+# GRAPHENE = {
+#     'SCHEMA': 'api.schema.schema'
+# }
 
 AUTH_USER_MODEL = 'api.User'
 
@@ -143,5 +141,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# cred = credentials.Certificate('./')
-# firebase_admin.initialize_app(cred)
