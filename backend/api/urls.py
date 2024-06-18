@@ -2,7 +2,7 @@ from django.urls import path
 from .views import *
 from django.views.decorators.csrf import csrf_exempt
 from graphene_file_upload.django import FileUploadGraphQLView
-from api.schema import schema
+
 
 urlpatterns = [
     # REST API
@@ -14,5 +14,5 @@ urlpatterns = [
     path("likes/", like_list, name="like_list"),
     path("likes/<int:like_id>/", like_detail, name="like_detail"),
     # Graphql
-    path("graphql/", csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True, schema=schema))),
+    path("graphql/", csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True))),
 ]

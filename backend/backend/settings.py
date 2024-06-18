@@ -42,10 +42,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'graphene_django',
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
+    "graphql_auth",
+    "django_filters",
     "api",
 
 ]
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -87,14 +90,29 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-# GRAPHENE = {
-#     'SCHEMA': 'api.schema.schema'
-# }
-
 AUTH_USER_MODEL = 'api.User'
 
-# Password validation
+GRAPHENE = {
+    'SCHEMA': 'api.schema.schema',
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ]
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_auth.backends.GraphQLAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+GRAPHQL_JWT = {
+    "JWT_ALLOW_ANY_CLASSES": [
+        "graphql_auth.mutations.Register",
+    ],
+    "JWT_VERIFY_EXPIRATION": True,
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -140,4 +158,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-

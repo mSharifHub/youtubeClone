@@ -4,6 +4,10 @@ from django.core.files.base import ContentFile
 from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
+from graphql_jwt.shortcuts import get_token, create_refresh_token
+from graphql_auth.schema import UserQuery, MeQuery
+from graphql_jwt.decorators import login_required
+
 from api.models import Video, User, Comment, Like
 
 
@@ -43,7 +47,7 @@ class LikeType(DjangoObjectType):
         model = Like
 
 
-class Query(graphene.ObjectType):
+class Query(UserQuery, MeQuery, graphene.ObjectType):
     all_videos = graphene.List(VideoType)
     all_comments = graphene.List(CommentType)
     all_likes = graphene.List(LikeType)
@@ -97,6 +101,8 @@ class CreateUser(graphene.Mutation):
         profile_picture = Upload(required=False)
 
     user = graphene.Field(UserType)
+    token = graphene.String()
+    refresh_token = graphene.String()
 
     def mutate(self, info, username, email, password, bio=None, profile_picture=None):
         try:
@@ -117,7 +123,11 @@ class CreateUser(graphene.Mutation):
             # Set user password
             user.set_password(password)
             user.save()
-            return CreateUser(user=user)
+
+            token = get_token(user)
+            refresh_token = create_refresh_token(user)
+
+            return CreateUser(user=user, token=token, refresh_token=refresh_token)
         except ValidationError as e:
             raise GraphQLError(f'400:{e.message}')
         except Exception as e:
@@ -132,18 +142,21 @@ class DeleteUser(graphene.Mutation):
     message = graphene.String()
     user = graphene.Field(UserType)
 
+    @login_required
     def mutate(self, info, id):
         try:
             user = User.objects.get(pk=id)
+            if info.context.user != user:
+                raise GraphQLError(f"403: You do not have authorization")
             username = user.username
             user.delete()
             try:
                 User.objects.get(pk=id)
-                raise GraphQLError(f'500: An error occurred while deleting the user')
+                raise GraphQLError(f"500: User {username} has not been deleted")
             except User.DoesNotExist:
-                return DeleteUser(success=True,message=f'User {username} deleted successfully')
+                return DeleteUser(success=True, message=f"User {username} has been deleted successfully")
         except User.DoesNotExist:
-            raise GraphQLError(f'400: user not found')
+            raise GraphQLError(f"400: user not found")
 
 
 class UpdateUser(graphene.Mutation):
@@ -157,8 +170,13 @@ class UpdateUser(graphene.Mutation):
 
     user = graphene.Field(UserType)
 
+    @login_required
     def mutate(self, info, id, username=None, email=None, password=None, bio=None, profile_picture=None):
         user = User.objects.get(pk=id)
+
+        if info.context.user != user:
+            raise GraphQLError(f"403: You do not have authorization")
+
         if username:
             user.username = username
         if email:
