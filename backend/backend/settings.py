@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv('DEBUG', "False") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -110,6 +110,7 @@ GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutation.Register",
         "graphql_auth.mutation.VerifyAccount",
+        "graphql_auth.mutation.ObtainJsonWebToken",
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
@@ -123,6 +124,7 @@ GRAPHQL_AUTH = {
     "REGISTER_MUTATION_FIELDS": ["email", "username"],
 
 }
+
 
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

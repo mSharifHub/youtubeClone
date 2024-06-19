@@ -1,4 +1,3 @@
-
 import graphene
 from graphql_jwt import ObtainJSONWebToken, Refresh, Revoke
 from django.core.exceptions import ValidationError
@@ -232,12 +231,14 @@ class CustomObtainJsonWebToken(ObtainJSONWebToken):
     errors = graphene.String()
     token = graphene.String()
     refresh_token = graphene.String()
+    username = graphene.String()
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
         try:
             result = super().mutate(root, info, **kwargs)
-            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token)
+            username = kwargs['username']
+            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token, username=username)
         except Exception as err:
             return cls(success=False, errors=str(err), token=None, refresh_token=None)
 
@@ -245,6 +246,8 @@ class CustomObtainJsonWebToken(ObtainJSONWebToken):
 class AuthMutation(graphene.ObjectType):
     register_user = graphene.Field(UserType)
     verify_account = mutations.VerifyAccount.Field()
+    resend_activation_email = mutations.ResendActivationEmail.Field()
+    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
 
 
 class CreateVideo(graphene.Mutation):
