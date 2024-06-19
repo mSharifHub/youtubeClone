@@ -1,12 +1,16 @@
+
 import graphene
+from graphql_jwt import ObtainJSONWebToken, Refresh, Revoke
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
 from graphql_jwt.shortcuts import get_token, create_refresh_token
+from graphql_auth import mutations
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_jwt.decorators import login_required
+from graphql_jwt.utils import jwt_decode
 
 from api.models import Video, User, Comment, Like
 
@@ -123,7 +127,6 @@ class CreateUser(graphene.Mutation):
             # Set user password
             user.set_password(password)
             user.save()
-
             token = get_token(user)
             refresh_token = create_refresh_token(user)
 
@@ -192,6 +195,58 @@ class UpdateUser(graphene.Mutation):
         return UpdateUser(user=user)
 
 
+class VerifyToken(graphene.Mutation):
+    class Arguments:
+        token = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+    payload = graphene.String()
+
+    def mutate(self, info, token):
+        try:
+            payload = jwt_decode(token)
+
+            username = payload['username']
+            if not username:
+                raise Exception("Invalid token: username not found")
+
+            user = User.objects.get(username=username)
+            user.status.verified = True
+            user.status.save()
+
+            return VerifyToken(success=True, message=f"user verified successfully", payload=payload)
+
+        except User.DoesNotExist:
+            return VerifyToken(success=False, message=f"Invalid token: username not found", payload={})
+        except Exception as err:
+            return VerifyToken(success=False, message=str(err), payload={})
+
+
+class CustomObtainJsonWebToken(ObtainJSONWebToken):
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    errors = graphene.String()
+    token = graphene.String()
+    refresh_token = graphene.String()
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        try:
+            result = super().mutate(root, info, **kwargs)
+            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token)
+        except Exception as err:
+            return cls(success=False, errors=str(err), token=None, refresh_token=None)
+
+
+class AuthMutation(graphene.ObjectType):
+    register_user = graphene.Field(UserType)
+    verify_account = mutations.VerifyAccount.Field()
+
+
 class CreateVideo(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
@@ -241,7 +296,11 @@ class CreateLike(graphene.Mutation):
         return CreateLike(like=like)
 
 
-class Mutation(graphene.ObjectType):
+class Mutation(AuthMutation, graphene.ObjectType):
+    token_auth = CustomObtainJsonWebToken.Field()
+    verify_token = VerifyToken.Field()
+    refresh_token = Refresh.Field()
+    revoke_token = Revoke.Field()
     create_user = CreateUser.Field()
     delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()

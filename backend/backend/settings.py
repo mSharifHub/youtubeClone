@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 from django.contrib import staticfiles
 from dotenv import load_dotenv
@@ -96,22 +97,35 @@ GRAPHENE = {
     'SCHEMA': 'api.schema.schema',
     "MIDDLEWARE": [
         "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ]
+    ],
 }
 
 AUTHENTICATION_BACKENDS = [
-    'graphql_auth.backends.GraphQLAuthBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 GRAPHQL_JWT = {
+
     "JWT_ALLOW_ANY_CLASSES": [
-        "graphql_auth.mutations.Register",
+        "graphql_auth.mutation.Register",
+        "graphql_auth.mutation.VerifyAccount",
     ],
     "JWT_VERIFY_EXPIRATION": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+GRAPHQL_AUTH = {
+    'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
+    "REGISTER_MUTATION_FIELDS": ["email", "username"],
+
+}
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
