@@ -17,6 +17,7 @@ from api.models import Video, User, Comment, Like
 class UserType(DjangoObjectType):
     class Meta:
         model = User
+        fields = ('id', 'username', 'is_staff', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
 
 
 def validate_file_size(file, max_size):
@@ -82,7 +83,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         except Video.DoesNotExist:
             return None
 
-    def resolve_all_user(self, info, **kwargs):
+    def resolve_all_users(self, info, **kwargs):
         return User.objects.all()
 
     def resolve_staff_users(self, info, **kwargs):
@@ -244,8 +245,8 @@ class CustomObtainJsonWebToken(ObtainJSONWebToken):
 
 
 class AuthMutation(graphene.ObjectType):
-    register_user = graphene.Field(UserType)
-    verify_account = mutations.VerifyAccount.Field()
+    register_user = CreateUser.Field()
+    verify_account = VerifyToken.Field()
     resend_activation_email = mutations.ResendActivationEmail.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
 
@@ -307,9 +308,6 @@ class Mutation(AuthMutation, graphene.ObjectType):
     create_user = CreateUser.Field()
     delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()
-    create_video = CreateVideo.Field()
-    create_comment = CreateComment.Field()
-    create_like = CreateLike.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -1,3 +1,9 @@
+import AllUsers from '../AllUsers.tsx';
+
 export default function Home() {
-  return <div> home page</div>;
+  return (
+    <div>
+      <AllUsers />
+    </div>
+  );
 }
