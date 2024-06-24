@@ -8,6 +8,10 @@ from graphql import GraphQLError
 from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt.decorators import login_required
 from graphql_jwt.utils import jwt_decode
+from social_core.backends.oauth import BaseOAuth2
+from social_core.exceptions import MissingBackend, AuthTokenError
+from social_django.utils import load_strategy, load_backend
+import requests
 
 from api.models import Video, User, Comment, Like
 
@@ -15,7 +19,7 @@ from api.models import Video, User, Comment, Like
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ('id', 'username', 'is_staff', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
+        fields = ('id', 'username', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
 
 
 def validate_file_size(file, max_size):
@@ -92,6 +96,71 @@ class Query(graphene.ObjectType):
             return User.objects.get(username=username)
         except User.DoesNotExist:
             return None
+
+
+class SocialAuth(graphene.Mutation):
+    class Arguments:
+        provider = graphene.String(required=True)
+        access_token = graphene.String(required=True)
+
+    user = graphene.Field(UserType)
+    token = graphene.String()
+    refresh_token = graphene.String()
+
+    def mutate(self, info, provider, access_token):
+        strategy = load_strategy(info.context)
+        backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
+
+        if isinstance(backend, BaseOAuth2):
+            try:
+                user = backend.do_auth(access_token)
+
+                if not user:
+
+                    details = backend.user_data(access_token)
+                    email = details.get('email')
+                    email_verified = details.get('email_verified')
+                    username = details.get('username') or details.get('email').split('@')[0]
+                    profile_picture_url = details.get('picture')
+
+                    if not email_verified:
+                        raise GraphQLError("Email not verified by Google")
+
+                    user = User(
+                        username=username,
+                        email=email,
+                        is_active=True,
+                        is_verified=True,
+                    )
+
+                    if profile_picture_url:
+                        response = requests.get(profile_picture_url)
+                        profile_picture = ContentFile(response.content)
+
+                        if profile_picture:
+                            validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
+                            file_name = f"{username}_profile_picture.jpg"
+                            user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+
+                    user.save()
+
+                else:
+                    if user.is_active:
+                        user.is_verified = True
+                        user.save()
+
+                if user and user.is_active:
+                    token = get_token(user)
+                    refresh_token = create_refresh_token(user)
+                    return SocialAuth(user=user, token=token, refresh_token=refresh_token)
+
+            except MissingBackend:
+                raise GraphQLError('Missing backend')
+
+            except AuthTokenError:
+                raise GraphQLError('Invalid token')
+
+        raise GraphQLError('Authentication failed')
 
 
 class CreateUser(graphene.Mutation):
@@ -237,10 +306,10 @@ class CustomObtainJsonWebToken(ObtainJSONWebToken):
         try:
             result = super().mutate(root, info, **kwargs)
             username = kwargs['username']
-            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token, username=username)
+            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token,
+                       username=username)
         except Exception as err:
             return cls(success=False, errors=str(err), token=None, refresh_token=None)
-
 
 
 class CreateVideo(graphene.Mutation):
@@ -293,6 +362,7 @@ class CreateLike(graphene.Mutation):
 
 
 class AuthMutation(graphene.ObjectType):
+    social_auth = SocialAuth.Field()
     register_user = CreateUser.Field()
     verify_account = VerifyToken.Field()
     token_auth = CustomObtainJsonWebToken.Field()
@@ -303,5 +373,6 @@ class AuthMutation(graphene.ObjectType):
     create_video = CreateVideo.Field()
     create_comment = CreateComment.Field()
     create_like = CreateLike.Field()
+
 
 schema = graphene.Schema(query=Query, mutation=AuthMutation)
