@@ -6,8 +6,6 @@ from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
 from graphql_jwt.shortcuts import get_token, create_refresh_token
-from graphql_auth import mutations
-from graphql_auth.schema import UserQuery, MeQuery
 from graphql_jwt.decorators import login_required
 from graphql_jwt.utils import jwt_decode
 
@@ -51,7 +49,7 @@ class LikeType(DjangoObjectType):
         model = Like
 
 
-class Query(UserQuery, MeQuery, graphene.ObjectType):
+class Query(graphene.ObjectType):
     all_videos = graphene.List(VideoType)
     all_comments = graphene.List(CommentType)
     all_likes = graphene.List(LikeType)
@@ -244,12 +242,6 @@ class CustomObtainJsonWebToken(ObtainJSONWebToken):
             return cls(success=False, errors=str(err), token=None, refresh_token=None)
 
 
-class AuthMutation(graphene.ObjectType):
-    register_user = CreateUser.Field()
-    verify_account = VerifyToken.Field()
-    resend_activation_email = mutations.ResendActivationEmail.Field()
-    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
-
 
 class CreateVideo(graphene.Mutation):
     class Arguments:
@@ -300,14 +292,16 @@ class CreateLike(graphene.Mutation):
         return CreateLike(like=like)
 
 
-class Mutation(AuthMutation, graphene.ObjectType):
+class AuthMutation(graphene.ObjectType):
+    register_user = CreateUser.Field()
+    verify_account = VerifyToken.Field()
     token_auth = CustomObtainJsonWebToken.Field()
-    verify_token = VerifyToken.Field()
     refresh_token = Refresh.Field()
     revoke_token = Revoke.Field()
-    create_user = CreateUser.Field()
     delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()
+    create_video = CreateVideo.Field()
+    create_comment = CreateComment.Field()
+    create_like = CreateLike.Field()
 
-
-schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=Query, mutation=AuthMutation)

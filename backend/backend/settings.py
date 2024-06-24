@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'graphene_django',
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
-    "graphql_auth",
     "django_filters",
     "api",
 
@@ -114,18 +113,16 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 GRAPHQL_JWT = {
-
     "JWT_ALLOW_ANY_CLASSES": [
-        "graphql_auth.mutation.Register",
-        "graphql_auth.mutation.VerifyAccount",
-        "graphql_auth.mutation.ObtainJsonWebToken",
+        "graphql_jwt.ObtainJSONWebToken",
+        "graphql_jwt.Verify",
+        "graphql_jwt.Refresh",
     ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
-
 GRAPHQL_AUTH = {
     'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
     "REGISTER_MUTATION_FIELDS": ["email", "username"],
