@@ -1,10 +1,13 @@
 import graphene
+import graphql_jwt
+import jwt
 from graphql_jwt import ObtainJSONWebToken, Refresh, Revoke
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from graphene_file_upload.scalars import Upload
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
+from graphql_jwt.settings import jwt_settings
 from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt.decorators import login_required
 from graphql_jwt.utils import jwt_decode
@@ -277,60 +280,6 @@ class UpdateUser(graphene.Mutation):
         return UpdateUser(user=user)
 
 
-class VerifyToken(graphene.Mutation):
-    class Arguments:
-        token = graphene.String(required=True)
-
-    success = graphene.Boolean()
-    message = graphene.String()
-    payload = graphene.String()
-
-    def mutate(self, info, token):
-        try:
-
-            if isinstance(token,str):
-                 payload = jwt_decode(token)
-            else:
-                payload = token
-
-            username = jwt_get_username_from_payload(payload)
-            if not username:
-                raise Exception("Invalid token: username not found")
-
-            user = User.objects.get(username=username)
-            user.status.verified = True
-            user.status.save()
-
-            return VerifyToken(success=True, message=f"user verified successfully", payload=str(payload))
-
-        except User.DoesNotExist:
-            return VerifyToken(success=False, message=f"Invalid token: username not found", payload={})
-        except Exception as err:
-            return VerifyToken(success=False, message=str(err), payload={})
-
-
-class CustomObtainJsonWebToken(ObtainJSONWebToken):
-    class Arguments:
-        username = graphene.String(required=True)
-        password = graphene.String(required=True)
-
-    success = graphene.Boolean()
-    errors = graphene.String()
-    token = graphene.String()
-    refresh_token = graphene.String()
-    username = graphene.String()
-
-    @classmethod
-    def mutate(cls, root, info, **kwargs):
-        try:
-            result = super().mutate(root, info, **kwargs)
-            username = kwargs['username']
-            return cls(success=True, errors=None, token=result.token, refresh_token=result.refresh_token,
-                       username=username)
-        except Exception as err:
-            return cls(success=False, errors=str(err), token=None, refresh_token=None)
-
-
 class CreateVideo(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
@@ -380,12 +329,50 @@ class CreateLike(graphene.Mutation):
         return CreateLike(like=like)
 
 
+class VerifyToken(graphene.Mutation):
+    class Arguments:
+        token = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+    payload = graphene.String()
+
+    def mutate(self, info, token):
+        try:
+            # Ensure token is decoded only if it's a string
+            if isinstance(token, str):
+                # Decode the JWT token
+                payload = jwt.decode(token, jwt_settings.JWT_SECRET_KEY, algorithms=[jwt_settings.JWT_ALGORITHM])
+            else:
+                payload = token
+
+            # Extract username from the payload
+            username = payload.get('username')  # Or 'sub' or another key depending on your token structure
+            if not username:
+                raise Exception("Invalid token: username not found")
+
+            user = User.objects.get(username=username)
+            user.is_verified = True
+            user.save()
+
+            return VerifyToken(success=True, message=f"user verified successfully", payload=str(payload))
+
+        except jwt.ExpiredSignatureError:
+            return VerifyToken(success=False, message="Token has expired", payload={})
+        except jwt.InvalidTokenError:
+            return VerifyToken(success=False, message="Invalid token", payload={})
+        except User.DoesNotExist:
+            return VerifyToken(success=False, message="Invalid token: username not found", payload={})
+        except Exception as err:
+            return VerifyToken(success=False, message=str(err), payload={})
+
+
 class AuthMutation(graphene.ObjectType):
     social_auth = SocialAuth.Field()
     register_user = CreateUser.Field()
-    verify_account = VerifyToken.Field()
-    token_auth = CustomObtainJsonWebToken.Field()
-    refresh_token = Refresh.Field()
+    verify_token = VerifyToken.Field()
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = Revoke.Field()
     delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()
