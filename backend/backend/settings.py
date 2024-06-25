@@ -117,9 +117,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.google.GoogleOAuth',
+
 )
 
 

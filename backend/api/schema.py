@@ -19,7 +19,7 @@ from api.models import Video, User, Comment, Like
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ('id', 'username', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
+        fields = ('id', 'username', 'is_staff', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
 
 
 def validate_file_size(file, max_size):
@@ -116,7 +116,6 @@ class SocialAuth(graphene.Mutation):
                 user = backend.do_auth(access_token)
 
                 if not user:
-
                     details = backend.user_data(access_token)
                     email = details.get('email')
                     email_verified = details.get('email_verified')
@@ -126,40 +125,49 @@ class SocialAuth(graphene.Mutation):
                     if not email_verified:
                         raise GraphQLError("Email not verified by Google")
 
-                    user = User(
-                        username=username,
-                        email=email,
-                        is_active=True,
-                        is_verified=True,
-                    )
+                    # Check if a user with the same email already exists
+                    existing_user = User.objects.filter(email=email).first()
+                    if existing_user:
+                        user = existing_user
+                    else:
+                        user = User(
+                            username=username,
+                            email=email,
+                            is_active=True,
+                            is_verified=True,
+                        )
 
-                    if profile_picture_url:
-                        response = requests.get(profile_picture_url)
-                        profile_picture = ContentFile(response.content)
-
-                        if profile_picture:
+                        if profile_picture_url:
+                            response = requests.get(profile_picture_url)
+                            profile_picture = ContentFile(response.content)
                             validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
                             file_name = f"{username}_profile_picture.jpg"
-                            user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+                            user.profile_picture.save(file_name, profile_picture, save=False)
 
-                    user.save()
-
-                else:
-                    if user.is_active:
-                        user.is_verified = True
                         user.save()
+                        print("New user created and saved.")
+
+                # Ensure the user is marked as verified
+                if user.is_active:
+                    user.is_verified = True
+                    user.save()
+                    print("User is verified.")
 
                 if user and user.is_active:
                     token = get_token(user)
                     refresh_token = create_refresh_token(user)
+                    print("User authenticated successfully.")
                     return SocialAuth(user=user, token=token, refresh_token=refresh_token)
 
             except MissingBackend:
+                print("Missing backend.")
                 raise GraphQLError('Missing backend')
 
             except AuthTokenError:
+                print("Invalid token.")
                 raise GraphQLError('Invalid token')
 
+        print("Authentication failed.")
         raise GraphQLError('Authentication failed')
 
 
@@ -179,25 +187,32 @@ class CreateUser(graphene.Mutation):
         try:
             validate_username_length(username, min_length=3)
 
-            # Create a new user instance
-            user = User(
-                username=username,
-                email=email,
-                bio=bio,
-            )
+            if User.objects.filter(username=username).exists():
+                raise GraphQLError("Username already exists")
 
-            if profile_picture:
-                validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
-                file_name = f"{username}_profile_picture.{profile_picture.name.split('.')[-1]}"
-                user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+            elif User.objects.filter(email=email).exists():
+                raise GraphQLError("Email already exists")
 
-            # Set user password
-            user.set_password(password)
-            user.save()
-            token = get_token(user)
-            refresh_token = create_refresh_token(user)
+            else:
+                # Create a new user instance
+                user = User(
+                    username=username,
+                    email=email,
+                    bio=bio,
+                )
 
-            return CreateUser(user=user, token=token, refresh_token=refresh_token)
+                if profile_picture:
+                    validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
+                    file_name = f"{username}_profile_picture.{profile_picture.name.split('.')[-1]}"
+                    user.profile_picture.save(file_name, ContentFile(profile_picture.read()), save=False)
+
+                # Set user password
+                user.set_password(password)
+                user.save()
+                token = get_token(user)
+                refresh_token = create_refresh_token(user)
+                return CreateUser(user=user, token=token, refresh_token=refresh_token)
+
         except ValidationError as e:
             raise GraphQLError(f'400:{e.message}')
         except Exception as e:
@@ -272,9 +287,13 @@ class VerifyToken(graphene.Mutation):
 
     def mutate(self, info, token):
         try:
-            payload = jwt_decode(token)
 
-            username = payload['username']
+            if isinstance(token,str):
+                 payload = jwt_decode(token)
+            else:
+                payload = token
+
+            username = jwt_get_username_from_payload(payload)
             if not username:
                 raise Exception("Invalid token: username not found")
 
@@ -282,7 +301,7 @@ class VerifyToken(graphene.Mutation):
             user.status.verified = True
             user.status.save()
 
-            return VerifyToken(success=True, message=f"user verified successfully", payload=payload)
+            return VerifyToken(success=True, message=f"user verified successfully", payload=str(payload))
 
         except User.DoesNotExist:
             return VerifyToken(success=False, message=f"Invalid token: username not found", payload={})
