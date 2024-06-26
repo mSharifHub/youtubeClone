@@ -6,8 +6,11 @@ import videoIconPath from '../assets/navigation_icons/add-video.png';
 import bellIconPath from '../assets/navigation_icons/bell.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
+import { useState } from 'react';
+import Login from './Login.tsx';
 
 export default function NavigationBar() {
+  const [showLogin, setShowLogin] = useState(false);
   return (
     <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1  px-2  ">
       {/*left*/}
@@ -62,10 +65,13 @@ export default function NavigationBar() {
           />
         </div>
         {/* profile component content */}
-        <div className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200">
+        <div
+          onClick={()=>setShowLogin(true)}
+          className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200">
           <FontAwesomeIcon icon={faUser} className="text-black" />
         </div>
       </div>
+      {showLogin && <Login/>}
     </nav>
   );
 }

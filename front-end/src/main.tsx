@@ -4,11 +4,14 @@ import App from './App.tsx';
 import { ApolloProvider } from '@apollo/client';
 import client from './graphql/apolloClient.ts';
 import './index.css';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <App />
+      </GoogleOAuthProvider>
     </ApolloProvider>
   </React.StrictMode>,
 );

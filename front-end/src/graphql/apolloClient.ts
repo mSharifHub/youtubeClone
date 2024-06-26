@@ -40,7 +40,6 @@ const link = ApolloLink.from([authLink, errorLink, httpLink]);
 const client = new ApolloClient({
   link,
   cache: new InMemoryCache(),
-})
-
+});
 
 export default client;
