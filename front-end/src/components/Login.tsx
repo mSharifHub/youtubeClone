@@ -1,5 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useMutation, gql } from '@apollo/client';
+import gogoleIcon from '../assets/menu_bar_icons/google.png';
 
 const SOCIAL_AUTH = gql`
   mutation SocialAuth($provider: String!, $accessToken: String!) {
@@ -20,7 +21,7 @@ const SOCIAL_AUTH = gql`
   }
 `;
 
-const Login = () => {
+const LoginWithGoogle = () => {
   const [socialAuth] = useMutation(SOCIAL_AUTH);
 
   const googleLogin = useGoogleLogin({
@@ -45,10 +46,16 @@ const Login = () => {
   });
 
   return (
-    <div>
-      <button onClick={() => googleLogin()}>Login with Google</button>
-    </div>
+    <button
+      className="w-80 h-16 flex justify-start items-center rounded-lg border-2 shadow-md"
+      onClick={() => googleLogin()}
+    >
+      <img src={gogoleIcon} alt="GoogleIcon" className="mx-2 h-10 w-10" />
+      <span className="capitalize font-semibold mx-4 ">
+        authenticate with google
+      </span>
+    </button>
   );
 };
 
-export default Login;
+export default LoginWithGoogle;
