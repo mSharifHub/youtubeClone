@@ -8,7 +8,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("api.urls")),
 
-    re_path(r'^oauth/', include('social_django.urls', namespace='social')),
+    # re_path(r'^oauth/', include('social_django.urls', namespace='social')),
 
 
 ]

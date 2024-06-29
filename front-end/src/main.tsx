@@ -8,10 +8,10 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <ApolloProvider client={client}>
         <App />
-      </GoogleOAuthProvider>
-    </ApolloProvider>
+      </ApolloProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 );
