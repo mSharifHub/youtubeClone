@@ -1,6 +1,7 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useMutation, gql } from '@apollo/client';
-import gogoleIcon from '../assets/menu_bar_icons/google.png';
+import { useUser } from '../context/UserContext.tsx';
+import googleIcon from '../assets/menu_bar_icons/google.png';
 
 const SOCIAL_AUTH = gql`
   mutation SocialAuth($provider: String!, $accessToken: String!) {
@@ -23,6 +24,7 @@ const SOCIAL_AUTH = gql`
 
 const LoginWithGoogle = () => {
   const [socialAuth] = useMutation(SOCIAL_AUTH);
+  const { dispatch } = useUser();
 
   const googleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -34,9 +36,10 @@ const LoginWithGoogle = () => {
       })
         .then((response) => {
           if (response.data) {
-            console.log(response.data);
-            localStorage.setItem('token', response.data.socialAuth.token);
-            // Handle user data (e.g., update context or state)
+            const { user, token, refreshToken } = response.data.socialAuth;
+            localStorage.setItem('token', token);
+            localStorage.setItem('refreshToken', refreshToken);
+            dispatch({ type: 'SET_USER', payload: user });
           }
         })
         .catch((err) => {
@@ -50,7 +53,7 @@ const LoginWithGoogle = () => {
       className="w-80 h-16 flex justify-start items-center rounded-lg border-2 shadow-md"
       onClick={() => googleLogin()}
     >
-      <img src={gogoleIcon} alt="GoogleIcon" className="mx-2 h-10 w-10" />
+      <img src={googleIcon} alt="GoogleIcon" className="mx-2 h-10 w-10" />
       <span className="capitalize font-semibold mx-4 ">
         authenticate with google
       </span>

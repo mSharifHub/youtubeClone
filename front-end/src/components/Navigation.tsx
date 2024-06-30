@@ -75,8 +75,8 @@ export default function NavigationBar() {
         {/* profile component content */}
         <div
           onClick={openGoogleModal}
-          className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200"
-        >
+          className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200 cursor-pointer">
+
           <FontAwesomeIcon icon={faUser} className="text-black" />
         </div>
       </div>
