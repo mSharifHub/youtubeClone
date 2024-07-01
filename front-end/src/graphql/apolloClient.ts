@@ -6,52 +6,58 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
-import { isTokenExpired, refreshAuthToken } from './authHelper.ts';
+import {
+  getAuthToken,
+  isTokenExpired,
+  refreshAuthToken,
+  removeAuthToken,
+  saveAuthToken,
+} from './authHelper.ts';
+import Cookies from 'js-cookie';
 
 const httpLink = createHttpLink({
   uri: 'http://127.0.0.1:8000/graphql/',
+  credentials: 'same-origin', // include if not same domain
 });
 
 const authLink = setContext(async (_, { headers }) => {
   try {
-    // check for token and refresh token in the  local storage
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
+    const csrfToken = Cookies.get('csrftoken');
+    const tokens = getAuthToken();
 
-    // if token than check if it  has expired
-    if (token) {
+    if (tokens) {
+      const { token, refreshToken } = tokens;
+
       const isExpired = isTokenExpired(token);
-      // if expired and there is a refresh token in local storage call function to create a new token
+
       if (isExpired && refreshToken) {
         const newTokenData = await refreshAuthToken(refreshToken);
-        if (newTokenData) {
-          console.log('new token generated');
-          const { token, refreshToken } = newTokenData;
-          localStorage.setItem('token', token);
-          localStorage.setItem('refreshToken', refreshToken);
 
-          return {
-            headers: {
-              ...headers,
-              authorization: `JWT ${token}`,
-            },
+        if (newTokenData) {
+          console.log('new token generated'); // debug
+          const { token, refreshToken } = newTokenData;
+          saveAuthToken(token, refreshToken);
+
+          const headersContent = {
+            ...headers,
+            authorization: `JWT ${token}`,
+            'X-CSRFToken': csrfToken,
           };
+
+          return { headers: headersContent };
         } else {
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          console.log(
-            'Refresh token failed. tokens removed from local storage',
-          );
+          removeAuthToken();
         }
+      } else {
+        const headersContent = {
+          ...headers,
+          authorization: token ? `JWT ${token}` : '',
+          'X-CSRFToken': csrfToken,
+        };
+
+        return { headers: headersContent };
       }
     }
-
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `JWT ${token}` : '',
-      },
-    };
   } catch (error) {
     console.error('error during token handling', error);
     return {

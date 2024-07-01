@@ -2,6 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useMutation, gql } from '@apollo/client';
 import { useUser } from '../context/UserContext.tsx';
 import googleIcon from '../assets/menu_bar_icons/google.png';
+import { saveAuthToken } from '../graphql/authHelper.ts';
 
 const SOCIAL_AUTH = gql`
   mutation SocialAuth($provider: String!, $accessToken: String!) {
@@ -37,8 +38,9 @@ const LoginWithGoogle = () => {
         .then((response) => {
           if (response.data) {
             const { user, token, refreshToken } = response.data.socialAuth;
-            localStorage.setItem('token', token);
-            localStorage.setItem('refreshToken', refreshToken);
+            saveAuthToken(token, refreshToken, user);
+            // localStorage.setItem('token', token);
+            // localStorage.setItem('refreshToken', refreshToken);
             dispatch({ type: 'SET_USER', payload: user });
           }
         })
