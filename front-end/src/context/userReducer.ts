@@ -1,10 +1,11 @@
 import { Action, UserState } from './interfaces.ts';
+import Cookies from 'js-cookie';
 
 export const userReducer = (state: UserState, action: Action) => {
   switch (action.type) {
     case 'SET_USER': {
       const user = action.payload;
-      localStorage.setItem('user', JSON.stringify(user));
+      Cookies.set('user', JSON.stringify(user), { expires: 7 });
       return {
         ...state,
         user,
@@ -23,3 +24,5 @@ export const userReducer = (state: UserState, action: Action) => {
       return state;
   }
 };
+
+

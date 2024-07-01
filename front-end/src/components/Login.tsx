@@ -39,8 +39,6 @@ const LoginWithGoogle = () => {
           if (response.data) {
             const { user, token, refreshToken } = response.data.socialAuth;
             saveAuthToken(token, refreshToken, user);
-            // localStorage.setItem('token', token);
-            // localStorage.setItem('refreshToken', refreshToken);
             dispatch({ type: 'SET_USER', payload: user });
           }
         })
