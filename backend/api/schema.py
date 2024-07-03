@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 import jwt
 from graphql_jwt import ObtainJSONWebToken, Refresh, Revoke
+from graphql_auth.schema import MeQuery
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from graphene_file_upload.scalars import Upload
@@ -23,6 +24,14 @@ class UserType(DjangoObjectType):
     class Meta:
         model = User
         fields = ('id', 'username', 'is_staff', 'profile_picture', 'bio', 'subscribers', 'is_verified', 'email')
+
+    profile_picture = graphene.String()
+
+    def resolve_profile_picture(self, info):
+        if self.profile_picture:
+            picture_url = info.context.build_absolute_uri(self.profile_picture.url)
+            print(f"this is the picture_url send to front end: {picture_url}")
+            return picture_url
 
 
 def validate_file_size(file, max_size):
@@ -56,7 +65,7 @@ class LikeType(DjangoObjectType):
         model = Like
 
 
-class Query(graphene.ObjectType):
+class Query(MeQuery, graphene.ObjectType):
     all_videos = graphene.List(VideoType)
     all_comments = graphene.List(CommentType)
     all_likes = graphene.List(LikeType)
@@ -65,6 +74,11 @@ class Query(graphene.ObjectType):
     user_by_user_name = graphene.Field(UserType, username=graphene.String(required=True))
     all_users = graphene.List(UserType)
     staff_users = graphene.List(UserType)
+    viewer = graphene.Field(UserType, token=graphene.String(required=True))
+
+    @login_required
+    def resolve_viewer(self, info, **kwargs):
+        return info.context.user
 
     def resolve_all_videos(self, info, **kwargs):
         return Video.objects.all()
@@ -374,6 +388,8 @@ class AuthMutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = Revoke.Field()
+    delete_token_cookie = graphql_jwt.DeleteJSONWebTokenCookie.Field()
+    delete_refresh_token_cookie = graphql_jwt.DeleteRefreshTokenCookie.Field()
     delete_user = DeleteUser.Field()
     update_user = UpdateUser.Field()
     create_video = CreateVideo.Field()

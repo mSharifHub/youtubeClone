@@ -12,20 +12,20 @@ const GoogleLoginModal: React.FC<LoginModalProps> = ({
   onRequestClose,
 }) => {
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      className="flex items-center justify-center h-full"
-      contentLabel="GoogleLoginModal"
-    >
-      <div
-        onClick={onRequestClose}
-        className="absolute border-2 w-full h-full"
-      />
-      <div className="z-10">
-        <LoginWithGoogle />
-      </div>
-    </Modal>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={onRequestClose}
+        className="flex items-center justify-center h-full"
+        contentLabel="GoogleLoginModal"
+      >
+        {/* extra div added to be able to close if clicked outside the loginWithGoogle */}
+        <div onClick={onRequestClose} className="absolute  w-full h-full" />
+        <div className="z-10">
+          <LoginWithGoogle />
+        </div>
+      </Modal>
+    </>
   );
 };
 

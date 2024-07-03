@@ -1,37 +1,37 @@
 import { gql } from '@apollo/client';
 
-export const GET_ALL_USERS = gql`
-  query GetAllUsers {
-    allUsers {
-      id
-      username
-      email
-      isStaff
-      profilePicture
-      bio
-      isVerified
+export const SOCIAL_AUTH = gql`
+  mutation SocialAuth($provider: String!, $accessToken: String!) {
+    socialAuth(provider: $provider, accessToken: $accessToken) {
+      user {
+        id
+        username
+        profilePicture
+        bio
+        isVerified
+        email
+        subscribers {
+          username
+        }
+      }
+      token
+      refreshToken
     }
   }
 `;
 
-export const GET_USER_BY_NAME = gql`
-  query GetUserByUsername($username: String!) {
-    userByUsername(username: $username) {
-      id
-      username
-      email
-      bio
+export const DeleteCookie = gql`
+  mutation DeleteCookie {
+    deleteTokenCookie {
+      deleted
     }
   }
 `;
 
-export const GET_STAFF_USERS = gql`
-  query GetStaffUsers {
-    staffUsers {
-      id
-      username
-      email
-      bio
+export const DeleteRefreshCookie = gql`
+  mutation DeleteRefreshCookie {
+    deleteRefreshTokenCookie {
+      deleted
     }
   }
 `;

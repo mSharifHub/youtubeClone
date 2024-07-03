@@ -3,6 +3,8 @@ import UserContext from './UserContext';
 import { userReducer } from './userReducer';
 import { UserContextType, UserState, Action } from './interfaces';
 import Cookies from 'js-cookie';
+import { DeleteCookie, DeleteRefreshCookie } from '../graphql/queries.ts';
+import { useMutation } from '@apollo/client';
 
 const getUser = (): UserState => {
   const userCookie = Cookies.get('user');
@@ -25,16 +27,23 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const initialState = getUser();
 
+  const [deleteTokenCookie] = useMutation(DeleteCookie);
+  const [deleteRefreshTokenCookie] = useMutation(DeleteRefreshCookie);
+
   const [state, dispatch] = useReducer<React.Reducer<UserState, Action>>(
     userReducer,
     initialState,
   );
 
-  const logout = () => {
-    Cookies.remove('JWT');
-    Cookies.remove('JWT-refresh-token');
-    Cookies.remove('user');
-    dispatch({ type: 'LOG_OUT' });
+  const logout = async () => {
+    try {
+      await deleteTokenCookie();
+      await deleteRefreshTokenCookie();
+      Cookies.remove('user');
+      dispatch({ type: 'LOG_OUT' });
+    } catch (err) {
+      console.log('Failed to delete cookie', err);
+    }
   };
 
   const value: UserContextType = { state, dispatch, logout };

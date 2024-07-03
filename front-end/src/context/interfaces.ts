@@ -6,7 +6,7 @@ export interface User {
   bio?: string;
   isVerified: boolean;
   email: string;
-  subscribers: { username: string };
+  subscribers: { username: string }[];
 }
 
 export interface UserState {
@@ -20,4 +20,7 @@ export interface UserContextType {
   logout: () => void;
 }
 
-export type Action = { type: 'SET_USER'; payload: User } | { type: 'LOG_OUT' };
+export interface Action {
+  type: string;
+  payload?: any; // change this later
+}

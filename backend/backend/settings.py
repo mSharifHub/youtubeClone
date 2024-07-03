@@ -134,6 +134,7 @@ GRAPHQL_JWT = {
         "graphql_jwt.Verify",
         "graphql_jwt.Refresh",
     ],
+    "JWT_ALLOW_ARGUMENT": True,
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     "JWT_EXPIRATION_DELTA": timedelta(minutes=2),
