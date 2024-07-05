@@ -1,33 +1,40 @@
-import { useGoogleLogin } from '@react-oauth/google';
+import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 import { useMutation } from '@apollo/client';
-import { useUser } from '../context/UserContext.tsx';
+
 import googleIcon from '../assets/menu_bar_icons/google.png';
-import { saveAuthToken } from '../graphql/authHelper.ts';
-import { SOCIAL_AUTH } from '../graphql/queries.ts';
+import { GOOGLE_AUTH } from '../graphql/queries.ts';
 
 const LoginWithGoogle = () => {
-  const [socialAuth] = useMutation(SOCIAL_AUTH);
-  const { dispatch } = useUser();
+  const [googleAuth] = useMutation(GOOGLE_AUTH);
+
+  const handleOnLogIn = async (codeResponse: CodeResponse) => {
+    console.log(
+      'Front end debugging the code response from google api',
+      codeResponse,
+    );
+
+    const { code } = codeResponse;
+
+    console.log('Debugging from end debugging the code ', code);
+
+    try {
+      const response = await googleAuth({
+        variables: {
+          code: code,
+        },
+      });
+
+      if (response && response.data) {
+        console.log('debugging response', response.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const googleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      socialAuth({
-        variables: {
-          provider: 'google-oauth2',
-          accessToken: tokenResponse.access_token,
-        },
-      })
-        .then((response) => {
-          if (response.data) {
-            const { user, token, refreshToken } = response.data.socialAuth;
-            saveAuthToken(token, refreshToken);
-            dispatch({ type: 'SET_USER', payload: user });
-          }
-        })
-        .catch((err) => {
-          console.error('Authentication error:', err);
-        });
-    },
+    onSuccess: handleOnLogIn,
+    flow: 'auth-code',
   });
 
   return (

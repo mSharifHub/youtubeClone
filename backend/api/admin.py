@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Video, Comment, Like
+from .models import User
 
 
 @admin.register(User)
@@ -23,19 +23,19 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('username',)
 
 
-@admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'upload_at', 'views')
-    search_fields = ('title', 'description')
-    prepopulated_fields = {'slug': ('title',)}
-
-
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'video', 'timestamp')
-    search_fields = ('content',)
-
-
-@admin.register(Like)
-class LikeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'video', 'timestamp')
+# @admin.register(Video)
+# class VideoAdmin(admin.ModelAdmin):
+#     list_display = ('title', 'user', 'upload_at', 'views')
+#     search_fields = ('title', 'description')
+#     prepopulated_fields = {'slug': ('title',)}
+#
+#
+# @admin.register(Comment)
+# class CommentAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'video', 'timestamp')
+#     search_fields = ('content',)
+#
+#
+# @admin.register(Like)
+# class LikeAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'video', 'timestamp')

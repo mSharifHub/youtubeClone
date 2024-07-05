@@ -35,3 +35,23 @@ export const DeleteRefreshCookie = gql`
     }
   }
 `;
+
+export const GOOGLE_AUTH = gql`
+  mutation GoogleAuth($code: String!) {
+    googleAuth(code: $code) {
+      user {
+        id
+        username
+        profilePicture
+        bio
+        isVerified
+        email
+        subscribers {
+          username
+        }
+      }
+      token
+      refreshToken
+    }
+  }
+`;

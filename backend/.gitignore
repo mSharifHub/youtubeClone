@@ -119,3 +119,6 @@ venv.bak/
 # Windows
 Thumbs.db
 ehthumbs.db
+
+
+client_secret.json
