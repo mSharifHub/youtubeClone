@@ -8,11 +8,9 @@ import bellIconPath from '../assets/navigation_icons/bell.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
 import GoogleLoginModal from './GoogleLoginModal.tsx';
-import { useUser } from '../context/UserContext.tsx';
 
 export default function NavigationBar() {
   const [showGoogleLogin, setShowGoogleLogin] = useState(false);
-  const { state } = useUser();
 
   const openGoogleModal = () => {
     setShowGoogleLogin(true);
@@ -79,24 +77,14 @@ export default function NavigationBar() {
           onClick={openGoogleModal}
           className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200 cursor-pointer"
         >
-          {!state.isLoggedIn ? (
-            <FontAwesomeIcon icon={faUser} className="text-black" />
-          ) : (
-            <img
-              src={state.user!.profilePicture}
-              className="rounded-full h-8 w-8"
-              alt={`${state.user!.username}'s profile`}
-            />
-          )}
+          <FontAwesomeIcon icon={faUser} className="text-black" />
         </div>
       </div>
 
-      {!state.isLoggedIn && (
-        <GoogleLoginModal
-          isOpen={showGoogleLogin}
-          onRequestClose={closeGoogleModal}
-        />
-      )}
+      <GoogleLoginModal
+        isOpen={showGoogleLogin}
+        onRequestClose={closeGoogleModal}
+      />
     </nav>
   );
 }

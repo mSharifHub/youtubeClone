@@ -7,8 +7,22 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         ('User Name And Password', {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'bio', 'profile_picture')}),
-        ('Permissions', {'fields': ('is_active','is_verified','is_staff','is_superuser', 'groups', 'user_permissions')}),
+        ('Personal info',
+         {'fields':
+              ('first_name',
+               'last_name',
+               'email',
+               'bio',
+               'profile_picture'
+               )}),
+        ('Permissions',
+         {'fields': ('is_active',
+                     'is_verified',
+                     'is_staff',
+                     'is_superuser',
+                     'groups',
+                     'user_permissions',
+                     )}),
         ('Important dates', {'fields': ('date_joined',)}),
         ('Subscriptions', {'fields': ('subscribers',)}),
     )
@@ -22,20 +36,3 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
 
-
-# @admin.register(Video)
-# class VideoAdmin(admin.ModelAdmin):
-#     list_display = ('title', 'user', 'upload_at', 'views')
-#     search_fields = ('title', 'description')
-#     prepopulated_fields = {'slug': ('title',)}
-#
-#
-# @admin.register(Comment)
-# class CommentAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'video', 'timestamp')
-#     search_fields = ('content',)
-#
-#
-# @admin.register(Like)
-# class LikeAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'video', 'timestamp')

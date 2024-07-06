@@ -1,17 +1,22 @@
+from datetime import timedelta
+from http import cookies
+
 import graphene
 import graphql_jwt
+from django.http import JsonResponse
 from graphql_auth.schema import MeQuery
+from django.contrib.auth import login
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from graphene_django.types import DjangoObjectType
 from graphql import GraphQLError
 from graphql_jwt.decorators import login_required, superuser_required
 from graphql_jwt.shortcuts import get_token, create_refresh_token
-from django.http import HttpResponse
 import requests
 
 from api.models import User
 from api.util import get_id_token_google
+from backend import settings
 
 
 class UserType(DjangoObjectType):
@@ -22,8 +27,12 @@ class UserType(DjangoObjectType):
                   "last_name",
                   'username',
                   'is_staff',
-                  'profile_picture', 'bio',
-                  'subscribers', 'is_verified', 'email'
+                  'profile_picture',
+                  'bio',
+                  'subscribers',
+                  'is_verified',
+                  'is_active',
+                  'email'
                   )
 
     profile_picture = graphene.String()
@@ -69,6 +78,7 @@ class GoogleAuth(graphene.Mutation):
             try:
                 # Get details and destruct user details
                 details = get_id_token_google(code)
+                google_sub = details['sub']
                 email = details['email']
                 email_verified = details['email_verified']
                 first_name = details['given_name']
@@ -76,10 +86,11 @@ class GoogleAuth(graphene.Mutation):
                 profile_picture_url = details['picture']
 
                 print(
-                    f"email: {email},"
-                    f" email_verified: {email_verified}, "
-                    f"first_name {first_name}, "
-                    f"profile_picture: {profile_picture_url}"
+                    f"email: {email}",
+                    f" email_verified: {email_verified} ",
+                    f"first_name {first_name}",
+                    f"profile_picture: {profile_picture_url}",
+                    f"google_sub: {google_sub}",
                 )
 
                 if not email_verified:
@@ -108,21 +119,35 @@ class GoogleAuth(graphene.Mutation):
                         validate_file_size(profile_picture, max_size=2 * 1024 * 1024)
                         file_name = f"{first_name}_{last_name}_profile_picture.jpg"
                         user.profile_picture.save(file_name, profile_picture, save=False)
-
                     user.save()
 
-                    print("new user has been created and saved")
-
-                print("creating an access token and refresh token")
                 token = get_token(user)
                 refresh_token = create_refresh_token(user)
-                print(f"access_token: {token}, refresh_token: {refresh_token}")
-                return GoogleAuth(user=user, token=token, refresh_token=refresh_token)
+                return {"user": user, "token": token, "refresh_token": refresh_token}
 
             except ValueError as err:
                 raise GraphQLError(f"Token exchange failed: {err}")
 
         raise GraphQLError("Authentication failed")
+
+
+# class CustomGoogleTokenAuth(graphql_jwt.JSONWebTokenMutation):
+#     token = graphene.String()
+#     refresh_token = graphene.String()
+#
+#     class Arguments:
+#         username = graphene.String(required=True)
+#         google_sub = graphene.String(required=True)
+#
+#     @classmethod
+#     def resolve(cls, root, info, username, google_sub):
+#         try:
+#             user = User.objects.get(username=username, google_sub=google_sub)
+#             token = get_token(user)
+#             refresh_token = create_refresh_token(user)
+#             return cls(token=token, refresh_token=refresh_token)
+#         except User.DoesNotExist:
+#             raise GraphQLError("User not found or invalid credentials")
 
 
 class AuthMutation(graphene.ObjectType):

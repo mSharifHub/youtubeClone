@@ -47,11 +47,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
     'graphene_django',
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "django_filters",
-    "social_django",
     "api",
 
 ]
@@ -65,7 +63,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "social_django.middleware.SocialAuthExceptionMiddleware"
 
 ]
 
@@ -83,13 +80,11 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                # 'social_django.context_processors.backends',
-                # 'social_django.context_processors.login_redirect',
+
             ],
         },
     },
 ]
-
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
@@ -116,28 +111,24 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-
-)
-
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
 GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_jwt.ObtainJSONWebToken",
         "graphql_jwt.Verify",
         "graphql_jwt.Refresh",
     ],
+    'JWT_COOKIE_NAME': 'JWT',
+    'JWT_COOKIE_SECURE': True,
+    'JWT_COOKIE_HTTPONLY': True,
+    'JWT_COOKIE_SAMESITE': 'Lax',
+    'JWT_REFRESH_TOKEN_COOKIE_NAME': 'JWT-refresh_token',
+    'JWT_REFRESH_TOKEN_COOKIE_SECURE': True,
+    'JWT_REFRESH_TOKEN_COOKIE_HTTPONLY': True,
+    'JWT_REFRESH_TOKEN_COOKIE_SAMESITE': 'Lax',
     "JWT_ALLOW_ARGUMENT": True,
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=2),
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
 GRAPHQL_AUTH = {

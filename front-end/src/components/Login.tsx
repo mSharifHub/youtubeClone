@@ -15,8 +15,6 @@ const LoginWithGoogle = () => {
 
     const { code } = codeResponse;
 
-    console.log('Debugging from end debugging the code ', code);
-
     try {
       const response = await googleAuth({
         variables: {
@@ -24,9 +22,7 @@ const LoginWithGoogle = () => {
         },
       });
 
-      if (response && response.data) {
-        console.log('debugging response', response.data);
-      }
+      console.log('front end response:', response);
     } catch (e) {
       console.error(e);
     }
