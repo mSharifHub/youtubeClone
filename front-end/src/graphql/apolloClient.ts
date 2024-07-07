@@ -5,10 +5,19 @@ import {
   createHttpLink,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:3000/server-point', // Point to  Express server
+  uri: 'http://localhost:8000/graphql/',
   credentials: 'include',
+});
+
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+    },
+  };
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -25,7 +34,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const link = ApolloLink.from([errorLink, httpLink]);
+const link = ApolloLink.from([authLink, errorLink, httpLink]);
 
 const client = new ApolloClient({
   link,

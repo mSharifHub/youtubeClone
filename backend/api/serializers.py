@@ -1,20 +1,19 @@
-# from rest_framework import serializers
-# from .models import Video, Comment, Like
-#
-#
-# class VideoSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Video
-#         fields = '__all__'
-#
-#
-# class CommentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Comment
-#         fields = '__all__'
-#
-#
-# class LikeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Like
-#         fields = '__all__'
+from rest_framework import serializers
+from api.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'profile_picture',
+            'bio',
+            'subscribers',
+            'is_verified',
+            'is_active'
+        )

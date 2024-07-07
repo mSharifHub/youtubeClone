@@ -30,8 +30,15 @@ export const GOOGLE_AUTH = gql`
           username
         }
       }
-      token
-      refreshToken
+    }
+  }
+`;
+
+export const VIEWER_QUERY = gql`
+  query {
+    viewer {
+      username
+      email
     }
   }
 `;
