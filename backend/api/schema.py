@@ -12,10 +12,10 @@ class Query(MeQuery, graphene.ObjectType):
 
     def resolve_viewer(self, info, **kwargs):
         user = info.context.user
+        token_in_cookies = info.context.COOKIES.get('JWT')
+        print(f"viewer token in cookies {token_in_cookies}")
         if user.is_anonymous:
             raise Exception("Not logged in")
-        token = info.context.COOKIES.get('JWT')
-        print(f"Token in GraphQL query: {token}")
         print(f"Authenticated user: {user.username}")
         return user
 

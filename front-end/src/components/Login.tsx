@@ -1,18 +1,23 @@
 import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 import { useMutation } from '@apollo/client';
-
 import googleIcon from '../assets/menu_bar_icons/google.png';
-import { GOOGLE_AUTH } from '../graphql/queries.ts';
+import { GOOGLE_AUTH, VIEWER_QUERY } from '../graphql/queries/queries.ts';
+import {
+  GoogleAuthMutation,
+  GoogleAuthMutationVariables,
+  ViewerQuery,
+} from '../graphql/types.ts';
+import client from '../graphql/apolloClient.ts';
+import { useUser } from '../userContext/UserContext.tsx';
 
 const LoginWithGoogle = () => {
-  const [googleAuth] = useMutation(GOOGLE_AUTH);
+  const { dispatch } = useUser();
+  const [googleAuth] = useMutation<
+    GoogleAuthMutation,
+    GoogleAuthMutationVariables
+  >(GOOGLE_AUTH);
 
   const handleOnLogIn = async (codeResponse: CodeResponse) => {
-    console.log(
-      'Front end debugging the code response from google api',
-      codeResponse,
-    );
-
     const { code } = codeResponse;
 
     try {
@@ -22,9 +27,26 @@ const LoginWithGoogle = () => {
         },
       });
 
-      console.log('front end response:', response);
-    } catch (e) {
-      console.error(e);
+      if (response && response.data?.googleAuth) {
+        const { isSuccess } = response.data.googleAuth;
+
+        if (isSuccess) {
+          try {
+            const { data } = await client.query<ViewerQuery>({
+              query: VIEWER_QUERY,
+            });
+            if (data && data.viewer) {
+              dispatch({ type: 'SET_USER', payload: data.viewer });
+            } else {
+              console.error('Failed to retrieve viewer');
+            }
+          } catch (innerError) {
+            console.error('error fetching viewer', innerError);
+          }
+        }
+      }
+    } catch (outerError) {
+      console.error('Error during google api authentication', outerError);
     }
   };
 

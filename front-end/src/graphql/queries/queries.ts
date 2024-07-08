@@ -19,26 +19,24 @@ export const DeleteRefreshCookie = gql`
 export const GOOGLE_AUTH = gql`
   mutation GoogleAuth($code: String!) {
     googleAuth(code: $code) {
-      user {
-        username
-        email
-        bio
-        profilePicture
-        firstName
-        lastName
-        subscribers {
-          username
-        }
-      }
+      isSuccess
     }
   }
 `;
 
 export const VIEWER_QUERY = gql`
-  query {
+  query Viewer {
     viewer {
+      firstName
+      lastName
       username
       email
+      profilePicture
+      bio
+      subscribers {
+        username
+        email
+      }
     }
   }
 `;

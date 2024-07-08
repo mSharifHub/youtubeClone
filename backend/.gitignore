@@ -43,6 +43,15 @@ ENV/
 env/
 .venv/
 
+# remove migrations
+api/migrations/*
+
+# remove profile pictures
+media/profile_pictures/*
+
+# remove database
+db.sqlite3
+
 # Pyenv
 .python-version
 

@@ -23,12 +23,15 @@ def validate_file_size(file, max_size):
 
 
 class GoogleAuth(graphene.Mutation):
-    user = graphene.Field(UserType)
+    is_success = graphene.Boolean()
 
     class Arguments:
         code = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
+
+        is_success = False
+
         if 'code' in kwargs.keys():
             code = kwargs['code']
 
@@ -80,7 +83,8 @@ class GoogleAuth(graphene.Mutation):
                     'refresh_token': refresh_token,
                 }
 
-                return GoogleAuth(user=user)
+                is_success = True
+                return GoogleAuth(is_success=is_success)
 
             except ValueError as err:
 

@@ -17,6 +17,7 @@ class HandleTokenMiddleware:
             if user:
                 request.user = user
         elif refresh_token:
+            print(f"Retrieved token from cookie and is expired")
             user = get_user_from_token(refresh_token)
 
             if user:
@@ -41,7 +42,7 @@ class HandleTokenMiddleware:
                 'JWT',
                 tokens['token'],
                 httponly=True,
-                max_age=3600,
+                max_age= 3 * 60 * 3600,
                 samesite='None',
                 secure=True
             )

@@ -117,19 +117,7 @@ GRAPHQL_JWT = {
         "graphql_jwt.Verify",
         "graphql_jwt.Refresh",
     ],
-    'JWT_COOKIE_NAME': 'JWT',
-    'JWT_COOKIE_SECURE': True,
-    'JWT_COOKIE_HTTPONLY': True,
-    'JWT_COOKIE_SAMESITE': 'Lax',
-    'JWT_REFRESH_TOKEN_COOKIE_NAME': 'JWT-refresh_token',
-    'JWT_REFRESH_TOKEN_COOKIE_SECURE': True,
-    'JWT_REFRESH_TOKEN_COOKIE_HTTPONLY': True,
-    'JWT_REFRESH_TOKEN_COOKIE_SAMESITE': 'Lax',
-    "JWT_ALLOW_ARGUMENT": True,
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+
 }
 GRAPHQL_AUTH = {
     'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
@@ -137,8 +125,8 @@ GRAPHQL_AUTH = {
 
 }
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# if DEBUG:
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

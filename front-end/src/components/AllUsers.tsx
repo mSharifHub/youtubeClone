@@ -1,6 +1,6 @@
 
 import {  useQuery } from "@apollo/client";
-import { GET_ALL_USERS } from '../graphql/queries.ts';
+import { GET_ALL_USERS } from '../graphql/queries/queries.ts';
 import React from 'react';
 
 const ALL_USERS: React.FC = () =>{
