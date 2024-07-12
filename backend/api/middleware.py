@@ -1,6 +1,12 @@
-from graphql_jwt.shortcuts import get_user_by_token
-
 from api.token_utils import is_token_expired, get_user_from_token, create_new_token
+from django.middleware.csrf import get_token
+from django.utils.deprecation import MiddlewareMixin
+
+
+class CustomCSRFMiddleware(MiddlewareMixin):
+    def process_response(self, request, response):
+        response['X-CSRF-Token'] = get_token(request)
+        return response
 
 
 class HandleTokenMiddleware:
@@ -42,7 +48,7 @@ class HandleTokenMiddleware:
                 'JWT',
                 tokens['token'],
                 httponly=True,
-                max_age= 3 * 60 * 3600,
+                max_age=3 * 60 * 3600,
                 samesite='None',
                 secure=True
             )

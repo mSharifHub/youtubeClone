@@ -24,6 +24,7 @@
     "axios": "^1.6.8",
     "clear": "^0.1.0",
     "graphql": "^16.9.0",
+    "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.1",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.2",
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-fontawesome": "^1.6.8",

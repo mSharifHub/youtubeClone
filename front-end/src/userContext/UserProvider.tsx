@@ -12,6 +12,7 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data } = useQuery<ViewerQuery>(VIEWER_QUERY, {
     onCompleted: (data) => {
       if (data && data.viewer) {

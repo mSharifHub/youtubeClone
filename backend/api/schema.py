@@ -4,11 +4,14 @@ from graphql_auth.schema import MeQuery
 from api.models import User
 from api.mutations import GoogleAuth, UserSerializerMutation
 from api.types import UserType
+from django.utils.decorators import method_decorator
 
 
 class Query(MeQuery, graphene.ObjectType):
     all_users = graphene.List(UserType)
     viewer = graphene.Field(UserType)
+
+    # ensure_csrf_cookie
 
     def resolve_viewer(self, info, **kwargs):
         user = info.context.user
@@ -25,7 +28,7 @@ class Query(MeQuery, graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     google_auth = GoogleAuth.Field()
-    user_serializer = UserSerializerMutation.Field()
+    user_update = UserSerializerMutation.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
