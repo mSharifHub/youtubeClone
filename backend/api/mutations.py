@@ -7,7 +7,6 @@ from graphql_jwt.shortcuts import get_token
 from api.models import User
 from api.serializers import UserSerializer
 from django.core.exceptions import ValidationError
-from api.types import UserType
 from api.util import get_id_token_google
 import requests
 

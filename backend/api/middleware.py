@@ -1,11 +1,12 @@
-from api.token_utils import is_token_expired, get_user_from_token, create_new_token
-from django.middleware.csrf import get_token
+from api.token_utils import is_token_expired
+from graphql_jwt.shortcuts import get_user_by_token, get_token, create_refresh_token
+from django.middleware.csrf import get_token as get_csrf_token
 from django.utils.deprecation import MiddlewareMixin
 
 
 class CustomCSRFMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
-        response['X-CSRF-Token'] = get_token(request)
+        response['X-CSRF-Token'] = get_csrf_token(request)
         return response
 
 
@@ -18,24 +19,21 @@ class HandleTokenMiddleware:
         refresh_token = request.COOKIES.get('JWT-refresh_token')
 
         if token and not is_token_expired(token):
-            print(f"Retrieved token  from cookie and is not expired: {token}")
-            user = get_user_from_token(token)
-            if user:
-                request.user = user
-        elif refresh_token:
-            print(f"Retrieved token from cookie and is expired")
-            user = get_user_from_token(refresh_token)
+            user = get_user_by_token(token)
+            request.user = user
 
+        elif refresh_token:
+            user = get_user_by_token(refresh_token)
             if user:
-                new_token, new_refresh_token = create_new_token(user)
-                print(f"Created new token: {new_token}")
-                print(f"Created new refresh token: {new_refresh_token}")
+                new_token = get_token(user)
+                new_refresh_token = create_refresh_token(user)
+                print(f"Created a new token  {new_token}")
+                print(f"Created a new refresh token {new_refresh_token}")
                 request.user = user
                 request.token_to_set = {
                     'token': new_token,
                     'refresh_token': new_refresh_token
                 }
-
         response = self.get_response(request)
 
         tokens = getattr(request, 'tokens_to_set', None)
