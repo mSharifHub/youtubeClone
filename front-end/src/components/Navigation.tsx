@@ -1,20 +1,25 @@
-import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
 import youtubeIconPath from '../assets/navigation_icons/youtube-logo.png';
 import videoIconPath from '../assets/navigation_icons/add-video.png';
 import bellIconPath from '../assets/navigation_icons/bell.png';
+import userIconPath from '../assets/navigation_icons/user-icon.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
 import GoogleLoginModal from './GoogleLoginModal.tsx';
 import { useUser } from '../userContext/UserContext.tsx';
+import { useToolTip } from './hooks/useToolTip.ts';
+import { ToolTip } from './helpers/ToolTip.tsx';
+import { useState } from 'react';
 
 export default function NavigationBar() {
   const [showGoogleLogin, setShowGoogleLogin] = useState(false);
   const {
     state: { isLoggedIn, user },
   } = useUser();
+
+  const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
 
   const openGoogleModal = () => {
     setShowGoogleLogin(true);
@@ -38,6 +43,7 @@ export default function NavigationBar() {
               src={youtubeIconPath}
               alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
               className="h-10 w-10  min-w-10"
+              title="Youtube Home"
             />
             <h3 className="hidden md:inline-block font-bold text-lg">
               YouTube
@@ -50,37 +56,49 @@ export default function NavigationBar() {
         <SearchInput />
       </div>
       {/*right*/}
-      <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end items-center   ">
+      <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end items-center  space-x-4  ">
         {/*icon search*/}
-        <div className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+        <div
+          className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer"
+          title="Search"
+        >
           <IconSearch />
         </div>
         {/*microphone*/}
-        <div className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+        <div
+          title="Search With Voice"
+          className="h-10 w-10 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer"
+        >
           <Microphone />
         </div>
 
-        {/* Add-video component content */}
-        <div className="h-10 w-10 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
-          <img
-            src={videoIconPath}
-            alt={videoIconPath.split('/').pop()?.split('.')[0]}
-            className="min-w-6 min-h-6 w-6 h-6"
-          />
-        </div>
-        {/* bell component content */}
-        <div className="h-10 w-10 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
-          <img
-            src={bellIconPath}
-            alt={videoIconPath.split('/').pop()?.split('.')[0]}
-            className="min-w-6 min-h-6 w-6 h-6"
-          />
-        </div>
+        {isLoggedIn ? (
+          <>
+            {/* Add-video component content */}
+            <div className="h-10 w-10 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+              <img
+                src={videoIconPath}
+                alt={videoIconPath.split('/').pop()?.split('.')[0]}
+                className="min-w-6 min-h-6 w-6 h-6"
+              />
+            </div>
+            {/* bell component content */}
+            <div className="h-10 w-10 flex justify-center items-center rounded-full transition-transform duration-150 ease-out hover:border-2 hover:bg-neutral-200 cursor-pointer">
+              <img
+                src={bellIconPath}
+                alt={videoIconPath.split('/').pop()?.split('.')[0]}
+                className="min-w-6 min-h-6 w-6 h-6"
+              />
+            </div>
+          </>
+        ) : (
+          <div className="cursor-pointer" title="settings">
+            <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
+          </div>
+        )}
+
         {/* profile component content */}
-        <div
-          onClick={openGoogleModal}
-          className="min-w-10 min-h-10  flex justify-center items-center rounded-full  hover:bg-neutral-200 cursor-pointer"
-        >
+        <div onClick={openGoogleModal}>
           {user && user.profilePicture ? (
             <img
               src={user.profilePicture}
@@ -88,10 +106,30 @@ export default function NavigationBar() {
               className="rounded-full h-8 w-8"
             />
           ) : (
-            <FontAwesomeIcon icon={faUser} className="text-black" />
+            <div
+              className="flex justify-center items-center border rounded-full w-24  h-9 space-x-2  transition-colors transform duration-75 ease-out hover:bg-blue-100  cursor-pointer"
+              title="Sign in with Google"
+            >
+              <div className="flex justify-center items-center border border-blue-400 rounded-full">
+                <img
+                  src={userIconPath}
+                  alt="user-icon"
+                  className=" h-5 w-5  "
+                />
+              </div>
+
+              <text className="text-sm  font-semibold text-blue-400">
+                Sign in
+              </text>
+            </div>
           )}
         </div>
       </div>
+      <ToolTip
+        visible={showTooltip}
+        text={toolTipText}
+        position={tooltipPosition}
+      />
       {!isLoggedIn && (
         <GoogleLoginModal
           isOpen={showGoogleLogin}

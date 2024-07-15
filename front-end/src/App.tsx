@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import MainLayout from './components/layouts/MainLayout.tsx';
-import Home from './components/pages/Home.tsx';
+import { Home } from './components/pages/Home.tsx';
 import NotFound from './components/pages/NotFound.tsx';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';

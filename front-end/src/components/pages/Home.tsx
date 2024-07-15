@@ -1,15 +1,16 @@
-// import { useQuery } from '@apollo/client';
-// import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
+import React from 'react';
+import { useUser } from '../../userContext/UserContext.tsx';
+import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 
-export default function Home() {
-  // const { loading, error, data } = useQuery(VIEWER_QUERY);
-  //
-  // if (loading) return <p>Loading....</p>;
-  // if (error) return <p>Error {error.message}</p>;
-
+export const Home: React.FC = () => {
+  const {
+    state: { isLoggedIn },
+  } = useUser();
   return (
-    <div>
-      {/*<p>{data.viewer.username}</p>*/}
-    </div>
+    <>
+      <div className="border-2 h-full flex justify-center">
+        {!isLoggedIn && <NotLoggedInBanner />}
+      </div>
+    </>
   );
-}
+};

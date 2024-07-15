@@ -19,8 +19,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         dispatch({ type: 'SET_USER', payload: data.viewer });
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onError: (error) => {},
+    // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // onError: (error) => {},
   });
 
   return (
