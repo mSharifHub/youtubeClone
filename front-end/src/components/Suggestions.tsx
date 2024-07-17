@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { ToolTip } from './helpers/ToolTip.tsx';
-import RecommendationsFilter from './reusable_components/RecommendationsFilter.tsx';
+import RecommendationsFilter from './RecommendationsFilter.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
 
 export default function Suggestions() {

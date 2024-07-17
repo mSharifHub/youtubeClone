@@ -9,7 +9,7 @@ export const useToolTip = () => {
   const toolTipMouseEnter = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
       const target = event.currentTarget as HTMLDivElement;
-      const toolTipText = text ? text : target.title.trim();
+      const toolTipText = text ? text : target.getAttribute('title');
       const rect = target.getBoundingClientRect();
 
       if (!toolTipText || !rect) {
@@ -20,7 +20,7 @@ export const useToolTip = () => {
         clearTimeout(timerRef.current);
       }
 
-      setTooltipPosition({ top: rect.top + 30, left: rect.left + 15 });
+      setTooltipPosition({ top: rect.top + 15, left: rect.left + 30 });
       setToolTipText(toolTipText);
 
       timerRef.current = window.setTimeout(() => {

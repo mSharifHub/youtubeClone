@@ -8,7 +8,7 @@ export const Home: React.FC = () => {
   } = useUser();
   return (
     <>
-      <div className="border-2 h-full flex justify-center">
+      <div className="h-full flex justify-center">
         {!isLoggedIn && <NotLoggedInBanner />}
       </div>
     </>
