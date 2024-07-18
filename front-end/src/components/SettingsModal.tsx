@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Portal from './helpers/Portal.ts';
 import { useClickOutside } from './hooks/useClickOutside.ts';
-import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import { Theme, useTheme } from '../darkModeContext/ThemeContext.ts';
+import { DarkModeSwitch } from 'react-toggle-dark-mode';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -22,14 +22,13 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
   position,
 }) => {
   const { setTheme, theme } = useTheme();
-  const [isDarkModeIcon, setDarkModeIcon] = useState<boolean>(false);
   const [darkModeText, setDarkModeText] = useState<Theme>(theme);
+  const [isDarkMode, setDarkMode] = useState(false);
 
-  const toggleDarkMode = (checked: boolean) => {
-    const newTheme = checked ? 'dark' : 'light';
-    setDarkModeIcon(checked);
-    setDarkModeText(newTheme);
+  const toggleDarkMode = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
+    setDarkModeText(newTheme);
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -40,20 +39,20 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
 
   useClickOutside(modalRef, onClickOutside, isOpen);
 
+  useEffect(() => {
+    theme === 'dark' ? setDarkMode(true) : setDarkMode(false);
+  }, [theme]);
+
   return (
     <Portal>
       <div
         ref={modalRef}
-        className="absolute bg-white dark:bg-neutral-700 drop-shadow-lg h-80  flex-initial w-64 rounded-lg z-20"
+        className="absolute bg-white dark:dark-modal drop-shadow-lg h-80  flex-initial w-64 rounded-lg z-20"
         style={pos}
       >
         <div className="grid grid-rows-9 mx-4">
           <div className="flex justify-start items-center space-x-4 row-start-2 row-span-1 capitalize text-sm f">
-            <DarkModeSwitch
-              checked={isDarkModeIcon}
-              onChange={toggleDarkMode}
-              size={20}
-            />
+            <DarkModeSwitch onChange={toggleDarkMode} checked={isDarkMode} />
             <span> Appearance: {darkModeText}</span>
           </div>
         </div>

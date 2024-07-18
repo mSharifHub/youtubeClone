@@ -22,7 +22,7 @@ export default function SearchInput() {
 
   return (
     <div className="w-full h-full  hidden md:flex justify-center items-center  space-x-4 ">
-      <div className="relative h-[2.5rem] w-full max-w-lg rounded-full border-2 ">
+      <div className="relative h-[2.5rem] w-full max-w-lg rounded-full border dark:border-none ">
         <input
           type="text"
           name="search-bar"
@@ -30,7 +30,7 @@ export default function SearchInput() {
           value={userInput}
           onChange={handleUserInputChange}
           placeholder="Search"
-          className="h-full w-full p-2 pl-8 pr-10 rounded-full placeholder:font-thin placeholder:text-lg placeholder:text-slate-300 focus:outline-none "
+          className="h-full w-full p-2 pl-8 pr-10 rounded-full placeholder:font-thin placeholder:text-lg placeholder:text-slate-300 focus:outline-none dark:dark-modal "
         />
         {userInput.length > 0 && (
           <div
@@ -38,19 +38,23 @@ export default function SearchInput() {
             onClick={clearUserInput}
             title="Clear input"
           >
-            <FontAwesomeIcon icon={faX} size="lg"  className="text-neutral-300"/>
+            <FontAwesomeIcon
+              icon={faX}
+              size="lg"
+              className="text-neutral-300"
+            />
           </div>
         )}
 
         <div
           title="Search button"
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-full flex justify-center items-center   bg-neutral-100 rounded-r-full transition-colors duration-100 ease-in-out hover:bg-neutral-200 cursor-pointer"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-full flex justify-center items-center   bg-neutral-100 dark:dark-modal rounded-r-full transition-colors duration-100 ease-in-out hover:bg-neutral-200 cursor-pointer"
         >
           <FontAwesomeIcon icon={faSearch} size="lg" />
         </div>
       </div>
       <div
-        className=" min-h-10 min-w-10  flex justify-center items-center rounded-full bg-neutral-100 cursor-pointer transition-colors duration-100 ease-in-out hover:bg-neutral-200 "
+        className=" min-h-10 min-w-10  flex justify-center items-center rounded-full bg-neutral-100 cursor-pointer transition-colors duration-100 ease-in-out hover:bg-neutral-200 dark:dark-modal "
         title="Search with your voice"
       >
         <Microphone />

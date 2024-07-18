@@ -6,7 +6,7 @@ export default {
     extend: {},
   },
   plugins: [
-    function ({ addUtilities }) {
+    function ({ addUtilities, theme }) {
       const utilities = {
         '.no-scrollbar::-webkit-scrollbar': {
           display: 'none',
@@ -26,6 +26,15 @@ export default {
         },
       };
       addUtilities(utilities);
+
+      const darkModelUtilities = {
+        '.dark-modal': {
+          'background-color': theme('colors.neutral.800'),
+          color: theme('colors.white'),
+        },
+      };
+
+      addUtilities(darkModelUtilities);
     },
   ],
 };

@@ -23,7 +23,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const root = document.documentElement;
-
     if (theme === 'system') {
       const prefersDark = window.matchMedia(
         '(prefers-color-scheme: dark)',
@@ -32,7 +31,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     } else {
       root.classList.toggle('dark', theme === 'dark');
     }
-
     localStorage.setItem('theme', theme);
   }, [theme]);
 

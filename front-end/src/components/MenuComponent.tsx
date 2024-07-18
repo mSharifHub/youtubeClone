@@ -39,7 +39,7 @@ export default function MenuComponent({
             <img
               src={customIconSrc}
               alt={`${title}-icon`}
-              className="h-6 w-6 min-h-4 min-w-4"
+              className="h-6 w-6 min-h-4 min-w-4 dark:invert"
             />
           )}
         </div>

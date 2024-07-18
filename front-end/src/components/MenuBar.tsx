@@ -1,6 +1,5 @@
 import MenuComponent from './MenuComponent.tsx';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-
 // importing the path for the customs icons
 import shortsIconPath from '../assets/menu_bar_icons/shorts.png';
 import homeIconPath from '../assets/menu_bar_icons/home.png';
