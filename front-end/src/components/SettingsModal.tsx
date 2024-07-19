@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Portal from './helpers/Portal.ts';
 import { useClickOutside } from './hooks/useClickOutside.ts';
-import { Theme, useTheme } from '../darkModeContext/ThemeContext.ts';
+import { useTheme } from '../darkModeContext/ThemeContext.ts';
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
 
 interface LoginModalProps {
@@ -21,14 +21,11 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
   onClickOutside,
   position,
 }) => {
-  const { setTheme, theme } = useTheme();
-  const [darkModeText, setDarkModeText] = useState<Theme>(theme);
-  const [isDarkMode, setDarkMode] = useState(false);
+  const { setTheme, theme, isDarkMode, darkModeText } = useTheme();
 
   const toggleDarkMode = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    setDarkModeText(newTheme);
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -38,10 +35,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
     : {};
 
   useClickOutside(modalRef, onClickOutside, isOpen);
-
-  useEffect(() => {
-    theme === 'dark' ? setDarkMode(true) : setDarkMode(false);
-  }, [theme]);
 
   return (
     <Portal>
