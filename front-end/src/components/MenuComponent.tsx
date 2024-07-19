@@ -3,6 +3,7 @@ import {
   FontAwesomeIcon,
   FontAwesomeIconProps,
 } from '@fortawesome/react-fontawesome';
+import { useTheme } from '../darkModeContext/ThemeContext.ts';
 
 // interface props for menu bar component
 interface MenuComponentProps {
@@ -26,10 +27,12 @@ export default function MenuComponent({
   */
   const isOrderReverse = order === 'reverse';
 
+  const { theme } = useTheme();
+
   return (
     <Link to={link}>
       <div
-        className={` w-[80%] h-10  flex flex-col xl:flex-row justify-center items-center rounded-lg transition-colors duration-100 ease-out hover:bg-neutral-100`}
+        className={` w-[80%] h-10  flex flex-col xl:flex-row justify-center items-center rounded-lg transition-colors duration-100 ease-out ${theme === 'dark' ? 'hover:bg-neutral-800' : 'hover:bg-neutral-100'}`}
       >
         <div
           className={`w-10 h-full ${isOrderReverse ? 'hidden  xl:flex xl:flex-grow justify-start' : ' flex justify-center'}  items-center  ${isOrderReverse ? 'order-last' : 'order-first'}`}

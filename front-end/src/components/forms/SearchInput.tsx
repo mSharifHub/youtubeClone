@@ -4,6 +4,7 @@ import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import Microphone from './Mircrophone.tsx';
 import { ToolTip } from '../helpers/ToolTip.tsx';
 import { useToolTip } from '../hooks/useToolTip.ts';
+import { useTheme } from '../../darkModeContext/ThemeContext.ts';
 
 export default function SearchInput() {
   const { showTooltip, tooltipPosition, toolTipText } = useToolTip();
@@ -19,6 +20,8 @@ export default function SearchInput() {
   const clearUserInput = () => {
     setUserInput('');
   };
+
+  const { theme } = useTheme();
 
   return (
     <div className="w-full h-full  hidden md:flex justify-center items-center  space-x-4 ">
@@ -48,13 +51,13 @@ export default function SearchInput() {
 
         <div
           title="Search button"
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-full flex justify-center items-center   bg-neutral-100 dark:dark-modal rounded-r-full transition-colors duration-100 ease-in-out hover:bg-neutral-200 cursor-pointer"
+          className={`absolute right-0 top-1/2 -translate-y-1/2 w-16 h-full flex justify-center items-center   bg-neutral-100 dark:dark-modal rounded-r-full transition-colors duration-100 ease-in-out ${theme === 'dark' ? 'hover:bg-neutral-700' : 'hover:bg-neutral-200'} cursor-pointer`}
         >
           <FontAwesomeIcon icon={faSearch} size="lg" />
         </div>
       </div>
       <div
-        className=" min-h-10 min-w-10  flex justify-center items-center rounded-full bg-neutral-100 cursor-pointer transition-colors duration-100 ease-in-out hover:bg-neutral-200 dark:dark-modal "
+        className={` min-h-10 min-w-10  flex justify-center items-center rounded-full bg-neutral-100 cursor-pointer transition-colors duration-100 ease-in-out ${theme === 'dark' ? 'hover:bg-neutral-700' : 'hover:bg-neutral-200'}  dark:dark-modal`}
         title="Search with your voice"
       >
         <Microphone />
