@@ -8,29 +8,28 @@ import bellIconPath from '../assets/navigation_icons/bell.png';
 import userIconPath from '../assets/navigation_icons/user-icon.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
-import GoogleLoginModal from './GoogleLoginModal.tsx';
 import { useUser } from '../userContext/UserContext.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
 import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
+import { useLoginWithGoogle } from './Login.tsx';
 
 export default function NavigationBar() {
   /**
-   * @param{showGoogleLogin, setShowGoogleLogin} - handles visibility of the Google modal
    * @param { showSettingModal, setShowSettingModal} - handle visibility of the settings modal
    * @param{settingModalPos,setSettingModalPos} - update the settings modal position
    */
 
-  const [showGoogleLogin, setShowGoogleLogin] = useState(false);
+  // const [showGoogleLogin, setShowGoogleLogin] = useState(false);
   const [showSettingModal, setShowSettingModal] = useState(false);
   const [settingModalPos, setSettingModalPos] = useState<DOMRect | undefined>(
     undefined,
   );
+
+  const login = useLoginWithGoogle();
+
   const settingModalRef = useRef<HTMLDivElement | null>(null);
 
-  /**
-   * @param {updateSettingsModalPos} updates the state position
-   */
   const updateSettingsModalPos = () => {
     if (settingModalRef.current) {
       const rect = settingModalRef.current.getBoundingClientRect();
@@ -52,13 +51,6 @@ export default function NavigationBar() {
   };
 
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
-
-  const openGoogleModal = () => {
-    setShowGoogleLogin(true);
-  };
-  const closeGoogleModal = () => {
-    setShowGoogleLogin(false);
-  };
 
   useEffect(() => {
     updateSettingsModalPos();
@@ -144,7 +136,7 @@ export default function NavigationBar() {
           )}
 
           {/* profile component content */}
-          <div onClick={openGoogleModal}>
+          <div onClick={login}>
             {user && user.profilePicture ? (
               <img
                 src={user.profilePicture}
@@ -178,12 +170,6 @@ export default function NavigationBar() {
         />
       </nav>
 
-      {!isLoggedIn && (
-        <GoogleLoginModal
-          isOpen={showGoogleLogin}
-          onRequestClose={closeGoogleModal}
-        />
-      )}
       {showSettingModal && (
         <SettingsModal
           isOpen={showSettingModal}
