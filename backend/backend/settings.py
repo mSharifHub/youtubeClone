@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework',
     'graphene_django',
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "django_filters",
@@ -149,6 +150,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+
+GOOGLE_CLIENT_ID = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+GOOGLE_CLIENT_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+GOOGLE_REDIRECT_URI = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
+CLIENT_ADDRESS = os.getenv('CLIENT_ADDRESS')
 
 LANGUAGE_CODE = "en-us"
 
