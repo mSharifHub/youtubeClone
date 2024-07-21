@@ -12,7 +12,9 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
 import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
-import { useLoginWithGoogle } from './Login.tsx';
+
+import { LoginGoogle } from './auth/LoginGoogle.ts';
+// import { useLoginWithGoogle } from './Login.tsx';
 
 export default function NavigationBar() {
   /**
@@ -26,7 +28,7 @@ export default function NavigationBar() {
     undefined,
   );
 
-  const login = useLoginWithGoogle();
+  // const login = useLoginWithGoogle();
 
   const settingModalRef = useRef<HTMLDivElement | null>(null);
 
@@ -136,7 +138,7 @@ export default function NavigationBar() {
           )}
 
           {/* profile component content */}
-          <div onClick={login}>
+          <div onClick={() => LoginGoogle()}>
             {user && user.profilePicture ? (
               <img
                 src={user.profilePicture}
