@@ -2,7 +2,7 @@ import graphene
 import graphql_jwt
 from graphql_auth.schema import MeQuery
 from api.models import User
-from api.mutations import GoogleAuth, UserSerializerMutation
+from api.mutations  import UserSerializerMutation
 from api.types import UserType
 from django.utils.decorators import method_decorator
 
@@ -27,7 +27,7 @@ class Query(MeQuery, graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    google_auth = GoogleAuth.Field()
+    # google_auth = GoogleAuth.Field()
     user_update = UserSerializerMutation.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
