@@ -10,12 +10,6 @@ interface LoginModalProps {
   position: DOMRect | undefined;
 }
 
-/**
- *
- * @param isOpen  Checks if the modal is open
- * @param onClickOutside  Calls the function on navigation to change the modal visibility state to false
- * @param{useClickOutside} hook  to that uses the modal ref to detect click events outside the modal
- */
 export const SettingsModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClickOutside,
@@ -31,7 +25,10 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
 
   const pos = position
-    ? { top: position.top + 30, left: position.left - 200 }
+    ? {
+        top: position.top + position.height,
+        right: Math.min(position.right, position.width),
+      }
     : {};
 
   useClickOutside(modalRef, onClickOutside, isOpen);

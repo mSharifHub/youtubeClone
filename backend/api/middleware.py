@@ -1,11 +1,14 @@
 from api.token_utils import is_token_expired
 from graphql_jwt.shortcuts import get_user_by_token, get_token, create_refresh_token
 from django.middleware.csrf import get_token as get_csrf_token
-from django.utils.deprecation import MiddlewareMixin
 
 
-class CustomCSRFMiddleware(MiddlewareMixin):
-    def process_response(self, request, response):
+class CustomCSRFMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
         response['X-CSRF-Token'] = get_csrf_token(request)
         return response
 
@@ -39,8 +42,8 @@ class HandleTokenMiddleware:
         tokens = getattr(request, 'tokens_to_set', None)
 
         if tokens:
-            print(f"Setting JWT cookie: {tokens['token']}")
-            print(f"Setting JWT-refresh_token cookie: {tokens['refresh_token']}")
+            print(f"Setting refresh JWT cookie: {tokens['token']}")
+            print(f"Setting  refresh JWT-refresh_token cookie: {tokens['refresh_token']}")
 
             response.set_cookie(
                 'JWT',

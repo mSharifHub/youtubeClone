@@ -2,24 +2,18 @@ import graphene
 import graphql_jwt
 from graphql_auth.schema import MeQuery
 from api.models import User
-from api.mutations  import UserSerializerMutation
+from api.mutations import UserSerializerMutation
 from api.types import UserType
-from django.utils.decorators import method_decorator
 
 
 class Query(MeQuery, graphene.ObjectType):
     all_users = graphene.List(UserType)
     viewer = graphene.Field(UserType)
 
-    # ensure_csrf_cookie
-
     def resolve_viewer(self, info, **kwargs):
         user = info.context.user
-        token_in_cookies = info.context.COOKIES.get('JWT')
-        print(f"viewer token in cookies {token_in_cookies}")
         if user.is_anonymous:
             raise Exception("Not logged in")
-        print(f"Authenticated user: {user.username}")
         return user
 
     def resolve_all_users(self, info, **kwargs):
@@ -27,7 +21,6 @@ class Query(MeQuery, graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    # google_auth = GoogleAuth.Field()
     user_update = UserSerializerMutation.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
