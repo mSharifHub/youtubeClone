@@ -24,5 +24,4 @@ class UserType(DjangoObjectType):
     def resolve_profile_picture(self, info):
         if self.profile_picture:
             picture_url = info.context.build_absolute_uri(self.profile_picture.url)
-            print(f"this is the picture_url send to front end: {picture_url}")
             return picture_url

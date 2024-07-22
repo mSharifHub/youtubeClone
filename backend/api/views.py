@@ -1,27 +1,22 @@
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from .serializers import UserSerializer
 from .util import get_google_id_token
 from api.models import User
 import requests
-
 from graphql_jwt.shortcuts import get_token, create_refresh_token
 
 
 class GoogleLoginView(APIView):
-
     def get(self, request):
         client_id = settings.GOOGLE_CLIENT_ID
         redirect_uri = settings.GOOGLE_REDIRECT_URI
         scope = 'openid%20email%20profile'
         access_type = "offline"
-
         auth_url = (
             f"https://accounts.google.com/o/oauth2/v2/auth?"
             f"response_type=code&access_type={access_type}&"

@@ -70,7 +70,7 @@ export default function Suggestions() {
         {/* all block */}
 
         <div
-          className={`bg-black text-white w-10 h-7 min-h-7 ${isStart ? 'flex' : 'hidden'} relative   justify-center items-center capitalize rounded-lg mr-4 cursor-pointer`}
+          className={`bg-black text-white w-10 h-7 min-h-7 ${isStart ? 'flex' : 'hidden'} relative   justify-center items-center capitalize rounded-lg mr-4 cursor-pointer dark:invert`}
           title="all"
         >
           all
@@ -80,7 +80,7 @@ export default function Suggestions() {
         <div className="relative w-full h-full overflow-hidden">
           {/* fading effect*/}
           <div
-            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-[rgba(255,255,255,0.5)]  to-transparent pointer-events-none z-10`}
+            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-[rgba(255,255,255,0.5)] dark:from-neutral-900 to-transparent pointer-events-none z-10`}
           />
           {/* scroll area */}
           <div
@@ -100,7 +100,7 @@ export default function Suggestions() {
 
           {/* fading effect*/}
           <div
-            className={` ${isEnd ? 'hidden' : null}  absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10`}
+            className={` ${isEnd ? 'hidden' : null}  absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white dark:from-neutral-900 via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10`}
           />
         </div>
 

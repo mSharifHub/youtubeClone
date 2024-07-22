@@ -1,24 +1,9 @@
-# import os.path
-# from oauth2client import client
-
 from django.conf import settings
 import requests
 from google.oauth2 import id_token
 import cachecontrol
 import google.auth.transport.requests
-
-
-# def get_id_token_google(code):
-#     client_secret_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'client_secret.json')
-#
-#     credentials = client.credentials_from_clientsecrets_and_code(
-#         client_secret_path,
-#         ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/userinfo.profile',
-#          'https://www.googleapis.com/auth/userinfo.email'],
-#         code
-#     )
-#
-#     return credentials.id_token
+from django.core.exceptions import ValidationError
 
 
 def get_google_id_token(code):
@@ -47,3 +32,8 @@ def get_google_id_token(code):
     id_info = id_token.verify_oauth2_token(token_response_parsed['id_token'], request, settings.GOOGLE_CLIENT_ID)
 
     return id_info
+
+
+def validate_file_size(file, max_size):
+    if file.size > max_size:
+        raise ValidationError(f"file size should not exceed {max_size / (1024 * 1024)} MB")
