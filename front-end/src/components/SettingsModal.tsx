@@ -43,7 +43,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
         <div className="grid grid-rows-9 mx-4">
           <div className="flex justify-start items-center space-x-4 row-start-2 row-span-1 capitalize text-sm f">
             <DarkModeSwitch onChange={toggleDarkMode} checked={isDarkMode} />
-            <span> Appearance: {darkModeText}</span>
+            <span> Appearance:{darkModeText}</span>
           </div>
         </div>
       </div>
