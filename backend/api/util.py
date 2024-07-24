@@ -1,9 +1,13 @@
+import string
+
 from django.conf import settings
 import requests
 from google.oauth2 import id_token
 import cachecontrol
 import google.auth.transport.requests
 from django.core.exceptions import ValidationError
+from api.models import User
+import random
 
 
 def get_google_id_token(code):
@@ -32,6 +36,19 @@ def get_google_id_token(code):
     id_info = id_token.verify_oauth2_token(token_response_parsed['id_token'], request, settings.GOOGLE_CLIENT_ID)
 
     return id_info
+
+
+def generate_youtube_handler(first_name, last_name):
+    base_handler = f'{first_name}_{last_name}'.lower()
+    handler = base_handler
+
+    if User.objects.filter(youtube_handler=base_handler).exists():
+        while True:
+            suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+            handler = f'{first_name}_{last_name}_{suffix}'
+            if not User.objects.filter(youtube_handler=handler).exists():
+                break
+    return handler
 
 
 def validate_file_size(file, max_size):
