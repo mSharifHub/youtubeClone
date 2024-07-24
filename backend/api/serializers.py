@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'username',
             'email',
-            'profile_picture',
+            'youtube_handler',
             'bio',
             'subscribers',
             'is_verified',

@@ -35,27 +35,16 @@ export type ErrorType = {
   messages: Array<Scalars['String']['output']>;
 };
 
-export type GoogleAuth = {
-  __typename?: 'GoogleAuth';
-  isSuccess?: Maybe<Scalars['Boolean']['output']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   deleteRefreshTokenCookie?: Maybe<DeleteRefreshTokenCookie>;
   deleteTokenCookie?: Maybe<DeleteJsonWebTokenCookie>;
-  googleAuth?: Maybe<GoogleAuth>;
   refreshToken?: Maybe<Refresh>;
   revokeToken?: Maybe<Revoke>;
   /** Obtain JSON Web Token mutation */
   tokenAuth?: Maybe<ObtainJsonWebToken>;
-  userSerializer?: Maybe<UserSerializerMutationPayload>;
+  userUpdate?: Maybe<UserSerializerMutationPayload>;
   verifyToken?: Maybe<Verify>;
-};
-
-
-export type MutationGoogleAuthArgs = {
-  code: Scalars['String']['input'];
 };
 
 
@@ -75,7 +64,7 @@ export type MutationTokenAuthArgs = {
 };
 
 
-export type MutationUserSerializerArgs = {
+export type MutationUserUpdateArgs = {
   input: UserSerializerMutationInput;
 };
 
@@ -141,6 +130,7 @@ export type UserNode = Node & {
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username: Scalars['String']['output'];
   verified?: Maybe<Scalars['Boolean']['output']>;
+  youtubeHandler: Scalars['String']['output'];
 };
 
 export type UserSerializerMutationInput = {
@@ -153,10 +143,10 @@ export type UserSerializerMutationInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isVerified?: InputMaybe<Scalars['Boolean']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
-  profilePicture?: InputMaybe<Scalars['String']['input']>;
   subscribers?: InputMaybe<Scalars['String']['input']>;
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username: Scalars['String']['input'];
+  youtubeHandler: Scalars['String']['input'];
 };
 
 export type UserSerializerMutationPayload = {
@@ -172,10 +162,10 @@ export type UserSerializerMutationPayload = {
   isActive?: Maybe<Scalars['Boolean']['output']>;
   isVerified?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
-  profilePicture?: Maybe<Scalars['String']['output']>;
   subscribers?: Maybe<Scalars['String']['output']>;
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username?: Maybe<Scalars['String']['output']>;
+  youtubeHandler?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserType = {
@@ -194,6 +184,7 @@ export type UserType = {
   subscribers: Array<UserType>;
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username: Scalars['String']['output'];
+  youtubeHandler: Scalars['String']['output'];
 };
 
 export type Verify = {
@@ -201,132 +192,19 @@ export type Verify = {
   payload: Scalars['GenericScalar']['output'];
 };
 
-export type DeleteCookieMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DeleteCookieMutation = { __typename?: 'Mutation', deleteTokenCookie?: { __typename?: 'DeleteJSONWebTokenCookie', deleted: boolean } | null };
-
-export type DeleteRefreshCookieMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DeleteRefreshCookieMutation = { __typename?: 'Mutation', deleteRefreshTokenCookie?: { __typename?: 'DeleteRefreshTokenCookie', deleted: boolean } | null };
-
-export type GoogleAuthMutationVariables = Exact<{
-  code: Scalars['String']['input'];
-}>;
-
-
-export type GoogleAuthMutation = { __typename?: 'Mutation', googleAuth?: { __typename?: 'GoogleAuth', isSuccess?: boolean | null } | null };
-
 export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserType', firstName: string, lastName: string, username: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserType', username: string, email: string }> } | null };
+export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserType', firstName: string, lastName: string, username: string, youtubeHandler: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserType', username: string, email: string }> } | null };
 
 
-export const DeleteCookieDocument = gql`
-    mutation DeleteCookie {
-  deleteTokenCookie {
-    deleted
-  }
-}
-    `;
-export type DeleteCookieMutationFn = Apollo.MutationFunction<DeleteCookieMutation, DeleteCookieMutationVariables>;
-
-/**
- * __useDeleteCookieMutation__
- *
- * To run a mutation, you first call `useDeleteCookieMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteCookieMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteCookieMutation, { data, loading, error }] = useDeleteCookieMutation({
- *   variables: {
- *   },
- * });
- */
-export function useDeleteCookieMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCookieMutation, DeleteCookieMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteCookieMutation, DeleteCookieMutationVariables>(DeleteCookieDocument, options);
-      }
-export type DeleteCookieMutationHookResult = ReturnType<typeof useDeleteCookieMutation>;
-export type DeleteCookieMutationResult = Apollo.MutationResult<DeleteCookieMutation>;
-export type DeleteCookieMutationOptions = Apollo.BaseMutationOptions<DeleteCookieMutation, DeleteCookieMutationVariables>;
-export const DeleteRefreshCookieDocument = gql`
-    mutation DeleteRefreshCookie {
-  deleteRefreshTokenCookie {
-    deleted
-  }
-}
-    `;
-export type DeleteRefreshCookieMutationFn = Apollo.MutationFunction<DeleteRefreshCookieMutation, DeleteRefreshCookieMutationVariables>;
-
-/**
- * __useDeleteRefreshCookieMutation__
- *
- * To run a mutation, you first call `useDeleteRefreshCookieMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteRefreshCookieMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteRefreshCookieMutation, { data, loading, error }] = useDeleteRefreshCookieMutation({
- *   variables: {
- *   },
- * });
- */
-export function useDeleteRefreshCookieMutation(baseOptions?: Apollo.MutationHookOptions<DeleteRefreshCookieMutation, DeleteRefreshCookieMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteRefreshCookieMutation, DeleteRefreshCookieMutationVariables>(DeleteRefreshCookieDocument, options);
-      }
-export type DeleteRefreshCookieMutationHookResult = ReturnType<typeof useDeleteRefreshCookieMutation>;
-export type DeleteRefreshCookieMutationResult = Apollo.MutationResult<DeleteRefreshCookieMutation>;
-export type DeleteRefreshCookieMutationOptions = Apollo.BaseMutationOptions<DeleteRefreshCookieMutation, DeleteRefreshCookieMutationVariables>;
-export const GoogleAuthDocument = gql`
-    mutation GoogleAuth($code: String!) {
-  googleAuth(code: $code) {
-    isSuccess
-  }
-}
-    `;
-export type GoogleAuthMutationFn = Apollo.MutationFunction<GoogleAuthMutation, GoogleAuthMutationVariables>;
-
-/**
- * __useGoogleAuthMutation__
- *
- * To run a mutation, you first call `useGoogleAuthMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useGoogleAuthMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [googleAuthMutation, { data, loading, error }] = useGoogleAuthMutation({
- *   variables: {
- *      code: // value for 'code'
- *   },
- * });
- */
-export function useGoogleAuthMutation(baseOptions?: Apollo.MutationHookOptions<GoogleAuthMutation, GoogleAuthMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<GoogleAuthMutation, GoogleAuthMutationVariables>(GoogleAuthDocument, options);
-      }
-export type GoogleAuthMutationHookResult = ReturnType<typeof useGoogleAuthMutation>;
-export type GoogleAuthMutationResult = Apollo.MutationResult<GoogleAuthMutation>;
-export type GoogleAuthMutationOptions = Apollo.BaseMutationOptions<GoogleAuthMutation, GoogleAuthMutationVariables>;
 export const ViewerDocument = gql`
     query Viewer {
   viewer {
     firstName
     lastName
     username
+    youtubeHandler
     email
     profilePicture
     bio

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-from .util import get_google_id_token
+from .util import get_google_id_token, generate_youtube_handler
 from api.models import User
 import requests
 from graphql_jwt.shortcuts import get_token, create_refresh_token
@@ -50,10 +50,12 @@ class GoogleAuthCallBackView(APIView):
                 user.save()
 
             except User.DoesNotExist:
+                youtube_handler = generate_youtube_handler(first_name, last_name, )
                 user_data = {
                     'username': email.split('@')[0],
                     'first_name': first_name,
                     'last_name': last_name,
+                    'youtube_handler': youtube_handler,
                     'email': email,
                     'is_verified': True,
                     'is_active': True
@@ -97,3 +99,12 @@ class GoogleAuthCallBackView(APIView):
             return response
         except ValueError as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        response.delete_cookie('JWT')
+        response.delete_cookie('JWT-refresh_token')
+        return response
+

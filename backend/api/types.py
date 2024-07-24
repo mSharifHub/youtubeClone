@@ -16,7 +16,8 @@ class UserType(DjangoObjectType):
                   'subscribers',
                   'is_verified',
                   'is_active',
-                  'email'
+                  'email',
+                  'youtube_handler',
                   )
 
     profile_picture = graphene.String()
