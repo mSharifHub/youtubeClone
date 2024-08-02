@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
+    'rest_framework_simplejwt',
     'graphene_django',
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "django_filters",
@@ -67,7 +68,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "api.middleware.HandleTokenMiddleware",
 ]
 ROOT_URLCONF = "backend.urls"
 
