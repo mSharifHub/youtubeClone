@@ -5,6 +5,7 @@ import { useTheme } from '../darkModeContext/ThemeContext.ts';
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import { useUser } from '../userContext/UserContext.tsx';
 import { Link } from 'react-router-dom';
+import { useUserLogout } from './hooks/useUserLogout.ts';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faGoogle} from '@fortawesome/free-brands-svg-icons';
 import youtubeStudioIcon from "../assets/menu_bar_icons/youtube-studio.png"
@@ -44,10 +45,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
       }
     : {};
 
-
-
-
-
+  const logout = useUserLogout();
 
   useClickOutside(modalRef, onClickOutside, isOpen);
 
@@ -104,7 +102,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
               </button>
               {/*log out*/}
               <button
-                onClick={() => ""}
+                onClick={() => logout()}
                 className="flex justify-start items-center space-x-4">
                 <img src={signOut} alt="signOut" className=" min-h-5 min-w-5 w-5 h-5 dark:invert" />
                 <h3 className="capitalize">sign out</h3>
