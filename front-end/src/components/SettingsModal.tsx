@@ -7,6 +7,10 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { Link } from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faGoogle} from '@fortawesome/free-brands-svg-icons';
+import youtubeStudioIcon from "../assets/menu_bar_icons/youtube-studio.png"
+import coin from "../assets/menu_bar_icons/coin.png"
+import signOut from "../assets/menu_bar_icons/sign-out.png"
+import settings from "../assets/menu_bar_icons/settings.png"
 
 
 interface LoginModalProps {
@@ -23,7 +27,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
   const { setTheme, theme, isDarkMode, darkModeText } = useTheme();
 
   const {
-    state: { user },
+    state: { user, isLoggedIn },
   } = useUser();
 
   const toggleDarkMode = () => {
@@ -40,18 +44,23 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
       }
     : {};
 
+
+
+
+
+
   useClickOutside(modalRef, onClickOutside, isOpen);
 
   return (
     <Portal>
       <div
         ref={modalRef}
-        className="absolute bg-white dark:dark-modal drop-shadow-lg  min-h-96  flex-initial w-80 min-w-80 rounded-lg z-20"
+        className="absolute bg-white dark:dark-modal drop-shadow-lg min-h-fit  min-w-fit w-64 rounded-lg z-20"
         style={pos}
       >
-        <div className="grid grid-rows-9">
-          {/*row-1*/}
-          <div className="row-span-1 row-start-1 border-b ">
+        <div className="grid grid-rows">
+          {/*row-1 [ user profile picture , youtube handler, view channel] */}
+          <section className={` ${!isLoggedIn ? "hidden" : "row-span-1 row-start-1 border-b"} `}>
             <div className="grid grid-cols-[0.25fr_1fr] space-x-5 px-4 py-4">
               {/*picture */}
               <div className="col-span-1 col-start-1 flex justify-start items-center">
@@ -59,7 +68,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                   <img
                     src={user.profilePicture}
                     alt={`${user.username}-profilePicture`}
-                    className="rounded-full min-h-12 min-w-12 w-12 h-12"
+                    className="rounded-full min-h-12 min-w-12 w-12 h-12 "
                   />
                 ) : null}
               </div>
@@ -81,25 +90,55 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                 </Link>
               </div>
             </div>
-          </div>
+          </section>
           {/*row-2*/}
-          <div className="row-span-1 row-start-2 ">
-            <div className="flex flex-col justify-center items-start border-b space-y-2 px-4 py-4 ">
+          <section className={` ${!isLoggedIn ? "hidden" : "row-span-1 row-start-2 border-b "}  text-sm`}>
+            <div className=" flex flex-col justify-center items-start space-y-4 px-4 py-4">
+              {/*google account*/}
               <button
-                onClick={()=> window.location.href='https://myaccount.google.com/'}
+                onClick={() => window.location.href = 'https://myaccount.google.com/'}
                 className="flex justify-center items-center space-x-4">
                 <FontAwesomeIcon
-                icon={faGoogle} size="lg"/>
+                  icon={faGoogle} size="lg" />
                 <span className="capitalize text-sm">google account</span>
               </button>
-              <div>sign out</div>
+              {/*log out*/}
+              <button
+                onClick={() => ""}
+                className="flex justify-start items-center space-x-4">
+                <img src={signOut} alt="signOut" className=" min-h-5 min-w-5 w-5 h-5 dark:invert" />
+                <h3 className="capitalize">sign out</h3>
+              </button>
             </div>
-          </div>
+          </section>
+          {/* row 3 [ youtubeStudio, purchase and membership ]*/}
+          <section className={` ${!isLoggedIn ? "hidden" : "row-span-1 row-start-3 border-b "} text-sm`}>
+            <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
+              <button className="flex justify-center items-center space-x-4">
+                <img src={youtubeStudioIcon} alt="youtube-studio" className=" min-h-7 min-w-7 w-7 h-7 dark:invert" />
+                <span className="capitalize text-sm">youtube studio</span>
+              </button>
+              <button className="flex justify-center items-center space-x-4">
+                <img src={coin} alt="purchase-and-memberships" className=" min-h-7 min-w-7 w-7 h-7 dark:invert" />
+                <h3 className="capitalize">purchases and membership</h3>
+              </button>
+            </div>
+          </section>
 
-          <div className="flex justify-start items-center space-x-4 row-start-4 row-span-1 capitalize text-sm f">
-            <DarkModeSwitch onChange={toggleDarkMode} checked={isDarkMode} />
-            <span> Appearance:{darkModeText}</span>
-          </div>
+          {/* row 4  [ dark mode, settings] */}
+          <section className="row-span-1 row-start-4 text-sm mt-2">
+            <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
+              <div className="flex justify-start items-center space-x-4">
+                <DarkModeSwitch onChange={toggleDarkMode} checked={isDarkMode} style={{ height: "18px" }} />
+                <h3 className="capitalize"> Appearance:{'\t'}{darkModeText}</h3>
+              </div>
+              <button className="flex justify-center items-center space-x-4">
+                <img src={settings} alt="settings" className="min-h-7 min-w-7 w-7 h-7 dark:invert" />
+                <h3 className="capitalize">settings</h3>
+              </button>
+            </div>
+
+          </section>
         </div>
       </div>
     </Portal>
