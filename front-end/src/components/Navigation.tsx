@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useUserLogin } from './hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
@@ -18,10 +19,6 @@ export default function NavigationBar() {
   const [settingModalPos, setSettingModalPos] = useState<DOMRect | undefined>(
     undefined,
   );
-
-  const redirectGoogleAuth = () => {
-    return (window.location.href = import.meta.env.VITE_GOOGLE_RESOURCE_SERVER);
-  };
 
   const settingModalRef = useRef<HTMLDivElement | null>(null);
 
@@ -44,6 +41,8 @@ export default function NavigationBar() {
   const handleCloseSettingModal = () => {
     setShowSettingModal(false);
   };
+
+  const { redirectGoogleAuth } = useUserLogin();
 
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
 
