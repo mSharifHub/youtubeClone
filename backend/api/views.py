@@ -80,7 +80,7 @@ class GoogleAuthCallBackView(APIView):
 
             refresh_token = create_refresh_token(user)
 
-            response = redirect(settings.CLIENT_ADDRESS)
+            response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
             response.set_cookie(
                 'JWT',
