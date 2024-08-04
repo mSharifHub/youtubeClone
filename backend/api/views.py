@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,6 +11,7 @@ import requests
 from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt.utils import jwt_decode, get_user_by_payload
 from graphql_jwt import exceptions
+from graphql_jwt.refresh_token.models import RefreshToken
 
 
 class GoogleLoginView(APIView):
@@ -111,25 +111,34 @@ class LogoutView(APIView):
 
         # If there is no token then throw an error
         if not token:
-            return Response({'success': True, 'error': 'Unauthorized or Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
-
-        print(f"token for debug {token}")
+            return Response({'success': True, 'error': 'Unauthorized or Invalid Request'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         try:
             payload = jwt_decode(token)
             user = get_user_by_payload(payload)
 
             if not user:
-                return Response({'success': False, 'error': 'Unauthorized or Invalid Request'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
+                                status=status.HTTP_401_UNAUTHORIZED)
 
-            print(f"debugging user {user}")
+            refresh_token_value = request.COOKIES.get('JWT-refresh_token')
+
+            if refresh_token_value:
+                try:
+                    refresh_token_obj = RefreshToken.objects.get(token=refresh_token_value)
+                    refresh_token_obj.revoke()
+                    # if revoked does not contain a time then it has not been revoked
+                    if refresh_token_obj.revoked is None:
+                        return Response({'success': False, 'error': 'Refresh Token  have not been revoked'},
+                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                except RefreshToken.DoesNotExist:
+                    pass
 
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
             response.delete_cookie('JWT')
             response.delete_cookie('JWT-refresh_token')
-            print(f"response for debugging user {user} logged out success {response}")
             return response
-
         except exceptions.JSONWebTokenError as err:
             return Response({'success': False, 'error': f'error occurred {err}'}, status=status.HTTP_400_BAD_REQUEST)
 
