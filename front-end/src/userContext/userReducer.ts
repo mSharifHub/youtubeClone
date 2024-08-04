@@ -1,18 +1,16 @@
 import { ViewerQuery } from '../graphql/types.ts';
+import Cookies from 'js-cookie';
 
 export interface UserState {
   user: ViewerQuery['viewer'] | null;
   isLoggedIn: boolean;
 }
 
+
+
 export type UserAction =
   | { type: 'SET_USER'; payload: ViewerQuery['viewer'] }
   | { type: 'CLEAR_USER' };
-
-export const initialState: UserState = {
-  user: null,
-  isLoggedIn: false,
-};
 
 export const userReducer = (
   state: UserState,
