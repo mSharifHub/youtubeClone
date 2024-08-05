@@ -6,19 +6,20 @@ from api.models import User
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ('id',
-                  "first_name",
-                  "last_name",
-                  'username',
-                  'is_staff',
-                  'profile_picture',
-                  'bio',
-                  'subscribers',
-                  'is_verified',
-                  'is_active',
-                  'email',
-                  'youtube_handler',
-                  )
+        fields = (
+            'google_sub',
+            "first_name",
+            "last_name",
+            'username',
+            'is_staff',
+            'profile_picture',
+            'bio',
+            'subscribers',
+            'is_verified',
+            'is_active',
+            'email',
+            'youtube_handler',
+        )
 
     profile_picture = graphene.String()
 

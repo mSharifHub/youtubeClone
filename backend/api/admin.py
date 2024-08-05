@@ -6,23 +6,20 @@ from .models import User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        ('User Name And Password', {'fields': ('username', 'password')}),
+        ('User Handler', {'fields': ('username', 'youtube_handler')}),
         ('Personal info',
          {'fields':
-              ('first_name',
-               'last_name',
-               'email',
-               'bio',
-               'profile_picture'
-               )}),
+             (
+                 'google_sub',
+                 'first_name',
+                 'last_name',
+                 'email',
+                 'bio',
+                 'profile_picture'
+             )}),
         ('Permissions',
-         {'fields': ('is_active',
-                     'is_verified',
-                     'is_staff',
-                     'is_superuser',
-                     'groups',
-                     'user_permissions',
-                     )}),
+         {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')},
+         ),
         ('Important dates', {'fields': ('date_joined',)}),
         ('Subscriptions', {'fields': ('subscribers',)}),
     )
@@ -35,4 +32,3 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
-
