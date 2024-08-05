@@ -11,7 +11,9 @@ import requests
 from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt.utils import jwt_decode, get_user_by_payload
 from graphql_jwt import exceptions
-from graphql_jwt.refresh_token.models import RefreshToken
+from .token_utils import revoke_refresh_token
+from django.contrib.auth import authenticate
+from jwt import InvalidTokenError, InvalidIssuerError
 
 
 class GoogleLoginView(APIView):
@@ -37,6 +39,7 @@ class GoogleAuthCallBackView(APIView):
 
         try:
             details = get_google_id_token(code)
+            sub = details['sub']
             email = details['email']
             email_verified = details['email_verified']
             first_name = details['given_name']
@@ -48,13 +51,14 @@ class GoogleAuthCallBackView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(google_sub=sub)
                 user.is_verified = True
                 user.save()
 
             except User.DoesNotExist:
                 youtube_handler = generate_youtube_handler(first_name, last_name, )
                 user_data = {
+                    'google_sub': sub,
                     'username': email.split('@')[0],
                     'first_name': first_name,
                     'last_name': last_name,
@@ -73,12 +77,18 @@ class GoogleAuthCallBackView(APIView):
                         file_name = f"{first_name}_{last_name}_profile_picture.jpg"
                         user.profile_picture.save(file_name, profile_picture, save=False)
                     user.save()
+
                 else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            token = get_token(user)
+            authenticated_user = authenticate(request=request, google_sub=user.google_sub)
 
-            refresh_token = create_refresh_token(user)
+            if authenticated_user is None:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            token = get_token(authenticated_user)
+
+            refresh_token = create_refresh_token(authenticated_user)
 
             response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
@@ -105,40 +115,41 @@ class GoogleAuthCallBackView(APIView):
 
 
 class LogoutView(APIView):
+
     def post(self, request):
-        # get cookie from the request
+
         token = request.COOKIES.get('JWT')
 
-        # If there is no token then throw an error
         if not token:
-            return Response({'success': True, 'error': 'Unauthorized or Invalid Request'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            payload = jwt_decode(token)
+            payload = jwt_decode(token, context=request)
+            print(f"debugging payload {payload}")
             user = get_user_by_payload(payload)
 
-            if not user:
+            if not user or not user.is_authenticated:
                 return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
             refresh_token_value = request.COOKIES.get('JWT-refresh_token')
 
             if refresh_token_value:
-                try:
-                    refresh_token_obj = RefreshToken.objects.get(token=refresh_token_value)
-                    refresh_token_obj.revoke()
-                    # if revoked does not contain a time then it has not been revoked
-                    if refresh_token_obj.revoked is None:
-                        return Response({'success': False, 'error': 'Refresh Token  have not been revoked'},
-                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                except RefreshToken.DoesNotExist:
-                    pass
+                revoke_refresh_token(refresh_token_value)
 
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
             response.delete_cookie('JWT')
             response.delete_cookie('JWT-refresh_token')
             return response
-        except exceptions.JSONWebTokenError as err:
-            return Response({'success': False, 'error': f'error occurred {err}'}, status=status.HTTP_400_BAD_REQUEST)
 
+        except exceptions.JSONWebTokenExpired:
+            return Response({'success': False, 'error': 'Token is expired'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        except (InvalidTokenError, InvalidIssuerError) as err:
+            return Response({'success': False, 'error': f'Invalid token: {err}'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        except exceptions.JSONWebTokenError as err:
+            return Response({'success': False, 'error': f'authentication failed {err}'},
+                            status=status.HTTP_400_BAD_REQUEST)
