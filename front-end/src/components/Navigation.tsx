@@ -119,14 +119,17 @@ export default function NavigationBar() {
               </div>
             </>
           ) : (
-            <div
-              ref={settingModalRef}
-              className="cursor-pointer"
-              title="settings"
-              onClick={(e) => handleShowSettingModal(e)}
-            >
-              <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
-            </div>
+            <>
+              {/* settings  if icon when not logged in  */}
+              <div
+                ref={settingModalRef}
+                className="cursor-pointer"
+                title="settings"
+                onClick={(e) => handleShowSettingModal(e)}
+              >
+                <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
+              </div>
+            </>
           )}
 
           {/* profile component content */}
@@ -135,6 +138,7 @@ export default function NavigationBar() {
               <div
                 ref={settingModalRef}
                 onClick={(e) => handleShowSettingModal(e)}
+                className="cursor-pointer"
               >
                 <img
                   src={user.profilePicture}

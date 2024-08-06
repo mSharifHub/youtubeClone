@@ -8,6 +8,7 @@ from api.views import GoogleLoginView, GoogleAuthCallBackView, LogoutView
 urlpatterns = [
 
     path('api/auth/google/', GoogleLoginView.as_view(), name='google-login'),
+
     path('api/auth/google/callback/', GoogleAuthCallBackView.as_view(), name='google-callback'),
 
     path('api/auth/logout/', LogoutView.as_view(), name='logout'),

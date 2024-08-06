@@ -12,14 +12,17 @@ from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt.utils import jwt_decode, get_user_by_payload
 from graphql_jwt import exceptions
 from .token_utils import revoke_refresh_token
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout as django_logout, login as django_login
 from jwt import InvalidTokenError, InvalidIssuerError
+from django.views.decorators.debug import sensitive_variables
+from django.urls import reverse
 
 
 class GoogleLoginView(APIView):
+    @sensitive_variables('code', 'client_id')
     def get(self, request):
         client_id = settings.GOOGLE_CLIENT_ID
-        redirect_uri = settings.GOOGLE_REDIRECT_URI
+        redirect_uri = request.build_absolute_uri(reverse('google-callback'))
         scope = 'openid%20email%20profile'
         access_type = "offline"
         auth_url = (
@@ -32,6 +35,7 @@ class GoogleLoginView(APIView):
 
 
 class GoogleAuthCallBackView(APIView):
+    @sensitive_variables('code', 'details', 'token', 'refresh_token')
     def get(self, request):
         code = request.query_params.get('code', None)
         if not code:
@@ -52,6 +56,8 @@ class GoogleAuthCallBackView(APIView):
 
             try:
                 user = User.objects.get(google_sub=sub)
+                print(f"debugging is user anon before login : {user.is_anonymous}")
+                print(f"debugging is user auth before login : {user.is_authenticated}")
                 user.is_verified = True
                 user.save()
 
@@ -109,6 +115,9 @@ class GoogleAuthCallBackView(APIView):
                 secure=True
             )
 
+            print(f"debugging is user anon after login : {user.is_anonymous}")
+            print(f"debugging is user auth after login : {user.is_authenticated}")
+
             return response
         except ValueError as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -126,8 +135,10 @@ class LogoutView(APIView):
 
         try:
             payload = jwt_decode(token, context=request)
-            print(f"debugging payload {payload}")
             user = get_user_by_payload(payload)
+
+            print(f"debugging is user anon before logout: {user.is_anonymous}")
+            print(f"debugging is user auth before logout : {user.is_authenticated}")
 
             if not user or not user.is_authenticated:
                 return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
@@ -139,8 +150,9 @@ class LogoutView(APIView):
                 revoke_refresh_token(refresh_token_value)
 
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
-            response.delete_cookie('JWT')
-            response.delete_cookie('JWT-refresh_token')
+
+            for cookie in request.COOKIES:
+                response.delete_cookie(cookie)
             return response
 
         except exceptions.JSONWebTokenExpired:
