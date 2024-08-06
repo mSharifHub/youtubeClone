@@ -1,5 +1,4 @@
 import string
-
 from django.conf import settings
 import requests
 from google.oauth2 import id_token
