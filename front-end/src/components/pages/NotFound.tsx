@@ -7,10 +7,10 @@ export default function NotFound() {
   const pathname = location.pathname as string;
 
   return (
-    <div className="h-screen w-screen  bg-white">
+    <div className="h-screen w-screen  bg-white dark:bg-neutral-900">
       <div className="container mx-auto h-full flex flex-col justify-center items-center  ">
         <img src={monkeyImage} alt="404-monkey" className="size-[12rem]" />
-        <span className="mt-5 text-md  font-black  text-center text-neutral-500">
+        <span className="mt-5 text-md  font-black  text-center text-neutral-500 dark:text-white">
           <span className="inline-block px-2">
             '{pathname.split('/').pop()}'
           </span>
