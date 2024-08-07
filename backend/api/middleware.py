@@ -1,5 +1,5 @@
-
 from django.middleware.csrf import get_token as get_csrf_token
+
 
 
 class CustomCSRFMiddleware:
