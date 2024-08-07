@@ -1,6 +1,8 @@
+import jwt
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,7 +10,7 @@ from .serializers import UserSerializer
 from .util import get_google_id_token, generate_youtube_handler
 from api.models import User
 import requests
-from graphql_jwt.shortcuts import get_token, create_refresh_token
+from graphql_jwt.shortcuts import get_token, create_refresh_token, get_payload
 from graphql_jwt.utils import jwt_decode, get_user_by_payload
 from graphql_jwt import exceptions
 from .token_utils import revoke_refresh_token
@@ -16,6 +18,7 @@ from django.contrib.auth import authenticate, logout as django_logout, login as 
 from jwt import InvalidTokenError, InvalidIssuerError
 from django.views.decorators.debug import sensitive_variables
 from django.urls import reverse
+from django.contrib.sessions.models import Session
 
 
 class GoogleLoginView(APIView):
@@ -56,8 +59,6 @@ class GoogleAuthCallBackView(APIView):
 
             try:
                 user = User.objects.get(google_sub=sub)
-                print(f"debugging is user anon before login : {user.is_anonymous}")
-                print(f"debugging is user auth before login : {user.is_authenticated}")
                 user.is_verified = True
                 user.save()
 
@@ -92,7 +93,15 @@ class GoogleAuthCallBackView(APIView):
             if authenticated_user is None:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            token = get_token(authenticated_user)
+            # django_login(request, authenticated_user)
+
+            extra_data = {
+                'google_sub': authenticated_user.google_sub,
+                'email': authenticated_user.email,
+                'youtube_handler': authenticated_user.youtube_handler,
+            }
+
+            token = get_token(authenticated_user, **extra_data)
 
             refresh_token = create_refresh_token(authenticated_user)
 
@@ -115,34 +124,27 @@ class GoogleAuthCallBackView(APIView):
                 secure=True
             )
 
-            print(f"debugging is user anon after login : {user.is_anonymous}")
-            print(f"debugging is user auth after login : {user.is_authenticated}")
-
             return response
         except ValueError as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
-
     def post(self, request):
 
-        token = request.COOKIES.get('JWT')
+        # permission_classes = [IsAuthenticated]
 
-        if not token:
-            return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
+        # session_key = request.COOKIES.get('sessionid')
+        # session = Session.objects.get(session_key=session_key)
+        #
+        # uid = session.get_decoded().get('_auth_user_id')
+        # user = User.objects.get(google_sub=uid)
+
+        if not request.user.is_authenticated:
+            return Response({'success': False, 'error': 'Unauthorized or invalid request'},
                             status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            payload = jwt_decode(token, context=request)
-            user = get_user_by_payload(payload)
-
-            print(f"debugging is user anon before logout: {user.is_anonymous}")
-            print(f"debugging is user auth before logout : {user.is_authenticated}")
-
-            if not user or not user.is_authenticated:
-                return Response({'success': False, 'error': 'Unauthorized or Invalid Request'},
-                                status=status.HTTP_401_UNAUTHORIZED)
 
             refresh_token_value = request.COOKIES.get('JWT-refresh_token')
 
