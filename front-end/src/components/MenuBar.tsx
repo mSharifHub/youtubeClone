@@ -26,9 +26,18 @@ import settingsIconPath from '../assets/menu_bar_icons/settings.png';
 import reportIconPath from '../assets/menu_bar_icons/report.png';
 import helpIconPatch from '../assets/menu_bar_icons/help.png';
 import sendFeedBackPath from '../assets/menu_bar_icons/feedback.png';
+import userIconPath from '../assets/navigation_icons/user-icon.png';
 import { Link } from 'react-router-dom';
+import { useUser } from '../userContext/UserContext.tsx';
+import { useUserLogin } from './hooks/useUserLogin.ts';
 
 export default function MenuBar() {
+  const {
+    state: { isLoggedIn },
+  } = useUser();
+
+  const { redirectGoogleAuth } = useUserLogin();
+
   return (
     <div className="hidden sm:block md:w-[5rem] md:min-w-[5rem] xl:w-[14rem] xl:min-w-[14rem]  h-full   lg:overflow-y-auto lg:scroll-smooth  overflow-hidden no-scrollbar lg:show-scrollbar mt-2 mr-10  ">
       <div className=" max-h-screen grid grid-cols-1 grid-rows-[0.25fr_0.5fr_0.25fr_1fr_0.25fr_0.25fr_0.25fr]">
@@ -46,52 +55,85 @@ export default function MenuBar() {
             link="#"
           />
         </div>
-        {/* row-2 You */}
-        <div className="hidden xl:flex flex-col  border-b space-y-2 pt-2 pb-2">
-          <MenuComponent
-            icon={faChevronRight}
-            title="you"
-            order="reverse"
-            link="#"
-          />
+        {isLoggedIn ? (
+          <>
+            {/* row-2 You */}
+            <div className="hidden xl:flex flex-col  border-b space-y-2 pt-2 pb-2">
+              <MenuComponent
+                icon={faChevronRight}
+                title="you"
+                order="reverse"
+                link="#"
+              />
 
-          <MenuComponent
-            customIconSrc={yourChannelPath}
-            title="your channel"
-            link="#"
-          />
-          <MenuComponent
-            customIconSrc={historyIconPath}
-            title="history"
-            link="#"
-          />
-          <MenuComponent
-            customIconSrc={playListPath}
-            title="playlist"
-            link="#"
-          />
-          <MenuComponent
-            customIconSrc={watchLaterPath}
-            title="watch later"
-            link="#"
-          />
-          <MenuComponent
-            customIconSrc={thumbsUpIconPath}
-            title="liked videos"
-            link="#"
-          />
-        </div>
-        {/* row-3 Subscriptions */}
-        <div className=" hidden xl:flex flex-col  border-b space-y-2  pt-2 pb-2">
-          <h1 className=" flex  justify-start   items-center  mx-4 text-xs md:text-lg  capitalize ">
-            subscriptions
-          </h1>
-          <MenuComponent
-            customIconSrc={allSubscriptionIconPath}
-            title="subscriptions"
-            link="#"
-          />
-        </div>
+              <MenuComponent
+                customIconSrc={yourChannelPath}
+                title="your channel"
+                link="#"
+              />
+              <MenuComponent
+                customIconSrc={historyIconPath}
+                title="history"
+                link="#"
+              />
+              <MenuComponent
+                customIconSrc={playListPath}
+                title="playlist"
+                link="#"
+              />
+              <MenuComponent
+                customIconSrc={watchLaterPath}
+                title="watch later"
+                link="#"
+              />
+              <MenuComponent
+                customIconSrc={thumbsUpIconPath}
+                title="liked videos"
+                link="#"
+              />
+            </div>
+            {/* row-3 Subscriptions */}
+            <div className=" hidden xl:flex flex-col  border-b space-y-2  pt-2 pb-2">
+              <h1 className=" flex  justify-start   items-center  mx-4 text-xs md:text-lg  capitalize ">
+                subscriptions
+              </h1>
+              <MenuComponent
+                customIconSrc={allSubscriptionIconPath}
+                title="subscriptions"
+                link="#"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* row 2 login */}
+            <div className="hidden xl:flex flex-col  border-b pt-4 pb-4">
+              <div className="justify-start items-center mx-4 space-y-2">
+                <h3 className="text-xs tex">
+                  Sign in to like videos, comment, and subscribe.
+                </h3>
+                <div
+                  onClick={() => redirectGoogleAuth()}
+                  className="flex justify-center items-center border dark:border-neutral-700 rounded-full w-24  h-9 space-x-2  transition-colors transform duration-75 ease-out hover:bg-blue-100 dark:hover:bg-neutral-700  cursor-pointer"
+                  title="Sign in with Google"
+                >
+                  <div className="flex justify-center items-center border border-blue-400 rounded-full ">
+                    <img
+                      src={userIconPath}
+                      alt="user-icon"
+                      className=" h-5 w-5  "
+                    />
+                  </div>
+
+                  <span className="text-sm  font-semibold text-blue-400 ">
+                    Sign in
+                  </span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* row-4 Explore */}
         <div className="hidden xl:flex flex-col  border-b  space-y-2 pt-2 pb-2">
           <h1 className="flex  justify-start items-center mx-4 text-xs md:text-lg  capitalize">

@@ -8,6 +8,7 @@ import './index.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from './userContext/UserProvider.tsx';
 import { ThemeProvider } from './darkModeContext/ThemeProvider.tsx';
+import { MenuBarProvider } from './menuBarContext/MenuBarProvider.tsx';
 
 Modal.setAppElement('#root');
 
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <ApolloProvider client={client}>
         <UserProvider>
           <ThemeProvider>
-            <App />
+            <MenuBarProvider>
+              <App />
+            </MenuBarProvider>
           </ThemeProvider>
         </UserProvider>
       </ApolloProvider>
