@@ -40,7 +40,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
 
   const pos = position
     ? {
-        top: position.top + position.height,
+        top:position.top + position.height + 20,
         right: Math.min(position.right, position.width),
       }
     : {};
@@ -95,7 +95,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
               {/*google account*/}
               <button
                 onClick={() => window.location.href = 'https://myaccount.google.com/'}
-                className="flex justify-center items-center space-x-4">
+                className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <FontAwesomeIcon
                   icon={faGoogle} size="lg" />
                 <span className="capitalize text-sm">google account</span>
@@ -103,7 +103,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
               {/*log out*/}
               <button
                 onClick={() => logout()}
-                className="flex justify-start items-center space-x-4">
+                className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <img src={signOut} alt="signOut" className=" min-h-5 min-w-5 w-5 h-5 dark:invert" />
                 <h3 className="capitalize">sign out</h3>
               </button>
@@ -112,13 +112,13 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
           {/* row 3 [ youtubeStudio, purchase and membership ]*/}
           <section className={` ${!isLoggedIn ? "hidden" : "row-span-1 row-start-3 border-b "} text-sm`}>
             <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
-              <button className="flex justify-center items-center space-x-4">
+              <button className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <img src={youtubeStudioIcon} alt="youtube-studio" className=" min-h-7 min-w-7 w-7 h-7 dark:invert" />
                 <span className="capitalize text-sm">youtube studio</span>
               </button>
-              <button className="flex justify-center items-center space-x-4">
+              <button className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <img src={coin} alt="purchase-and-memberships" className=" min-h-7 min-w-7 w-7 h-7 dark:invert" />
-                <h3 className="capitalize">purchases and membership</h3>
+                <h3 className="capitalize whitespace-nowrap">purchases and membership</h3>
               </button>
             </div>
           </section>
@@ -126,11 +126,11 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
           {/* row 4  [ dark mode, settings] */}
           <section className="row-span-1 row-start-4 text-sm mt-2">
             <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
-              <div className="flex justify-start items-center space-x-4">
+              <div className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <DarkModeSwitch onChange={toggleDarkMode} checked={isDarkMode} style={{ height: "18px" }} />
                 <h3 className="capitalize"> Appearance:{'\t'}{darkModeText}</h3>
               </div>
-              <button className="flex justify-center items-center space-x-4">
+              <button className="flex w-full h-8  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700">
                 <img src={settings} alt="settings" className="min-h-7 min-w-7 w-7 h-7 dark:invert" />
                 <h3 className="capitalize">settings</h3>
               </button>

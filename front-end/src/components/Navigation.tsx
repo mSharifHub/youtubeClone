@@ -13,6 +13,7 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
 import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
+import { useMenuBar } from '../menuBarContext/MenuBarContext';
 
 export default function NavigationBar() {
   const [showSettingModal, setShowSettingModal] = useState(false);
@@ -32,6 +33,8 @@ export default function NavigationBar() {
   const {
     state: { isLoggedIn, user },
   } = useUser();
+
+  const { setShow } = useMenuBar();
 
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -54,23 +57,38 @@ export default function NavigationBar() {
     };
   }, []);
 
+  const handleMenuToggle = () => {
+    setShow((prevShow) => !prevShow);
+  };
+
   return (
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
         {/*left*/}
-        <div className="col-span-1 col-start-1 row-start-1 row-span-1 flex justify-start items-center ">
-          <div className="flex justify-center items-center md:mx-4 space-x-4 md:space-x-8">
-            <FontAwesomeIcon
-              icon={faBars}
-              size="xl"
-              className=" text-neutral-400"
-            />
-            <div className="flex justify-center items-center">
+        <div className="col-span-1 col-start-1 row-start-1 row-span-1 flex justify-start items-center">
+          {/* layer */}
+          <div className="flex justify-start items-center sm:px-4 space-x-4 md:space-x-8">
+            {/* fa-bars */}
+            <div
+              onClick={handleMenuToggle}
+              title="Menu Bar"
+              className=" p-2 rounded-full transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700   cursor-pointer"
+            >
+              <FontAwesomeIcon
+                icon={faBars}
+                size="xl"
+                className=" flex justify-center items-center text-neutral-400 "
+              />
+            </div>
+            <div
+              onClick={() => (window.location.href = '/')}
+              title="Youtube Home"
+              className="flex justify-center items-center cursor-pointer"
+            >
               <img
                 src={youtubeIconPath}
                 alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
                 className="h-8 w-8  min-w-8"
-                title="Youtube Home"
               />
               <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">
                 YouTube
