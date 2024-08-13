@@ -1,14 +1,15 @@
-import React, { useState, ReactNode } from 'react';
-import { MenuBarContext, MenuBarContextProp } from './MenuBarContext.ts';
+import React, { ReactNode, useReducer } from 'react';
+import { MenuBarContext } from './MenuBarContext.ts';
+import { initialMenuState, MenuBarReducer } from './MenuBarReducer.ts';
 
 export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [show, setShow] = useState(false);
-
-  const value: MenuBarContextProp = { show, setShow };
+  const [state, dispatch] = useReducer(MenuBarReducer, initialMenuState);
 
   return (
-    <MenuBarContext.Provider value={value}>{children}</MenuBarContext.Provider>
+    <MenuBarContext.Provider value={{ state, dispatch }}>
+      {children}
+    </MenuBarContext.Provider>
   );
 };
