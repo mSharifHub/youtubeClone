@@ -44,11 +44,11 @@ export default function MenuBar() {
 
   return (
     <div
-      className={`min-h-fit ${toggler ? 'w-[5%] ' : 'w-[20%] '} grid grid-cols-1  grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
+      className={`min-h-fit ${toggler ? 'w-[5%] ' : 'w-[20%]'}  grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
     >
       {/* row-1*/}
       <section
-        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-[2px] ' : null}`}
+        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 ' : null}`}
       >
         <MenuComponent customIconSrc={homeIconPath} title="home" link="/" />
         <MenuComponent title="shorts" customIconSrc={shortsIconPath} link="#" />
@@ -62,7 +62,7 @@ export default function MenuBar() {
         <>
           {/* row-2*/}
           <section
-            className={`  flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-[2px] ' : null}`}
+            className={`  flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
           >
             {/* you should stay visible on toggler */}
             <div>
@@ -102,26 +102,34 @@ export default function MenuBar() {
             </div>
           </section>
           {/* row-3*/}
-          <section  className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-[2px] ' : null}`}>
-            <div
-
-            >
-              <h1 className="capitalize ">subscriptions</h1>
-              <MenuComponent
-                customIconSrc={allSubscriptionIconPath}
-                title="subscriptions"
-                link="#"
-              />
-            </div>
+          <section
+            className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
+          >
+            <h1 className="capitalize ">subscriptions</h1>
+            <MenuComponent
+              customIconSrc={allSubscriptionIconPath}
+              title="subscriptions"
+              link="#"
+            />
           </section>
         </>
       ) : (
-        <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />
+        <>
+          {/* login component */}
+          <section
+            className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 ' : null}`}
+          >
+            <h3 className=" flex flex-initial w-[80%]   text-sm text-start">
+              Sign in to like videos, comment, and subscribe.
+            </h3>
+            <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />
+          </section>
+        </>
       )}
 
       {/* row-4 Explore */}
       <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-[2px] ' : null}`}
+        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
       >
         <h1 className="capitalize">explore</h1>
         <MenuComponent
@@ -163,7 +171,7 @@ export default function MenuBar() {
       </section>
       {/* row-5 */}
       <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-[2px] ' : null}`}
+        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
       >
         <MenuComponent
           customIconSrc={settingsIconPath}

@@ -54,8 +54,6 @@ export default function NavigationBar() {
 
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
 
-  const { state } = useMenuBar();
-
   useEffect(() => {
     updateSettingsModalPos();
     window.addEventListener('resize', updateSettingsModalPos);
@@ -68,15 +66,16 @@ export default function NavigationBar() {
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
         {/*left*/}
-        <div className="col-span-1 col-start-1 row-start-1 row-span-1  flex justify-start items-center space-x-4">
+        <div className="col-span-1 col-start-1 row-start-1 row-span-1 mx-4 flex justify-start items-center space-x-4">
           {/* fa-bars */}
-          <div
+
+          <FontAwesomeIcon
+            icon={faBars}
             onClick={handleMenu}
             title="Menu Bar"
-            className={`flex justify-center  items-center ${state.toggler ? 'mx-2' : null} rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer`}
-          >
-            <FontAwesomeIcon icon={faBars} className="h-6 w-6 p-2" />
-          </div>
+            className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
+          />
+
           <div
             onClick={() => (window.location.href = '/')}
             title="Youtube Home"
@@ -97,7 +96,7 @@ export default function NavigationBar() {
           <SearchInput />
         </div>
         {/*right*/}
-        <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end items-center space-x-3">
+        <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end mx-4 items-center space-x-3">
           {/*icon search*/}
           <div
             className="h-8 w-8 min-w-8 flex md:hidden justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200  dark:hover:bg-neutral-700 cursor-pointer"
