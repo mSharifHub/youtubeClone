@@ -13,7 +13,7 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
 import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
-import { useMenuBar } from '../menuBarContext/MenuBarContext';
+import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
 
 export default function NavigationBar() {
   const [showSettingModal, setShowSettingModal] = useState(false);
@@ -23,6 +23,7 @@ export default function NavigationBar() {
 
   const settingModalRef = useRef<HTMLDivElement | null>(null);
 
+  // updates the position of the element settings for the modal settings
   const updateSettingsModalPos = () => {
     if (settingModalRef.current) {
       const rect = settingModalRef.current.getBoundingClientRect();
@@ -34,7 +35,7 @@ export default function NavigationBar() {
     state: { isLoggedIn, user },
   } = useUser();
 
-  const { setShow } = useMenuBar();
+  const { dispatch } = useMenuBar();
 
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -45,9 +46,15 @@ export default function NavigationBar() {
     setShowSettingModal(false);
   };
 
+  const handleMenu = () => {
+    dispatch({ type: 'HANDLE_MENU' });
+  };
+
   const { redirectGoogleAuth } = useUserLogin();
 
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
+
+  const { state } = useMenuBar();
 
   useEffect(() => {
     updateSettingsModalPos();
@@ -57,10 +64,6 @@ export default function NavigationBar() {
     };
   }, []);
 
-  const handleMenuToggle = () => {
-    setShow((prevShow) => !prevShow);
-  };
-
   return (
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
@@ -68,11 +71,11 @@ export default function NavigationBar() {
         <div className="col-span-1 col-start-1 row-start-1 row-span-1  flex justify-start items-center space-x-4">
           {/* fa-bars */}
           <div
-            onClick={handleMenuToggle}
+            onClick={handleMenu}
             title="Menu Bar"
-            className=" p-1 flex justify-center  items-center rounded-full ml-4 xl:ml-1 transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer"
+            className={`flex justify-center  items-center ${state.toggler ? 'mx-2' : null} rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer`}
           >
-            <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
+            <FontAwesomeIcon icon={faBars} className="h-6 w-6 p-2" />
           </div>
           <div
             onClick={() => (window.location.href = '/')}

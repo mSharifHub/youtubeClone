@@ -1,8 +1,9 @@
-import { createContext, Dispatch, SetStateAction, useContext } from 'react';
+import { createContext, Dispatch, useContext } from 'react';
+import { MenuState, ActionType } from './MenuBarReducer.ts';
 
 export interface MenuBarContextProp {
-  show: boolean;
-  setShow: Dispatch<SetStateAction<boolean>>;
+  state: MenuState;
+  dispatch: Dispatch<ActionType>;
 }
 
 export const MenuBarContext = createContext<MenuBarContextProp | undefined>(
