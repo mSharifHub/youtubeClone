@@ -42,13 +42,16 @@ export default function MenuBar() {
     state: { toggler },
   } = useMenuBar();
 
+  const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
+
   return (
     <div
-      className={`min-h-fit ${toggler ? 'w-[5%] ' : 'w-[20%]'}  grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
+      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
     >
       {/* row-1*/}
+
       <section
-        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 ' : null}`}
+        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
       >
         <MenuComponent customIconSrc={homeIconPath} title="home" link="/" />
         <MenuComponent title="shorts" customIconSrc={shortsIconPath} link="#" />
@@ -62,7 +65,7 @@ export default function MenuBar() {
         <>
           {/* row-2*/}
           <section
-            className={`  flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
+            className={`  flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}
           >
             {/* you should stay visible on toggler */}
             <div>
@@ -103,7 +106,7 @@ export default function MenuBar() {
           </section>
           {/* row-3*/}
           <section
-            className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
+            className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  flex-initial w-[12rem] ' : 'w-16'}`}
           >
             <h1 className="capitalize ">subscriptions</h1>
             <MenuComponent
@@ -117,7 +120,7 @@ export default function MenuBar() {
         <>
           {/* login component */}
           <section
-            className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 ' : null}`}
+            className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]' : 'w-16'}`}
           >
             <h3 className=" flex flex-initial w-[80%]   text-sm text-start">
               Sign in to like videos, comment, and subscribe.
@@ -129,7 +132,7 @@ export default function MenuBar() {
 
       {/* row-4 Explore */}
       <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
+        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
       >
         <h1 className="capitalize">explore</h1>
         <MenuComponent
@@ -171,7 +174,7 @@ export default function MenuBar() {
       </section>
       {/* row-5 */}
       <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  ' : null}`}
+        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
       >
         <MenuComponent
           customIconSrc={settingsIconPath}
@@ -188,9 +191,16 @@ export default function MenuBar() {
       </section>
       {/* row-6 */}
       <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3`}
+        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'flex-initial w-[12rem] ' : 'w-16'}`}
       >
-        <h1 className="capitalize">terms of usage</h1>
+        <h1 className="capitalize">developer information</h1>
+        <ul className="text-sm capitalize text-nowrap text-left space-y-2">
+          {aboutArr.map((item, index) => (
+            <li className=" text-sm cursor-pointer" key={`key-${index}`}>
+              {item}
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

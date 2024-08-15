@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useUserLogin } from './hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
@@ -15,27 +15,16 @@ import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
 import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
 
+
 export default function NavigationBar() {
   const [showSettingModal, setShowSettingModal] = useState(false);
-  const [settingModalPos, setSettingModalPos] = useState<DOMRect | undefined>(
-    undefined,
-  );
 
-  const settingModalRef = useRef<HTMLDivElement | null>(null);
-
-  // updates the position of the element settings for the modal settings
-  const updateSettingsModalPos = () => {
-    if (settingModalRef.current) {
-      const rect = settingModalRef.current.getBoundingClientRect();
-      setSettingModalPos(rect);
-    }
-  };
 
   const {
     state: { isLoggedIn, user },
   } = useUser();
 
-  const { dispatch } = useMenuBar();
+  const { dispatch, state} = useMenuBar();
 
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -46,21 +35,28 @@ export default function NavigationBar() {
     setShowSettingModal(false);
   };
 
+
+
   const handleMenu = () => {
-    dispatch({ type: 'HANDLE_MENU' });
+    const isLargeScreen = window.matchMedia('(min-width: 1280px)').matches;
+    const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;
+
+    if (isLargeScreen) {
+      dispatch({ type: 'HANDLE_TOGGLE_MENU' });
+    }
+
+    if (isSmallScreen) {
+      dispatch({ type: 'HANDLE_MENU' });
+    }
   };
 
   const { redirectGoogleAuth } = useUserLogin();
 
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
 
-  useEffect(() => {
-    updateSettingsModalPos();
-    window.addEventListener('resize', updateSettingsModalPos);
-    return () => {
-      window.removeEventListener('resize', updateSettingsModalPos);
-    };
-  }, []);
+
+
+
 
   return (
     <>
@@ -135,7 +131,6 @@ export default function NavigationBar() {
             <>
               {/* settings  if icon when not logged in  */}
               <div
-                ref={settingModalRef}
                 className="cursor-pointer"
                 title="settings"
                 onClick={(e) => handleShowSettingModal(e)}
@@ -149,15 +144,20 @@ export default function NavigationBar() {
           <div onClick={() => (!isLoggedIn ? redirectGoogleAuth() : null)}>
             {user && user.profilePicture ? (
               <div
-                ref={settingModalRef}
                 onClick={(e) => handleShowSettingModal(e)}
-                className="cursor-pointer"
+                className="cursor-pointer border relative"
               >
                 <img
                   src={user.profilePicture}
                   alt={`${user.username}-profilePicture`}
                   className="rounded-full min-h-8 min-w-8 w-8 h-8"
                 />
+                {showSettingModal && (
+                  <SettingsModal
+                    isOpen={showSettingModal}
+                    onClickOutside={handleCloseSettingModal}
+                  />
+                )}
               </div>
             ) : (
               <div
@@ -185,14 +185,6 @@ export default function NavigationBar() {
           position={tooltipPosition}
         />
       </nav>
-
-      {showSettingModal && (
-        <SettingsModal
-          isOpen={showSettingModal}
-          onClickOutside={handleCloseSettingModal}
-          position={settingModalPos}
-        />
-      )}
     </>
   );
 }

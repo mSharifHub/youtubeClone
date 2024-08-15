@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import Portal from './helpers/Portal.ts';
 import { useClickOutside } from './hooks/useClickOutside.ts';
 import { useTheme } from '../darkModeContext/ThemeContext.ts';
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
@@ -17,13 +16,11 @@ import settings from "../assets/menu_bar_icons/settings.png"
 interface LoginModalProps {
   isOpen: boolean;
   onClickOutside: () => void;
-  position: DOMRect | undefined;
 }
 
 export const SettingsModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClickOutside,
-  position,
 }) => {
   const { setTheme, theme, isDarkMode, darkModeText } = useTheme();
 
@@ -38,23 +35,17 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
 
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const pos = position
-    ? {
-        top:position.top + position.height + 20,
-        right: Math.min(position.right, position.width),
-      }
-    : {};
+
 
   const logout = useUserLogout();
 
   useClickOutside(modalRef, onClickOutside, isOpen);
 
   return (
-    <Portal>
+
       <div
         ref={modalRef}
-        className="absolute bg-white dark:dark-modal drop-shadow-lg min-h-fit  min-w-fit w-64 rounded-lg z-20"
-        style={pos}
+        className="absolute  transition-transform ease-in-out duration-100  top-10 right-4 bg-white dark:dark-modal drop-shadow-lg min-h-fit  min-w-fit w-64 rounded-lg z-20"
       >
         <div className="grid grid-rows">
           {/*row-1 [ user profile picture , youtube handler, view channel] */}
@@ -139,6 +130,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
           </section>
         </div>
       </div>
-    </Portal>
+
   );
 };

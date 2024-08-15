@@ -8,6 +8,7 @@ export default function MainLayout() {
   const {
     state: { isLoggedIn },
   } = useUser();
+
   return (
     <div className=" h-screen w-screen flex flex-col  px-4 py-4">
       <NavigationBar />
