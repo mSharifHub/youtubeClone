@@ -1,4 +1,8 @@
-export type ActionType = { type: 'HANDLE_MENU' };
+export type ActionType =
+  | { type: 'HANDLE_MENU' }
+  | { type: 'HANDLE_TOGGLE_MENU' }
+  | { type: 'RESET_STATE_TOGGLE_MENU' }
+  | { type: 'RESET_STATE_MENU' };
 
 export interface MenuState {
   toggler: boolean;
@@ -14,14 +18,28 @@ export const MenuBarReducer = (
   state: MenuState,
   action: ActionType,
 ): MenuState => {
-  const isLargeScreen = window.matchMedia('(min-width: 1280px)').matches;
-  const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;
-
   switch (action.type) {
     case 'HANDLE_MENU':
       return {
-        toggler: isLargeScreen ? !state.toggler : false,
-        menu: isSmallScreen? !state.menu : false,
+        ...state,
+        menu: !state.menu,
+      };
+
+    case 'RESET_STATE_MENU':
+      return {
+        ...state,
+        menu: initialMenuState.menu,
+      };
+
+    case 'HANDLE_TOGGLE_MENU':
+      return {
+        ...state,
+        toggler: !state.toggler,
+      };
+    case 'RESET_STATE_TOGGLE_MENU':
+      return {
+        ...state,
+        toggler: initialMenuState.toggler,
       };
 
     default:
