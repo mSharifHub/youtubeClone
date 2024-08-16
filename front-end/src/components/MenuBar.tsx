@@ -46,7 +46,7 @@ export default function MenuBar() {
 
   return (
     <div
-      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
+      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
     >
       {/* row-1*/}
 
