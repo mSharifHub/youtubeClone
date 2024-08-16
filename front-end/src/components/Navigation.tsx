@@ -24,7 +24,7 @@ export default function NavigationBar() {
     state: { isLoggedIn, user },
   } = useUser();
 
-  const { dispatch, state} = useMenuBar();
+  const { dispatch} = useMenuBar();
 
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -42,7 +42,7 @@ export default function NavigationBar() {
     const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;
 
     if (isLargeScreen) {
-      dispatch({ type: 'HANDLE_TOGGLE_MENU' });
+      dispatch({ type: 'USER_TOGGLE_MENU' });
     }
 
     if (isSmallScreen) {
@@ -145,7 +145,7 @@ export default function NavigationBar() {
             {user && user.profilePicture ? (
               <div
                 onClick={(e) => handleShowSettingModal(e)}
-                className="cursor-pointer border relative"
+                className="cursor-pointer relative"
               >
                 <img
                   src={user.profilePicture}
