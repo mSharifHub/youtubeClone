@@ -2,6 +2,7 @@ export type ActionType =
   | { type: 'HANDLE_MENU' }
   | { type: 'SYSTEM_TOGGLE_MENU' }
   | { type: 'USER_TOGGLE_MENU' }
+  | { type: 'RESET_STATE_MENU' }
   | { type: 'RESET_STATE_TOGGLE_MENU' };
 
 export interface MenuState {
@@ -37,13 +38,19 @@ export const MenuBarReducer = (
       return {
         ...state,
         toggler: !state.toggler,
-        userInteracted: !state.userInteracted,
+        userInteracted: !state.toggler,
       };
 
     case 'RESET_STATE_TOGGLE_MENU':
       return {
         ...state,
         toggler: false,
+      };
+
+    case 'RESET_STATE_MENU':
+      return {
+        ...state,
+        menu: false,
       };
 
     default:

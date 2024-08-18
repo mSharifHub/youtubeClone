@@ -3,6 +3,7 @@ import NavigationBar from '../Navigation.tsx';
 import MenuBar from '../MenuBar.tsx';
 import Suggestions from '../Suggestions.tsx';
 import { useUser } from '../../userContext/UserContext.tsx';
+import { MenuModal } from '../MenuModal.tsx';
 
 export default function MainLayout() {
   const {
@@ -14,6 +15,7 @@ export default function MainLayout() {
       <NavigationBar />
       <main className="h-full w-full  flex flex-row  overflow-hidden">
         <MenuBar />
+        <MenuModal />
         {/* main div*/}
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
           {/* MLL suggestions container */}
