@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 
-export const useThrottle = <T extends (...args: any[]) => void>(
+export const useThrottle = <
+  T extends (...args: number[]) => ReturnType<T> | undefined,
+>(
   callBack: T,
   interval: number,
 ) => {

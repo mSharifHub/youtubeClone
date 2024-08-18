@@ -46,12 +46,12 @@ export default function MenuBar() {
 
   return (
     <div
-      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden`}
+      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden  `}
     >
       {/* row-1*/}
 
       <section
-        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
+        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}
       >
         <MenuComponent customIconSrc={homeIconPath} title="home" link="/" />
         <MenuComponent title="shorts" customIconSrc={shortsIconPath} link="#" />

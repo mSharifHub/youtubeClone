@@ -55,9 +55,6 @@ export default function NavigationBar() {
   const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
 
 
-
-
-
   return (
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
