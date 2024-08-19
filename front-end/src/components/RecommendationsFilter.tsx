@@ -13,7 +13,7 @@ export default function RecommendationsFilter({
     throw new Error("Title can't be more than 20 characters long");
   }
   return (
-    <div className="relative h-7  min-h-7  px-2 flex justify-center items-center rounded-lg transition-colors duration-200 ease-out bg-neutral-100 dark:bg-neutral-700 font-medium  capitalize hover:bg-neutral-200 dark:hover:bg-neutral-600">
+    <div className="relative h-7  min-h-7  px-2 flex justify-center items-center rounded-lg transition-colors duration-200 ease-out bg-neutral-100 dark:dark-modal font-medium  capitalize hover:bg-neutral-200 dark:hover:bg-neutral-600">
       <Link to={link}>
         <h1 className="text-nowrap text-sm">{title}</h1>
       </Link>

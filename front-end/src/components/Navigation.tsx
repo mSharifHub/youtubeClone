@@ -62,7 +62,7 @@ export default function NavigationBar() {
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
         {/*left*/}
-        <div className="col-span-1 col-start-1 row-start-1 row-span-1 mx-4 flex justify-start items-center space-x-4">
+        <div className="col-span-1 col-start-1 row-start-1 row-span-1 mx-4 flex justify-start items-center space-x-2">
           {/* fa-bars */}
 
           <FontAwesomeIcon

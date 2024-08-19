@@ -3,7 +3,26 @@ export default {
   darkMode: 'selector',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        slideRight: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
+        slideLeft: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        'slide-right': 'slideRight 0.25s  ease-out',
+        'slide-left': 'slideLeft 0.25s ease-out ',
+      },
+
+      colors: {
+        darkTheme: '#0f0f0f',
+      },
+    },
   },
   plugins: [
     function ({ addUtilities, theme }) {
