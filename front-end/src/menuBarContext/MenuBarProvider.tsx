@@ -10,16 +10,11 @@ export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({
 
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-  const [numberOfRender, setNumberOfRender] = useState<number>(0);
-
-  console.log(`rendered how many times: ${numberOfRender}`);
-
   const handleResize = useThrottle(() => {
     setWindowWidth(window.innerWidth);
-    setNumberOfRender((prev) => prev + 1);
-  }, 500);
+  }, 150);
 
-  // Throttle function for the resize
+  // throttle function for the resize
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -30,12 +25,19 @@ export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({
     if (!state.userInteracted && !state.toggler && windowWidth < 1280) {
       dispatch({ type: 'SYSTEM_TOGGLE_MENU' });
     }
+
     return () => {
       if (!state.userInteracted && state.toggler && windowWidth > 1280) {
         dispatch({ type: 'RESET_STATE_TOGGLE_MENU' });
       }
     };
   }, [state.toggler, state.userInteracted, windowWidth]);
+
+  useEffect(() => {
+    if (windowWidth > 1280) {
+      dispatch({ type: 'RESET_STATE_MENU' });
+    }
+  }, [windowWidth]);
 
   return (
     <MenuBarContext.Provider value={{ state, dispatch }}>
