@@ -31,6 +31,7 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { useUserLogin } from './hooks/useUserLogin.ts';
 import { LoginComponent } from './LoginComponent.tsx';
 import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function MenuBar() {
   const {
@@ -42,11 +43,42 @@ export default function MenuBar() {
     state: { toggler },
   } = useMenuBar();
 
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const [isTop, setIsTop] = useState(false);
+  const [isBottom, setIsBottom] = useState(true);
+
+  const handleScrollTop = useCallback(() => {
+    const div = scrollRef.current;
+    if (!div) return;
+
+    if (div.scrollTop > 0) {
+      setIsTop(false);
+    } else {
+      setIsBottom(true);
+    }
+
+    if (div.scrollTop + div.clientHeight >= div.scrollHeight) {
+      setIsBottom(true);
+    } else {
+      setIsBottom(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const div = scrollRef.current;
+    if (!div) return;
+    div.addEventListener('scroll', handleScrollTop);
+    return () => {
+      div.removeEventListener('scroll', handleScrollTop);
+    };
+  }, [handleScrollTop]);
+
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
 
   return (
     <div
-      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden  `}
+      className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} my-2 hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden  `}
     >
       {/* row-1*/}
 

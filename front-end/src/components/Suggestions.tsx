@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { ToolTip } from './helpers/ToolTip.tsx';
 import RecommendationsFilter from './RecommendationsFilter.tsx';
 import { useToolTip } from './hooks/useToolTip.ts';
+import { useDebounce } from './hooks/useDebounce.ts';
 
 export default function Suggestions() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isStart, setIsStart] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [countRendered, setCountRendered] = useState<number>(0);
 
   const {
     showTooltip,
@@ -32,22 +34,21 @@ export default function Suggestions() {
     { title: 'dummyData', link: '#' },
   ].map((item, index) => ({ ...item, index }));
 
-  const handleScroll = useCallback(() => {
+  console.log(`number of scrolls rendered ${countRendered}`);
+
+  const handleScroll = useDebounce(() => {
     const div = scrollRef.current;
+
     if (!div) return;
 
-    if (div.scrollLeft > 0) {
-      setIsStart(false);
-    } else {
-      setIsStart(true);
-    }
+    setCountRendered((n) => n + 1);
 
-    if (div.scrollWidth - div.scrollLeft === div.clientWidth) {
-      setIsEnd(true);
-    } else {
-      setIsEnd(false);
-    }
-  }, []);
+    const atStart = div.scrollLeft === 0;
+    const atEnd = div.scrollLeft + div.clientWidth >= div.scrollWidth;
+
+    if (atStart !== isStart) setIsStart(atStart);
+    if (atEnd !== isEnd) setIsEnd(atEnd);
+  }, 500);
 
   useEffect(() => {
     const div = scrollRef.current;
@@ -66,7 +67,7 @@ export default function Suggestions() {
         position={tooltipPosition}
       />
 
-      <section className="h-12 w-full flex justify-start items-center">
+      <section className="h-12 w-full px-4  flex justify-start items-center">
         {/* all block */}
 
         <div
@@ -80,7 +81,7 @@ export default function Suggestions() {
         <div className="relative w-full h-full overflow-hidden">
           {/* fading effect*/}
           <div
-            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white  dark:from-darkTheme via-[rgba(255,255,255,0.5)] dark:from-neutral-950 to-transparent pointer-events-none z-10`}
+            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white  dark:from-darkTheme via-[rgba(255,255,255,0.5)]  to-transparent pointer-events-none z-10`}
           />
           {/* scroll area */}
           <div

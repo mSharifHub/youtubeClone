@@ -10,17 +10,9 @@ export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({
 
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-  /*
-   * for debugging render due to window resize
-   */
-  const [rendered, setRendered] = useState<number>(0);
-
   const handleResize = useThrottle(() => {
-    setRendered((prev) => prev + 1);
     setWindowWidth(window.innerWidth);
   }, 150);
-
-  console.log(`number of times rendered ${rendered}`);
 
   // throttle function for the resize
   useEffect(() => {
