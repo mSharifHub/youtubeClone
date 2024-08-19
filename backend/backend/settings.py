@@ -16,6 +16,13 @@ from django.contrib import staticfiles
 from django.core.checks import templates
 from dotenv import load_dotenv
 
+import django
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy
+
+django.utils.translation.ugettext = gettext
+django.utils.translation.ugettext_lazy = gettext_lazy
+
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 

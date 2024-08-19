@@ -80,7 +80,7 @@ export default function Suggestions() {
         <div className="relative w-full h-full overflow-hidden">
           {/* fading effect*/}
           <div
-            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-[rgba(255,255,255,0.5)] dark:from-neutral-900 to-transparent pointer-events-none z-10`}
+            className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white  dark:from-darkTheme via-[rgba(255,255,255,0.5)] dark:from-neutral-950 to-transparent pointer-events-none z-10`}
           />
           {/* scroll area */}
           <div
@@ -100,7 +100,7 @@ export default function Suggestions() {
 
           {/* fading effect*/}
           <div
-            className={` ${isEnd ? 'hidden' : null}  absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white dark:from-neutral-900 via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10`}
+            className={` ${isEnd ? 'hidden' : null}  absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white dark:from-darkTheme via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none z-10`}
           />
         </div>
 

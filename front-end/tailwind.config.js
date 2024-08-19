@@ -18,6 +18,10 @@ export default {
         'slide-right': 'slideRight 0.25s  ease-out',
         'slide-left': 'slideLeft 0.25s ease-out ',
       },
+
+      colors: {
+        darkTheme: '#0f0f0f',
+      },
     },
   },
   plugins: [

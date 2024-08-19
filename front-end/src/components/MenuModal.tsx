@@ -78,10 +78,10 @@ export const MenuModal: React.FC = () => {
         closeTimeoutMS={200}
         overlayClassName="fixed inset-0 bg-neutral-950  bg-opacity-60 z-10"
         style={{ content: { outline: 'none' } }}
-        className={`h-screen w-64  grid-flow-row   bg-white  dark:bg-neutral-900 rounded-sm shadow-md ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}>
+        className={`h-screen w-56  grid-flow-row   bg-white  dark:bg-darkTheme rounded-sm shadow-lg ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}>
         <div className="h-full py-5 px-4 grid grid-cols-1 auto-rows-min space-y-4 overflow-y-auto overflow-hidden scroll-smooth">
           {/* row-1*/}
-          <div className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-4 ">
+          <div className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-2 ">
             {/* fa-bars */}
             <FontAwesomeIcon
               icon={faBars}

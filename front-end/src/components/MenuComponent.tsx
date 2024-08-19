@@ -23,7 +23,7 @@ export default function MenuComponent({
         className={`flex min-h-10 min-w-full items-center ${state.toggler && !isOffCanvas ? 'flex-col h-16 justify-center' : 'flex-row justify-start  px-5'} rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer `}
       >
         <div
-          className={` flex justify-center items-center ${reverse && !state.toggler ? 'order-2' : null} dark:invert  `}
+          className={` flex justify-center items-center ${reverse ? 'order-2' : null} dark:invert  `}
         >
           {customIconSrc && (
             <img
