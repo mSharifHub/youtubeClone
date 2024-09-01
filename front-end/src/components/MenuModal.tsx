@@ -34,6 +34,8 @@ import { useUserLogin } from './hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import youtubeIconPath from '../assets/navigation_icons/youtube-logo.png';
+import { useToolTip } from './hooks/useToolTip.ts';
+import { ToolTip } from './helpers/ToolTip.tsx';
 
 export const MenuModal: React.FC = () => {
 
@@ -47,6 +49,10 @@ export const MenuModal: React.FC = () => {
 
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
+
+
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
+    useToolTip();
 
 
   useEffect(() => {
@@ -68,7 +74,6 @@ export const MenuModal: React.FC = () => {
   }, []);
 
 
-
   return(
       <ReactModal
         isOpen={state.menu}
@@ -76,16 +81,20 @@ export const MenuModal: React.FC = () => {
           dispatch({ type: 'HANDLE_MENU' })
         }}
         closeTimeoutMS={200}
-        overlayClassName="fixed inset-0 bg-neutral-950  bg-opacity-60 z-10"
+        overlayClassName={`fixed inset-0  bg-neutral-950  transition duration-500 ease-in-out ${state.menu ? "bg-opacity-50" : "bg-opacity-0"}  z-10`}
         style={{ content: { outline: 'none' } }}
         className={`h-screen w-56  grid-flow-row   bg-white  dark:bg-darkTheme rounded-sm shadow-lg ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}>
-        <div className="h-full py-5 px-4 grid grid-cols-1 auto-rows-min space-y-4 overflow-y-auto overflow-hidden scroll-smooth">
+        <div
+          className="h-full py-5 px-4 grid grid-cols-1 auto-rows-min space-y-4 overflow-y-auto overflow-hidden scroll-smooth">
           {/* row-1*/}
-          <div className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-2 ">
+          <div
+            className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-2 ">
             {/* fa-bars */}
             <FontAwesomeIcon
               icon={faBars}
-              onClick={()=>{dispatch({ type: 'HANDLE_MENU' })}}
+              onClick={() => {
+                dispatch({ type: 'HANDLE_MENU' })
+              }}
               title="Menu Bar"
               className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
             />
@@ -108,13 +117,26 @@ export const MenuModal: React.FC = () => {
           <section
             className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
           >
-            <MenuComponent customIconSrc={homeIconPath} title="home" link="/" isOffCanvas={true} />
-            <MenuComponent title="shorts" customIconSrc={shortsIconPath} link="#" isOffCanvas={true} />
             <MenuComponent
-              title="subscriptions"
+              customIconSrc={homeIconPath}
+              title="Home"
+              link="/"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}/>
+            <MenuComponent
+              title="Shorts"
+              customIconSrc={shortsIconPath}
+              link="#" isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}/>
+            <MenuComponent
+              title="Subscriptions"
               customIconSrc={subscriptionIconPath}
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
           </section>
           {isLoggedIn ? (
@@ -126,41 +148,53 @@ export const MenuModal: React.FC = () => {
                 <div>
                   <MenuComponent
                     customIconSrc={chevronRight}
-                    title="you"
+                    title="You"
                     reverse={true}
                     link="#"
                     isOffCanvas={true}
+                    onMouseEnter={mouseEnter}
+                    onMouseLeave={mouseLeave}
                   />
                 </div>
                 <MenuComponent
                   customIconSrc={yourChannelPath}
-                  title="your channel"
+                  title="Your Channel"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
                 <MenuComponent
                   customIconSrc={historyIconPath}
-                  title="history"
+                  title="History"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
                 <MenuComponent
                   customIconSrc={playListPath}
-                  title="playlist"
+                  title="Playlist"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
                 <MenuComponent
                   customIconSrc={watchLaterPath}
-                  title="watch later"
+                  title="Watch Later"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
                 <MenuComponent
                   customIconSrc={thumbsUpIconPath}
-                  title="liked videos"
+                  title="liked Videos"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
 
               </section>
@@ -171,9 +205,11 @@ export const MenuModal: React.FC = () => {
                 <h1 className="capitalize mx-4 ">subscriptions</h1>
                 <MenuComponent
                   customIconSrc={allSubscriptionIconPath}
-                  title="subscriptions"
+                  title="Subscriptions"
                   link="#"
                   isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
                 />
               </section>
             </>
@@ -200,45 +236,99 @@ export const MenuModal: React.FC = () => {
             <h1 className="capitalize mx-4">explore</h1>
             <MenuComponent
               customIconSrc={trendingIconPath}
-              title="trending"
+              title="Trending"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
             <MenuComponent
               customIconSrc={shoppingIconPath}
-              title="shopping"
+              title="Shopping"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
-            <MenuComponent customIconSrc={musicIconPath} title="music" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={moviesIconPath} title="movies" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={liveIconPath} title="live" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={gamingIconPath} title="gaming" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={newsIconPath} title="news" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={sportsIconPath} title="sports" link="#" isOffCanvas={true} />
+            <MenuComponent
+              customIconSrc={musicIconPath}
+              title="Music"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={moviesIconPath}
+              title="Movies"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={liveIconPath}
+              title="Live"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={gamingIconPath}
+              title="Gaming"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={newsIconPath}
+              title="News"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={sportsIconPath}
+              title="Sports"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
             <MenuComponent
               customIconSrc={coursesIconPath}
-              title="courses"
+              title="Courses"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
             <MenuComponent
               customIconSrc={fashionBeautyIconPath}
-              title="fashion"
+              title="Fashion"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
             <MenuComponent
               customIconSrc={podcastIconPath}
-              title="podcast"
+              title="Podcast"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
             <MenuComponent
               customIconSrc={playableIconPath}
-              title="playables"
+              title="Playables"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
           </section>
           {/* row-5 */}
@@ -247,33 +337,58 @@ export const MenuModal: React.FC = () => {
           >
             <MenuComponent
               customIconSrc={settingsIconPath}
-              title="settings"
+              title="Settings"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
-            <MenuComponent customIconSrc={reportIconPath} title="report" link="#" isOffCanvas={true} />
-            <MenuComponent customIconSrc={helpIconPatch} title="help" link="#" isOffCanvas={true} />
+            <MenuComponent
+              customIconSrc={reportIconPath}
+              title="Report"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={helpIconPatch}
+              title="Help"
+              link="#"
+              isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
             <MenuComponent
               customIconSrc={sendFeedBackPath}
-              title="feedback"
+              title="Feedback"
               link="#"
               isOffCanvas={true}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
           </section>
           {/* row-6 */}
           <section
-            className={` flex flex-col space-y-3`}
+            className="flex flex-col space-y-3"
           >
-            <h1 className="capitalize mx-4">developer information</h1>
-            <ul className="text-sm mx-4 capitalize text-nowrap text-left space-y-2">
-              {aboutArr.map((item, index) => (
-                <li className=" text-sm cursor-pointer" key={`key-${index}`}>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div className="capitalize mx-4 text-nowrap space-y-2">
+              <h1 className="text-md">developer information</h1>
+              <ul className="space-y-2">
+                {aboutArr.map((item, index) => (
+                  <li className="cursor-pointer text-sm " key={`key-${index}`}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         </div>
+        <ToolTip
+          visible={showTooltip}
+          text={toolTipText}
+          position={tooltipPosition}
+        />
       </ReactModal>
 
   )

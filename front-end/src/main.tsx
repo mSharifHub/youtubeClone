@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from './userContext/UserProvider.tsx';
 import { ThemeProvider } from './darkModeContext/ThemeProvider.tsx';
 import { MenuBarProvider } from './menuBarContext/MenuBarProvider.tsx';
+import { SettingModalsProvider } from './SetttingsModalsContext/SettingModalsProvider.tsx';
 
 Modal.setAppElement('#root');
 
@@ -19,7 +20,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <UserProvider>
           <ThemeProvider>
             <MenuBarProvider>
-              <App />
+              <SettingModalsProvider>
+                <App />
+              </SettingModalsProvider>
             </MenuBarProvider>
           </ThemeProvider>
         </UserProvider>

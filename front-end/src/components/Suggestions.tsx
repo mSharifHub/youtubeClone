@@ -10,15 +10,9 @@ export default function Suggestions() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isStart, setIsStart] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
-  const [countRendered, setCountRendered] = useState<number>(0);
 
-  const {
-    showTooltip,
-    toolTipText,
-    tooltipPosition,
-    toolTipMouseEnter,
-    toolTipMouseLeave,
-  } = useToolTip();
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
+    useToolTip();
 
   const dummyData = [
     { title: 'dummyData', link: '#' },
@@ -34,14 +28,10 @@ export default function Suggestions() {
     { title: 'dummyData', link: '#' },
   ].map((item, index) => ({ ...item, index }));
 
-  console.log(`number of scrolls rendered ${countRendered}`);
-
   const handleScroll = useDebounce(() => {
     const div = scrollRef.current;
 
     if (!div) return;
-
-    setCountRendered((n) => n + 1);
 
     const atStart = div.scrollLeft === 0;
     const atEnd = div.scrollLeft + div.clientWidth >= div.scrollWidth;
@@ -67,11 +57,11 @@ export default function Suggestions() {
         position={tooltipPosition}
       />
 
-      <section className="h-12 w-full px-4  flex justify-start items-center">
+      <section className="h-12 min-w-full px-4  flex justify-start items-center ">
         {/* all block */}
 
         <div
-          className={`bg-black text-white w-10 h-7 min-h-7 ${isStart ? 'flex' : 'hidden'} relative   justify-center items-center capitalize rounded-lg mr-4 cursor-pointer dark:invert`}
+          className={`bg-black text-white w-10 h-7 min-h-7  flex  ${isStart ? 'visible' : ' invisible'} relative   justify-center items-center capitalize rounded-lg mr-4 cursor-pointer dark:invert`}
           title="all"
         >
           all
@@ -90,8 +80,8 @@ export default function Suggestions() {
           >
             {dummyData.map((item) => (
               <div
-                onMouseEnter={(e) => toolTipMouseEnter(e, item.title)}
-                onMouseLeave={toolTipMouseLeave}
+                onMouseEnter={(e) => mouseEnter(e, item.title)}
+                onMouseLeave={mouseLeave}
                 key={item.index}
               >
                 <RecommendationsFilter title={item.title} link={item.link} />
@@ -107,7 +97,7 @@ export default function Suggestions() {
 
         {/* right arrow */}
         <div
-          className={`h-10 w-10 ${isEnd ? 'hidden' : 'flex'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`}
+          className={`h-10 w-10  flex ${isEnd ? 'visible' : 'invisible'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`}
           title="scroll right"
         >
           <FontAwesomeIcon icon={faChevronRight} />

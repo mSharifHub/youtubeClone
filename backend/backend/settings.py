@@ -137,6 +137,8 @@ GRAPHQL_AUTH = {
 
 }
 
+# SESSION_COOKIE_AGE = 180
+
 # if DEBUG:
 #     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 

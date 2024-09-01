@@ -2,21 +2,34 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
-  GenericScalar: { input: any; output: any; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
+  GenericScalar: { input: any; output: any };
 };
 
 export type DeleteJsonWebTokenCookie = {
@@ -47,27 +60,22 @@ export type Mutation = {
   verifyToken?: Maybe<Verify>;
 };
 
-
 export type MutationRefreshTokenArgs = {
   token?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type MutationRevokeTokenArgs = {
   refreshToken?: InputMaybe<Scalars['String']['input']>;
 };
-
 
 export type MutationTokenAuthArgs = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
 };
 
-
 export type MutationUserUpdateArgs = {
   input: UserSerializerMutationInput;
 };
-
 
 export type MutationVerifyTokenArgs = {
   token?: InputMaybe<Scalars['String']['input']>;
@@ -192,29 +200,44 @@ export type Verify = {
   payload: Scalars['GenericScalar']['output'];
 };
 
-export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
+export type ViewerQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserType', firstName: string, lastName: string, username: string, youtubeHandler: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserType', username: string, email: string }> } | null };
-
+export type ViewerQuery = {
+  __typename?: 'Query';
+  viewer?: {
+    __typename?: 'UserType';
+    firstName: string;
+    lastName: string;
+    username: string;
+    youtubeHandler: string;
+    email: string;
+    profilePicture?: string | null;
+    bio: string;
+    subscribers: Array<{
+      __typename?: 'UserType';
+      username: string;
+      email: string;
+    }>;
+  } | null;
+};
 
 export const ViewerDocument = gql`
-    query Viewer {
-  viewer {
-    firstName
-    lastName
-    username
-    youtubeHandler
-    email
-    profilePicture
-    bio
-    subscribers {
+  query Viewer {
+    viewer {
+      firstName
+      lastName
       username
+      youtubeHandler
       email
+      profilePicture
+      bio
+      subscribers {
+        username
+        email
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerQuery__
@@ -231,19 +254,42 @@ export const ViewerDocument = gql`
  *   },
  * });
  */
-export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-      }
-export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
-export function useViewerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
+export function useViewerQuery(
+  baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(
+    ViewerDocument,
+    options,
+  );
+}
+export function useViewerLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(
+    ViewerDocument,
+    options,
+  );
+}
+export function useViewerSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    ViewerQuery,
+    ViewerQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(
+    ViewerDocument,
+    options,
+  );
+}
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
-export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
-export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
+export type ViewerSuspenseQueryHookResult = ReturnType<
+  typeof useViewerSuspenseQuery
+>;
+export type ViewerQueryResult = Apollo.QueryResult<
+  ViewerQuery,
+  ViewerQueryVariables
+>;

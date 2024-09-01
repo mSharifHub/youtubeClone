@@ -31,7 +31,8 @@ import { useUser } from '../userContext/UserContext.tsx';
 import { useUserLogin } from './hooks/useUserLogin.ts';
 import { LoginComponent } from './LoginComponent.tsx';
 import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useToolTip } from './hooks/useToolTip.ts';
+import { ToolTip } from './helpers/ToolTip.tsx';
 
 export default function MenuBar() {
   const {
@@ -43,36 +44,8 @@ export default function MenuBar() {
     state: { toggler },
   } = useMenuBar();
 
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  const [isTop, setIsTop] = useState(false);
-  const [isBottom, setIsBottom] = useState(true);
-
-  const handleScrollTop = useCallback(() => {
-    const div = scrollRef.current;
-    if (!div) return;
-
-    if (div.scrollTop > 0) {
-      setIsTop(false);
-    } else {
-      setIsBottom(true);
-    }
-
-    if (div.scrollTop + div.clientHeight >= div.scrollHeight) {
-      setIsBottom(true);
-    } else {
-      setIsBottom(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const div = scrollRef.current;
-    if (!div) return;
-    div.addEventListener('scroll', handleScrollTop);
-    return () => {
-      div.removeEventListener('scroll', handleScrollTop);
-    };
-  }, [handleScrollTop]);
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
+    useToolTip();
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
 
@@ -85,66 +58,97 @@ export default function MenuBar() {
       <section
         className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}
       >
-        <MenuComponent customIconSrc={homeIconPath} title="home" link="/" />
-        <MenuComponent title="shorts" customIconSrc={shortsIconPath} link="#" />
         <MenuComponent
-          title="subscriptions"
+          customIconSrc={homeIconPath}
+          title="Home"
+          link="/"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          title="Shorts"
+          customIconSrc={shortsIconPath}
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          title="Subscriptions"
           customIconSrc={subscriptionIconPath}
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
       </section>
       {isLoggedIn ? (
         <>
           {/* row-2*/}
           <section
-            className={`  flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}
+            className={` flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}
           >
-            {/* you should stay visible on toggler */}
-            <div>
-              <MenuComponent
-                customIconSrc={toggler ? youIcon : chevronRight}
-                title="you"
-                reverse={true}
-                link="#"
-              />
-            </div>
-            <div className={`${toggler && 'hidden'}`}>
-              <MenuComponent
-                customIconSrc={yourChannelPath}
-                title="your channel"
-                link="#"
-              />
-              <MenuComponent
-                customIconSrc={historyIconPath}
-                title="history"
-                link="#"
-              />
-              <MenuComponent
-                customIconSrc={playListPath}
-                title="playlist"
-                link="#"
-              />
-              <MenuComponent
-                customIconSrc={watchLaterPath}
-                title="watch later"
-                link="#"
-              />
-              <MenuComponent
-                customIconSrc={thumbsUpIconPath}
-                title="liked videos"
-                link="#"
-              />
-            </div>
+            {/* you should stay visible on toggle */}
+
+            <MenuComponent
+              customIconSrc={toggler ? youIcon : chevronRight}
+              title="You"
+              reverse={true}
+              link="#"
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+
+            <MenuComponent
+              customIconSrc={yourChannelPath}
+              title="Your channel"
+              link="#"
+              hidden={toggler}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={historyIconPath}
+              title="History"
+              link="#"
+              hidden={toggler}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={playListPath}
+              title="Playlist"
+              link="#"
+              hidden={toggler}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={watchLaterPath}
+              title="Watch later"
+              link="#"
+              hidden={toggler}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
+            <MenuComponent
+              customIconSrc={thumbsUpIconPath}
+              title="Liked videos"
+              link="#"
+              hidden={toggler}
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
+            />
           </section>
           {/* row-3*/}
           <section
             className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  flex-initial w-[12rem] ' : 'w-16'}`}
           >
-            <h1 className="capitalize ">subscriptions</h1>
+            <h1 className="capitalize mx-4">subscriptions</h1>
             <MenuComponent
               customIconSrc={allSubscriptionIconPath}
-              title="subscriptions"
+              title="Subscriptions"
               link="#"
+              onMouseEnter={mouseEnter}
+              onMouseLeave={mouseLeave}
             />
           </section>
         </>
@@ -166,42 +170,90 @@ export default function MenuBar() {
       <section
         className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
       >
-        <h1 className="capitalize">explore</h1>
+        <h1 className="capitalize mx-4">explore</h1>
         <MenuComponent
           customIconSrc={trendingIconPath}
-          title="trending"
+          title="Trending"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
         <MenuComponent
           customIconSrc={shoppingIconPath}
-          title="shopping"
+          title="Shopping"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={musicIconPath} title="music" link="#" />
-        <MenuComponent customIconSrc={moviesIconPath} title="movies" link="#" />
-        <MenuComponent customIconSrc={liveIconPath} title="live" link="#" />
-        <MenuComponent customIconSrc={gamingIconPath} title="gaming" link="#" />
-        <MenuComponent customIconSrc={newsIconPath} title="news" link="#" />
-        <MenuComponent customIconSrc={sportsIconPath} title="sports" link="#" />
+        <MenuComponent
+          customIconSrc={musicIconPath}
+          title="Music"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={moviesIconPath}
+          title="Movies"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={liveIconPath}
+          title="Live"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={gamingIconPath}
+          title="Gaming"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={newsIconPath}
+          title="News"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={sportsIconPath}
+          title="Sports"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={coursesIconPath}
-          title="courses"
+          title="Courses"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
         <MenuComponent
           customIconSrc={fashionBeautyIconPath}
-          title="fashion"
+          title="Fashion"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
         <MenuComponent
           customIconSrc={podcastIconPath}
-          title="podcast"
+          title="Podcast"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
         <MenuComponent
           customIconSrc={playableIconPath}
-          title="playables"
+          title="Playables"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
       </section>
       {/* row-5 */}
@@ -210,30 +262,53 @@ export default function MenuBar() {
       >
         <MenuComponent
           customIconSrc={settingsIconPath}
-          title="settings"
+          title="Settings"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={reportIconPath} title="report" link="#" />
-        <MenuComponent customIconSrc={helpIconPatch} title="help" link="#" />
+        <MenuComponent
+          customIconSrc={reportIconPath}
+          title="Report"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
+        <MenuComponent
+          customIconSrc={helpIconPatch}
+          title="Help"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={sendFeedBackPath}
-          title="feedback"
+          title="Feedback"
           link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
         />
       </section>
       {/* row-6 */}
       <section
         className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'flex-initial w-[12rem] ' : 'w-16'}`}
       >
-        <h1 className="capitalize">developer information</h1>
-        <ul className="text-sm capitalize text-nowrap text-left space-y-2">
-          {aboutArr.map((item, index) => (
-            <li className=" text-sm cursor-pointer" key={`key-${index}`}>
-              {item}
-            </li>
-          ))}
-        </ul>
+        <div className="capitalize mx-4 text-nowrap space-y-2">
+          <h1 className="text-md">developer information</h1>
+          <ul className="space-y-2">
+            {aboutArr.map((item, index) => (
+              <li className="cursor-pointer text-sm " key={`key-${index}`}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
+      <ToolTip
+        visible={showTooltip}
+        text={toolTipText}
+        position={tooltipPosition}
+      />
     </div>
   );
 }
