@@ -19,7 +19,7 @@ export const ToolTip: React.FC<ToolTipProps> = ({
   return (
     <Portal>
       <div
-        className="absolute  bg-slate-900 text-white text-xs px-[2px] py-[2px]  opacity-50 text-center  z-20"
+        className="absolute  bg-neutral-800  border-[0.5px] dark:dark-modal text-white text-xs px-[2px] py-[2px]  text-center  z-20"
         style={{ top: top, left: left }}
       >
         {text}

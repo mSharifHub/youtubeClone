@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useUserLogin } from './hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
@@ -10,65 +10,77 @@ import userIconPath from '../assets/navigation_icons/user-icon.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
 import { useUser } from '../userContext/UserContext.tsx';
-import { useToolTip } from './hooks/useToolTip.ts';
-import { ToolTip } from './helpers/ToolTip.tsx';
 import { SettingsModal } from './SettingsModal.tsx';
 import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
+import {useSettingsModal} from '../SetttingsModalsContext/SettingsModalsContext.ts';
+import { SubModal } from './SubModel.tsx';
 
 
 export default function NavigationBar() {
-  const [showSettingModal, setShowSettingModal] = useState(false);
 
-
+  // user state context to display the user data on the navigation component
   const {
     state: { isLoggedIn, user },
   } = useUser();
 
-  const { dispatch} = useMenuBar();
+  // setting modals context to  pass as prop to settings component
+  const {
+    state:{settingModalToggler, subSettingModalToggler},
+    dispatch : settingModalDispatch,
+  } = useSettingsModal()
 
+  // dispatch for menu bar
+  const { dispatch: menuBarDispatch} = useMenuBar();
+
+  // function to be passed as prop to settings modal component
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    setShowSettingModal(true);
+    settingModalDispatch({type:"OPEN_SETTINGS_MODAL"})
   };
 
+/*
+*
+* This functions handles the settings state. The Settings modal
+* needs to be used as a children of the html tag
+ */
   const handleCloseSettingModal = () => {
-    setShowSettingModal(false);
+    settingModalDispatch({type:"CLOSE_SETTINGS_MODAL"})
   };
 
+  const handleCloseSubModel =()=>{
+    settingModalDispatch({type:"CLOSE_SUB_SETTINGS_MODAL"})
+  }
 
-
+  // function to change context state based on the screen size
   const handleMenu = () => {
     const isLargeScreen = window.matchMedia('(min-width: 1280px)').matches;
     const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;
 
     if (isLargeScreen) {
-      dispatch({ type: 'USER_TOGGLE_MENU' });
+      menuBarDispatch({ type: 'USER_TOGGLE_MENU' });
     }
 
     if (isSmallScreen) {
-      dispatch({ type: 'HANDLE_MENU' });
+      menuBarDispatch({ type: 'HANDLE_MENU' });
     }
   };
 
+  // function to redirect user to login user google API and backend  end point
   const { redirectGoogleAuth } = useUserLogin();
-
-  const { showTooltip, toolTipText, tooltipPosition } = useToolTip();
-
 
   return (
     <>
       <nav className="grid grid-cols-2 md:grid-cols-[0.5fr_1fr_0.5fr] grid-rows-1 h-10  justify-center items-center mb-2  mt-1 ">
-        {/*left*/}
+        {/*left side of the navigation bar*/}
         <div className="col-span-1 col-start-1 row-start-1 row-span-1 mx-4 flex justify-start items-center space-x-2">
-          {/* fa-bars */}
-
+          {/* fa-bars to show or hide side menu */}
           <FontAwesomeIcon
             icon={faBars}
             onClick={handleMenu}
             title="Menu Bar"
             className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
           />
-
+          {/* YouTube Icon to page redirect to home page */}
           <div
             onClick={() => (window.location.href = '/')}
             title="Youtube Home"
@@ -84,11 +96,11 @@ export default function NavigationBar() {
             </h3>
           </div>
         </div>
-        {/*middle*/}
+        {/*middle of the navigation bar e*/}
         <div className="col-span-1 md:col-start-2 row-start-1 row-span-1 flex justify-center items-center">
           <SearchInput />
         </div>
-        {/*right*/}
+        {/*right side of the navigation bar*/}
         <div className="col-span-1 col-start-2 md:col-start-3  row-start-1 row-span-1  flex justify-end mx-4 items-center space-x-3">
           {/*icon search*/}
           <div
@@ -111,6 +123,7 @@ export default function NavigationBar() {
               <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200 dark:hover:bg-neutral-700  cursor-pointer ">
                 <img
                   src={videoIconPath}
+                  title="Add Video"
                   alt={videoIconPath.split('/').pop()?.split('.')[0]}
                   className="min-w-6 min-h-6 w-6 h-6 dark:invert"
                 />
@@ -119,6 +132,7 @@ export default function NavigationBar() {
               <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer ">
                 <img
                   src={bellIconPath}
+                  title="Alerts"
                   alt={videoIconPath.split('/').pop()?.split('.')[0]}
                   className="min-w-6 min-h-6 w-6 h-6 dark:invert"
                 />
@@ -133,6 +147,13 @@ export default function NavigationBar() {
                 onClick={(e) => handleShowSettingModal(e)}
               >
                 <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
+                {/* Use component settings within the  html tag */}
+                {settingModalToggler && (
+                  <SettingsModal
+                    isOpen={settingModalToggler}
+                    onClickOutside={handleCloseSettingModal}
+                  />
+                )}
               </div>
             </>
           )}
@@ -143,16 +164,25 @@ export default function NavigationBar() {
               <div
                 onClick={(e) => handleShowSettingModal(e)}
                 className="cursor-pointer relative"
+                title="User Account"
               >
                 <img
                   src={user.profilePicture}
                   alt={`${user.username}-profilePicture`}
                   className="rounded-full min-h-8 min-w-8 w-8 h-8"
                 />
-                {showSettingModal && (
+                {/* Use component settings within the  html tag */}
+                {settingModalToggler && (
                   <SettingsModal
-                    isOpen={showSettingModal}
+                    isOpen={settingModalToggler}
                     onClickOutside={handleCloseSettingModal}
+                  />
+                )}
+                {/* subModal component */}
+                {subSettingModalToggler && (
+                  <SubModal
+                    isOpen={subSettingModalToggler}
+                    onClickOutside={handleCloseSubModel}
                   />
                 )}
               </div>
@@ -168,7 +198,6 @@ export default function NavigationBar() {
                     className=" h-5 w-5  "
                   />
                 </div>
-
                 <span className="text-sm  font-semibold text-blue-400 ">
                   Sign in
                 </span>
@@ -176,12 +205,9 @@ export default function NavigationBar() {
             )}
           </div>
         </div>
-        <ToolTip
-          visible={showTooltip}
-          text={toolTipText}
-          position={tooltipPosition}
-        />
+
       </nav>
+
     </>
   );
 }

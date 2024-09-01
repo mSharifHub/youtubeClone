@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
+import React from 'react';
 interface MenuComponentProps {
   customIconSrc?: string;
   title: string;
   link: string;
   reverse?: boolean;
   isOffCanvas?: boolean;
+  hidden?: boolean;
+  onMouseEnter?: (
+    event: React.MouseEvent<HTMLDivElement>,
+    text: string,
+  ) => void;
+  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export default function MenuComponent({
@@ -14,13 +21,18 @@ export default function MenuComponent({
   link,
   reverse,
   isOffCanvas,
+  hidden,
+  onMouseEnter,
+  onMouseLeave,
 }: MenuComponentProps) {
   const { state } = useMenuBar();
 
   return (
     <Link to={link}>
       <div
-        className={`flex min-h-10 min-w-full items-center ${state.toggler && !isOffCanvas ? 'flex-col h-16 justify-center' : 'flex-row justify-start  px-5'} rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer `}
+        className={` ${hidden ? 'hidden' : 'flex'}  min-h-10 min-w-full items-center ${state.toggler && !isOffCanvas ? 'flex-col h-16 justify-center' : 'flex-row justify-start  px-5'} rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer `}
+        onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, title)}
+        onMouseLeave={onMouseLeave}
       >
         <div
           className={` flex justify-center items-center ${reverse ? 'order-2' : null} dark:invert  `}
@@ -34,7 +46,7 @@ export default function MenuComponent({
           )}
         </div>
         <div
-          className={`flex p-0.5  ${!reverse && 'mx-4'} whitespace-nowrap capitalize ${state.toggler && !isOffCanvas ? 'text-[8.5px]' : 'text-sm'}  ${reverse && !state.toggler && 'font-semibold'} `}
+          className={` p-0.5 capitalize ${!state.toggler && !reverse ? 'mx-4' : null} ${state.toggler && !isOffCanvas ? 'text-[8.5px]' : 'text-sm'}  ${reverse && state.toggler && !isOffCanvas ? 'hidden' : 'flex'} `}
         >
           {title}
         </div>

@@ -3,3 +3,4 @@ dist
 /src/components/SettingsModal.tsx
 /src/components/MenuModal.tsx
 /src/components/Navigation.tsx
+/src/components/SubModel.tsx
