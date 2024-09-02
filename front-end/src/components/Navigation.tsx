@@ -10,10 +10,12 @@ import userIconPath from '../assets/navigation_icons/user-icon.png';
 import Microphone from './forms/Mircrophone.tsx';
 import IconSearch from './forms/IconSearch.tsx';
 import { useUser } from '../userContext/UserContext.tsx';
-import { SettingsModal } from './SettingsModal.tsx';
-import { useMenuBar } from '../menuBarContext/MenuBarContext.ts';
-import {useSettingsModal} from '../SetttingsModalsContext/SettingsModalsContext.ts';
-import { SubModal } from './SubModel.tsx';
+import { SettingsModal } from './settingsComponents/SettingsModal.tsx';
+import { useMenuBar } from './menuBarComponents/menuBarContext/MenuBarContext.ts';
+import {useSettingsModal} from './settingsComponents/SetttingsModalsContext/SettingsModalsContext.ts';
+import { SubModal } from './settingsComponents/SubModal.tsx';
+import { SwitchAccount } from './settingsComponents/SwitchAccount.tsx';
+import { SwitchTheme } from './settingsComponents/SwitchTheme.tsx';
 
 
 export default function NavigationBar() {
@@ -23,9 +25,9 @@ export default function NavigationBar() {
     state: { isLoggedIn, user },
   } = useUser();
 
-  // setting modals context to  pass as prop to settings component
+
   const {
-    state:{settingModalToggler, subSettingModalToggler},
+    state:{settingModalToggler, subSettingModalToggler, subModalContent},
     dispatch : settingModalDispatch,
   } = useSettingsModal()
 
@@ -179,11 +181,15 @@ export default function NavigationBar() {
                   />
                 )}
                 {/* subModal component */}
-                {subSettingModalToggler && (
+                {subSettingModalToggler && subModalContent &&(
                   <SubModal
                     isOpen={subSettingModalToggler}
                     onClickOutside={handleCloseSubModel}
-                  />
+                  >
+                    {subModalContent === "SWITCH_ACCOUNTS" && <SwitchAccount/>}
+                    {subModalContent === "THEME_MODE" && <SwitchTheme/>}
+
+                  </SubModal>
                 )}
               </div>
             ) : (

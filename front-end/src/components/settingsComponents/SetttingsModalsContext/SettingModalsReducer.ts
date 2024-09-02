@@ -2,16 +2,19 @@ export type ActionType =
   | { type: 'OPEN_SETTINGS_MODAL' }
   | { type: 'OPEN_SUB_SETTINGS_MODAL' }
   | { type: 'CLOSE_SETTINGS_MODAL' }
-  | { type: 'CLOSE_SUB_SETTINGS_MODAL' };
+  | { type: 'CLOSE_SUB_SETTINGS_MODAL' }
+  | { type: 'SET_SUB_MODAL_CONTENT'; payload: string | null };
 
 export interface SettingModalsState {
   settingModalToggler: boolean;
   subSettingModalToggler: boolean;
+  subModalContent: string | null;
 }
 
 export const initialSettingsModalState: SettingModalsState = {
   settingModalToggler: false,
   subSettingModalToggler: false,
+  subModalContent: null,
 };
 
 export const SettingModalsReducer = (
@@ -41,6 +44,12 @@ export const SettingModalsReducer = (
       return {
         ...state,
         subSettingModalToggler: true,
+      };
+
+    case 'SET_SUB_MODAL_CONTENT':
+      return {
+        ...state,
+        subModalContent: action.payload,
       };
 
     default:
