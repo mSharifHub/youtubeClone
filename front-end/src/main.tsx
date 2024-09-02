@@ -7,9 +7,9 @@ import client from './graphql/apolloClient.ts';
 import './index.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from './userContext/UserProvider.tsx';
-import { ThemeProvider } from './darkModeContext/ThemeProvider.tsx';
-import { MenuBarProvider } from './menuBarContext/MenuBarProvider.tsx';
-import { SettingModalsProvider } from './SetttingsModalsContext/SettingModalsProvider.tsx';
+import { ThemeProvider } from './components/settingsComponents/darkModeContext/ThemeProvider.tsx';
+import { MenuBarProvider } from './components/menuBarComponents/menuBarContext/MenuBarProvider.tsx';
+import { SettingModalsProvider } from './components/settingsComponents/SetttingsModalsContext/SettingModalsProvider.tsx';
 
 Modal.setAppElement('#root');
 

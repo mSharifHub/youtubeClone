@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom';
 import NavigationBar from '../Navigation.tsx';
-import MenuBar from '../MenuBar.tsx';
+import MenuBar from '../menuBarComponents/MenuBar.tsx';
 import Suggestions from '../Suggestions.tsx';
 import { useUser } from '../../userContext/UserContext.tsx';
-import { MenuModal } from '../MenuModal.tsx';
+import { MenuModal } from '../menuBarComponents/MenuModal.tsx';
 
 export default function MainLayout() {
   const {
