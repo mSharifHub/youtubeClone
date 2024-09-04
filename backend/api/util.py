@@ -1,4 +1,6 @@
 import string
+from re import split
+
 from django.conf import settings
 import requests
 from google.oauth2 import id_token
@@ -17,7 +19,6 @@ def get_google_id_token(code):
         'client_secret': settings.GOOGLE_CLIENT_SECRET,
         'grant_type': 'authorization_code',
         'redirect_uri': settings.GOOGLE_REDIRECT_URI,
-
     }
 
     token_http_post = requests.post(token_url, data=token_data)
@@ -34,7 +35,17 @@ def get_google_id_token(code):
 
     id_info = id_token.verify_oauth2_token(token_response_parsed['id_token'], request, settings.GOOGLE_CLIENT_ID)
 
-    return id_info
+
+    # response_token = str(token_response_parsed)
+    #
+    # print(response_token.split(","))
+
+    return {
+        'id_info': id_info,
+        'access_token': token_response_parsed['access_token'],
+        'refresh_token': token_response_parsed['refresh_token'],
+        'expires_in': token_response_parsed['expires_in'],
+    }
 
 
 def generate_youtube_handler(first_name, last_name):

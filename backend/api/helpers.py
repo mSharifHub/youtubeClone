@@ -2,7 +2,6 @@ from django.core.files.base import ContentFile
 from api.models import User
 import requests
 
-
 class Helpers:
 
     @staticmethod
