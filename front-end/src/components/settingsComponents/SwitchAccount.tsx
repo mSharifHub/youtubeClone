@@ -1,6 +1,7 @@
 import React from 'react';
 import { JSX } from 'react/jsx-runtime';
 import { useUser } from '../../userContext/UserContext.tsx';
+import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,6 +27,8 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
   } = useUser();
 
   const logout = useUserLogout();
+
+  const { redirectGoogleAuth } = useUserLogin();
 
   const { dispatch: settingsModalDispatch } = useSettingsModal();
 
@@ -144,7 +147,10 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
       </section>
       {/*Row-5 Add Account And Sign out*/}
       <section className="flex  flex-col justify-start items-center p-2">
-        <div className="h-10 w-full flex justify-start items-center  px-2 text-sm rounded-lg space-x-4 transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
+        <div
+          onClick={() => redirectGoogleAuth()}
+          className="h-10 w-full flex justify-start items-center  px-2 text-sm rounded-lg space-x-4 transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer "
+        >
           <FontAwesomeIcon icon={faUserPlus} className="text-sm" />{' '}
           <span>Add account</span>
         </div>

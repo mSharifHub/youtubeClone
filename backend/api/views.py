@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+import django.contrib.auth
 from django.conf import settings
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -27,7 +29,8 @@ class GoogleLoginView(APIView):
             f"https://accounts.google.com/o/oauth2/v2/auth?"
             f"response_type=code&access_type={access_type}&"
             f"redirect_uri={redirect_uri}&scope={scope}&"
-            f"client_id={client_id}"
+            f"client_id={client_id}&"
+            "prompt=select_account"
         )
         return redirect(auth_url)
 
@@ -41,13 +44,20 @@ class GoogleAuthCallBackView(APIView):
             return Response({'error': 'Code is required'}, status=status.HTTP_400_BAD_REQUEST)
         # 2 Gets the user data
         try:
-            details = get_google_id_token(code)
-            sub = details['sub']
-            email = details['email']
-            email_verified = details['email_verified']
-            first_name = details['given_name']
-            last_name = details['family_name']
-            profile_picture_url = details['picture']
+            token_details = get_google_id_token(code)
+            id_info = token_details['id_info']
+            # google_access_token = token_details['access_token']
+            # google_refresh_token = token_details['refresh_token']
+            # google_expires_in = token_details['expires_in']
+
+            sub = id_info['sub']
+            email = id_info['email']
+            email_verified = id_info['email_verified']
+            first_name = id_info['given_name']
+            last_name = id_info['family_name']
+            profile_picture_url = id_info['picture']
+
+
 
             # 3 Checks if user email is verified
             if not email_verified:
@@ -91,29 +101,26 @@ class GoogleAuthCallBackView(APIView):
                 'youtube_handler': user.youtube_handler,
             }
 
-            token = get_token(user, **extra_data)
-
-            refresh_token = create_refresh_token(user)
+            # token = get_token(user, **extra_data)
+            #
+            # refresh_token = create_refresh_token(user)
 
             response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
-            response.set_cookie(
-                'JWT',
-                token,
-                httponly=True,
-                max_age=3 * 60 * 3600,
-                samesite='None',
-                secure=True
-            )
-            response.set_cookie(
-                'JWT-refresh_token',
-                refresh_token,
-                httponly=True,
-                max_age=7 * 24 * 3600,
-                samesite='None',
-                secure=True
-            )
-
+            # response.set_cookie(
+            #     'JWT',
+            #     token,
+            #     httponly=True,
+            #     max_age=google_expires_in,
+            #     samesite='Strict'
+            # )
+            # response.set_cookie(
+            #     'JWT-refresh_token',
+            #     refresh_token,
+            #     httponly=True,
+            #     max_age=14 * 24 * 3600,
+            #     samesite='Strict'
+            # )
             return response
         except ValueError as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -121,28 +128,25 @@ class GoogleAuthCallBackView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-
         # session_key = request.COOKIES.get('sessionid')
         # session = Session.objects.get(session_key=session_key)
         # uid = session.get_decoded().get('_auth_user_id')
         # user = User.objects.get(google_sub=uid)
-
         if not request.user.is_authenticated:
             return Response({'success': False, 'error': 'Unauthorized or invalid request'},
                             status=status.HTTP_401_UNAUTHORIZED)
         try:
 
-            refresh_token_value = request.COOKIES.get('JWT-refresh_token')
-
-            if refresh_token_value:
-                revoke_refresh_token(refresh_token_value)
+            # refresh_token_value = request.COOKIES.get('JWT-refresh_token')
+            #
+            # if refresh_token_value:
+            #     revoke_refresh_token(refresh_token_value)
 
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
             for cookie in request.COOKIES:
                 response.delete_cookie(cookie)
             return response
-
         except exceptions.JSONWebTokenExpired:
             return Response({'success': False, 'error': 'Token is expired'},
                             status=status.HTTP_401_UNAUTHORIZED)
