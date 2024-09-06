@@ -5,7 +5,8 @@ import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import useGoogleAuthList from './useListAccounts.ts';
+import { useGoogleAuthList } from "./useListAccounts.ts";
+
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 
 import {
@@ -14,23 +15,17 @@ import {
   faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
-// type GoogleAccounts = {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   profilePicture: string | null | undefined;
-//   youtubeHandler: string;
-//   subscribersCount: number;
-// };
+
 
 export const SwitchAccount: React.FC = (): JSX.Element => {
   const {
     state: { user, isLoggedIn },
   } = useUser();
 
-  const { accounts} = useGoogleAuthList(
-    import.meta.env.VITE_GOOGLE_CLIENT_ID,
-  );
+
+  const {usersAuthList,loading,error} = useGoogleAuthList()
+
+
 
   const logout = useUserLogout();
 
@@ -44,26 +39,11 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     event.stopPropagation();
   };
 
-  // /**
-  //  *  TODO
-  //  *  need to change to be an api call to the back end. Use state for now for testing
-  //  */
-  // const googleAccounts: GoogleAccounts[] = user
-  //   ? [
-  //       {
-  //         firstName: user.firstName,
-  //         lastName: user.lastName,
-  //         email: user.email,
-  //         profilePicture: user.profilePicture,
-  //         youtubeHandler: user.youtubeHandler,
-  //         subscribersCount: user.subscribers.length,
-  //       },
-  //     ]
-  //   : [];
+  console.log(...usersAuthList);
 
   return (
     <div>
-      {/*  Row-1 Return to Setting Modal */}
+      {/* return to main menu section */}
       <section className="p-2 border-b-[0.5px] ">
         <button
           onClick={onCLickAccounts}
@@ -77,13 +57,10 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
         </button>
       </section>
       {/*  Row-2 First name, last name, and email */}
-      <section className="p-2 border-b-[0.5px]">
-        <div className=" flex flex-col justify-center items-start h-14 px-2 w-60 text-xs">
-          <div>
+      <section>
             {isLoggedIn &&
-                <ul className="min-w-full">
-                  <li
-                    className="grid grid-cols-[0.25fr_1fr] h-20 min-w-full space-x-1.5 p-2 rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer">
+                  <div
+                    className=" relative grid grid-cols-[0.25fr_1fr] h-20 w-full  space-x-1.5 p-2 rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer">
                     <div className="col-start-1 col-span-1 flex justify-center items-center">
                       <img
                         src={user?.profilePicture || undefined}
@@ -91,22 +68,30 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
                         className="rounded-full min-h-14 min-w-14 w-14 h-14"
                       />
                     </div>
-                    <div className="col-start-2 col-span-1 flex flex-col">
-                      <div className="space-x-2 text-sm">
-                        <span>{user?.username}</span>
-                      </div>
+                    <div className="col-start-2 flex flex-col text-xs">
+                        <span>{user?.firstName} {user?.lastName} </span>
+                        <span>{user?.youtubeHandler}</span>
                     </div>
-                  </li>
-                </ul>
-
+                    <FontAwesomeIcon icon= {faCheck}  className="absolute right-4 top-1/2 -translate-y-1/2" />
+                  </div>
             }
-          </div>
+      </section>
+      {/*Row-4 view All Channels*/}
+      <section className="flex justify-start items-center border-b-[0.5px] ">
+        <div className="h-10 w-full flex justify-start items-center  px-2 text-sm  transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
+          View all channels
         </div>
       </section>
-      {/* Row-3 Accounts List */}
-      <section className="flex justify-start items-center p-2">
-        {accounts.length > 0 &&
-          accounts
+
+      {/*Row-3 Accounts authenticated List */}
+      <section className="flex flex-col justify-start items-start p-2">
+        <div className="text-xs font-bold"> other accounts</div>
+        {loading &&
+          <div>
+            ....loading
+          </div>}
+        { !error && usersAuthList.length > 0 &&
+          usersAuthList
             .filter((account) => account.email !== user?.email) // Filter accounts that do not match the logged-in user's email
             .map((account, index) => (
               <ul className="min-w-full" key={`${account.id}-${index}`}>
@@ -116,25 +101,16 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
                   <div className="col-start-1 col-span-1 flex justify-center items-center">
                     <img
                       src={account.imageUrl || undefined}
-                      alt={`${account.givenName}-profilePicture`}
+                      alt={`${account.name}-profilePicture`}
                       className="rounded-full min-h-14 min-w-14 w-14 h-14"
                     />
-                  </div>
-                  <div className="col-start-2 col-span-1 flex flex-col">
-                    <div className="space-x-2 text-sm">
-                      <span>{account.fullName}</span>
-                    </div>
                   </div>
                 </li>
               </ul>
             ))}
       </section>
-      {/* Row-4 view All Channels*/}
-      <section className="flex justify-start items-center p-2 border-b-[0.5px] ">
-        <div className="h-10 w-full flex justify-start items-center  px-2 text-sm rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
-          View all channels
-        </div>
-      </section>
+
+
       {/*Row-5 Add Account And Sign out*/}
       <section className="flex  flex-col justify-start items-center p-2">
         <div

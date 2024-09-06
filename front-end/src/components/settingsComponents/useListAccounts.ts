@@ -1,74 +1,94 @@
-import { useEffect, useState } from 'react';
 import { gapi } from 'gapi-script';
+import React, { useEffect } from 'react';
 
-const useGoogleAuthList = (clientId) => {
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [accounts, setAccounts] = useState([]);
-  const [error, setError] = useState(null);
+interface GoogleUserProfile {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+}
+
+export const useGoogleAuthList = () => {
+  const [usersAuthList, setUsersAuthListList] = React.useState<
+    GoogleUserProfile[]
+  >([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<Error | null>(null);
 
   useEffect(() => {
-    const initializeGapi = () => {
-      gapi.load('client:auth2', () => {
+    const initGapi = () => {
+      gapi.load('auth2', () => {
         gapi.auth2
           .init({
-            clientId: clientId,
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            fetch_basic_profile: true,
             scope: 'profile email',
           })
-          .then(() => {
-            setIsInitialized(true);
-            checkLoggedInUsers();
+          .then((auth2) => {
+            setLoading(false);
+            if (auth2.isSignedIn.get()) {
+              const currentUser = auth2.currentUser.get();
+
+              if (currentUser.isSignedIn()) {
+                const basicProfile = currentUser.getBasicProfile();
+                const userProfile = {
+                  id: basicProfile.getId(),
+                  email: basicProfile.getEmail(),
+                  name: basicProfile.getName(),
+                  imageUrl: basicProfile.getImageUrl(),
+                };
+
+                setUsersAuthListList((prevProfile) => {
+                  const userExist = prevProfile.some(
+                    (user) => user.email === userProfile.email,
+                  );
+
+                  if (!userExist) {
+                    return [...prevProfile, userProfile];
+                  }
+
+                  return prevProfile;
+                });
+              }
+            }
+
+            auth2.currentUser.listen((user) => {
+              if (user.isSignedIn()) {
+                const basicProfile = user.getBasicProfile();
+                const userProfile = {
+                  id: basicProfile.getId(),
+                  email: basicProfile.getEmail(),
+                  name: basicProfile.getName(),
+                  imageUrl: basicProfile.getImageUrl(),
+                };
+
+                setUsersAuthListList((prevProfile) => {
+                  const userExist = prevProfile.some(
+                    (user) => user.email === userProfile.email,
+                  );
+
+                  if (!userExist) {
+                    return [...prevProfile, userProfile];
+                  }
+
+                  return prevProfile;
+                });
+              } else {
+                const signedOutUserEmail = user.getBasicProfile().getEmail();
+                setUsersAuthListList((prevAuth) =>
+                  prevAuth.filter((user) => user.email !== signedOutUserEmail),
+                );
+              }
+            });
           })
-          .catch((error) => {
-            console.error('Error initializing GAPI', error);
-            setError(error);
+          .catch((err) => {
+            setError(err);
           });
       });
     };
 
-    if (clientId) {
-      initializeGapi();
-    }
-  }, [clientId]);
+    initGapi();
+  }, []);
 
-  const checkLoggedInUsers = async () => {
-    try {
-      const authInstance = gapi.auth2.getAuthInstance();
-      const user = authInstance.currentUser.get();
-      if (user && user.isSignedIn()) {
-        const basicProfile = user.getBasicProfile();
-
-        const userProfile = {
-          id: basicProfile.getId(),
-          fullName: basicProfile.getName(),
-          givenName: basicProfile.getGivenName(),
-          familyName: basicProfile.getFamilyName(),
-          imageUrl: basicProfile.getImageUrl(),
-          email: basicProfile.getEmail(),
-        };
-
-        setAccounts((prevAccounts) => {
-          const emailExist = prevAccounts.find(
-            (account) => account.email === userProfile.email,
-          );
-
-          if (!emailExist) {
-            return [...prevAccounts, userProfile];
-          }
-
-          return prevAccounts;
-        });
-      }
-    } catch (err) {
-      console.error('Error checking logged-in users', err);
-      setError(err);
-    }
-  };
-
-  return {
-    accounts,
-    error,
-    isInitialized,
-  };
+  return { usersAuthList, loading, error };
 };
-
-export default useGoogleAuthList;
