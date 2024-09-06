@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
-import django.contrib.auth
+import json
+# from datetime import datetime, timedelta
+# import django.contrib.auth
 from django.conf import settings
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -8,14 +9,16 @@ from rest_framework import status
 from .serializers import UserSerializer
 from .util import get_google_id_token, generate_youtube_handler
 from api.models import User
-from graphql_jwt.shortcuts import get_token, create_refresh_token
+# from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt import exceptions
-from .token_utils import revoke_refresh_token
+# from .token_utils import revoke_refresh_token
 from django.contrib.auth import login as django_login
 from jwt import InvalidTokenError, InvalidIssuerError
 from django.views.decorators.debug import sensitive_variables
 from django.urls import reverse
 from api.helpers import Helpers
+from google.cloud import pubsub_v1
+
 
 
 class GoogleLoginView(APIView):
@@ -46,9 +49,9 @@ class GoogleAuthCallBackView(APIView):
         try:
             token_details = get_google_id_token(code)
             id_info = token_details['id_info']
-            # google_access_token = token_details['access_token']
-            # google_refresh_token = token_details['refresh_token']
-            # google_expires_in = token_details['expires_in']
+            google_access_token = token_details['access_token']
+            google_refresh_token = token_details['refresh_token']
+            google_expires_in = token_details['expires_in']
 
             sub = id_info['sub']
             email = id_info['email']
@@ -95,58 +98,68 @@ class GoogleAuthCallBackView(APIView):
 
             django_login(request, user, 'django.contrib.auth.backends.ModelBackend')
 
-            extra_data = {
-                'google_sub': user.google_sub,
-                'email': user.email,
-                'youtube_handler': user.youtube_handler,
-            }
-
-            # token = get_token(user, **extra_data)
-            #
-            # refresh_token = create_refresh_token(user)
 
             response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
-            # response.set_cookie(
-            #     'JWT',
-            #     token,
-            #     httponly=True,
-            #     max_age=google_expires_in,
-            #     samesite='Strict'
-            # )
-            # response.set_cookie(
-            #     'JWT-refresh_token',
-            #     refresh_token,
-            #     httponly=True,
-            #     max_age=14 * 24 * 3600,
-            #     samesite='Strict'
-            # )
+            # storing google tokens on cookies
+            response.set_cookie(
+                'google_access_token',
+                google_access_token,
+                httponly=True,
+                max_age=google_expires_in,
+                samesite='Strict',
+                secure= True
+            )
+            response.set_cookie(
+                'google_refresh_token',
+                google_refresh_token,
+                httponly=True,
+                max_age=14 * 24 * 3600,
+                samesite='Strict',
+                secure= True
+            )
+
             return response
-        except ValueError as err:
+        except Exception as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
     def post(self, request):
-        # session_key = request.COOKIES.get('sessionid')
-        # session = Session.objects.get(session_key=session_key)
-        # uid = session.get_decoded().get('_auth_user_id')
-        # user = User.objects.get(google_sub=uid)
+
         if not request.user.is_authenticated:
             return Response({'success': False, 'error': 'Unauthorized or invalid request'},
                             status=status.HTTP_401_UNAUTHORIZED)
+
+        google_access_token = request.COOKIES.get('google_access_token')
+        google_refresh_token = request.COOKIES.get('google_refresh_token')
+
+        if not google_access_token or not google_refresh_token:
+            return Response({'success': False, 'error': 'Unauthorized or invalid request'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        message = {
+            "access_token": google_access_token,
+            "refresh_token": google_refresh_token,
+            "user_id": request.user.google_sub
+        }
+
+        message_str = json.dumps(message)
+
+        byte_message = message_str.encode('utf-8')
+
+
         try:
-
-            # refresh_token_value = request.COOKIES.get('JWT-refresh_token')
-            #
-            # if refresh_token_value:
-            #     revoke_refresh_token(refresh_token_value)
-
+            publisher = pubsub_v1.PublisherClient()
+            topic_path = publisher.topic_path(settings.GOOGLE_CLOUD_PROJECT_ID, settings.GOOGLE_CLOUD_PUB_SUB_TOPIC_ID)
+            future = publisher.publish(topic_path, byte_message)
+            print(future.result())
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
             for cookie in request.COOKIES:
                 response.delete_cookie(cookie)
+
             return response
+
         except exceptions.JSONWebTokenExpired:
             return Response({'success': False, 'error': 'Token is expired'},
                             status=status.HTTP_401_UNAUTHORIZED)

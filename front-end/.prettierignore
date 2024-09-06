@@ -4,3 +4,4 @@ dist
 /front-end/src/components/menuBarComponents/MenuModal.tsx
 /src/components/Navigation.tsx
 /front-end/src/components/SubModal.tsx
+/src/components/settingsComponents/SwitchAccount.tsx
