@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { gapi } from 'gapi-script';
 
 const useGoogleAuthList = (clientId) => {
+
   const [isInitialized, setIsInitialized] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const initializeGapi = () => {
-      gapi.load('client:auth2', () => {
+      gapi.load('auth2', () => {
         gapi.auth2
           .init({
             clientId: clientId,
