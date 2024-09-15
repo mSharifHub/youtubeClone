@@ -156,6 +156,17 @@ export default function NavigationBar() {
                     onClickOutside={handleCloseSettingModal}
                   />
                 )}
+                {/* subModal component */}
+                {subSettingModalToggler && subModalContent &&(
+                  <SubModal
+                    isOpen={subSettingModalToggler}
+                    onClickOutside={handleCloseSubModel}
+                  >
+                    {subModalContent === "SWITCH_ACCOUNTS" && <SwitchAccount/>}
+                    {subModalContent === "THEME_MODE" && <SwitchTheme/>}
+
+                  </SubModal>
+                )}
               </div>
             </>
           )}

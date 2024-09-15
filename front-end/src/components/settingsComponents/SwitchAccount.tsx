@@ -6,7 +6,6 @@ import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useGoogleAuthList } from "./useListAccounts.ts";
-
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 
 import {
@@ -15,6 +14,7 @@ import {
   faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { ProfileSkeleton } from "./ProfileSkeleton.tsx";
 
 
 export const SwitchAccount: React.FC = (): JSX.Element => {
@@ -24,8 +24,6 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
 
 
   const {usersAuthList,loading,error} = useGoogleAuthList()
-
-
 
   const logout = useUserLogout();
 
@@ -39,11 +37,12 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     event.stopPropagation();
   };
 
+  // for debugging list of users
   console.log(...usersAuthList);
 
   return (
     <div>
-      {/* return to main menu section */}
+      {/* Row-1 return to main menu section */}
       <section className="p-2 border-b-[0.5px] ">
         <button
           onClick={onCLickAccounts}
@@ -56,60 +55,58 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
           <span className="text-[14px]">Accounts</span>
         </button>
       </section>
-      {/*  Row-2 First name, last name, and email */}
+
+      {/* Row-2 Username and email */}
+      <section className="p-2 border-b-[0.5px]">
+        {isLoggedIn && user &&
+          <div className="px-2 text-sm">
+            <div>{user.firstName} {user.lastName}</div>
+            <div className="text-neutral-400 text-[12px]">{user.email}</div>
+          </div>
+        }
+      </section>
+
+      {/* Row-3 User Profile */}
       <section>
-            {isLoggedIn &&
-                  <div
-                    className=" relative grid grid-cols-[0.25fr_1fr] h-20 w-full  space-x-1.5 p-2 rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer">
-                    <div className="col-start-1 col-span-1 flex justify-center items-center">
-                      <img
-                        src={user?.profilePicture || undefined}
-                        alt={`${user?.youtubeHandler}-profilePicture`}
-                        className="rounded-full min-h-14 min-w-14 w-14 h-14"
-                      />
-                    </div>
-                    <div className="col-start-2 flex flex-col text-xs">
-                        <span>{user?.firstName} {user?.lastName} </span>
-                        <span>{user?.youtubeHandler}</span>
-                    </div>
-                    <FontAwesomeIcon icon= {faCheck}  className="absolute right-4 top-1/2 -translate-y-1/2" />
-                  </div>
+            {isLoggedIn && user &&
+              <ProfileSkeleton
+                userProfile={user.profilePicture ?? undefined}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                youtubeHandler={user.youtubeHandler}
+                subscribersCount={user.subscribers.length}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+              </ProfileSkeleton>
             }
       </section>
-      {/*Row-4 view All Channels*/}
+      {/* Row-4 View All Channels*/}
       <section className="flex justify-start items-center border-b-[0.5px] ">
-        <div className="h-10 w-full flex justify-start items-center  px-2 text-sm  transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
+        <div className=" w-full flex justify-start items-center p-2 text-sm  transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
           View all channels
         </div>
       </section>
 
-      {/*Row-3 Accounts authenticated List */}
-      <section className="flex flex-col justify-start items-start p-2">
-        <div className="text-xs font-bold"> other accounts</div>
-        {loading &&
-          <div>
-            ....loading
-          </div>}
-        { !error && usersAuthList.length > 0 &&
+      {/* Row-5 Other Accounts Authenticated List */}
+      <section className="flex flex-col justify-start items-start">
+        <div className=" w-full  p-2 text-xs font-bold "> other accounts</div>
+        {loading && <ProfileSkeleton skeleton={loading} />}
+        {!error && usersAuthList.length > 0 &&
           usersAuthList
             .filter((account) => account.email !== user?.email) // Filter accounts that do not match the logged-in user's email
             .map((account, index) => (
               <ul className="min-w-full" key={`${account.id}-${index}`}>
-                <li
-                  className="grid grid-cols-[0.25fr_1fr] h-20 min-w-full space-x-1.5 p-2 rounded-lg transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
-                >
-                  <div className="col-start-1 col-span-1 flex justify-center items-center">
-                    <img
-                      src={account.imageUrl || undefined}
-                      alt={`${account.name}-profilePicture`}
-                      className="rounded-full min-h-14 min-w-14 w-14 h-14"
-                    />
-                  </div>
+                <li>
+                  <div className="px-2 text-xs">{account.email} </div>
+                  <ProfileSkeleton
+                    userProfile={account.imageUrl}
+                    firstName={account.name.split(" ").shift()}
+                    lastName={account.name.split(" ").pop()}
+                  />
                 </li>
               </ul>
             ))}
       </section>
-
 
       {/*Row-5 Add Account And Sign out*/}
       <section className="flex  flex-col justify-start items-center p-2">
@@ -117,7 +114,7 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
           onClick={() => redirectGoogleAuth()}
           className="h-10 w-full flex justify-start items-center  px-2 text-sm rounded-lg space-x-4 transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer "
         >
-          <FontAwesomeIcon icon={faUserPlus} className="text-sm" />{' '}
+          <FontAwesomeIcon icon={faUserPlus} className="text-sm" />
           <span>Add account</span>
         </div>
 
