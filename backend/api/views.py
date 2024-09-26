@@ -1,4 +1,4 @@
-import json
+# import json
 # from datetime import datetime, timedelta
 # import django.contrib.auth
 from django.conf import settings
@@ -17,8 +17,7 @@ from jwt import InvalidTokenError, InvalidIssuerError
 from django.views.decorators.debug import sensitive_variables
 from django.urls import reverse
 from api.helpers import Helpers
-from google.cloud import pubsub_v1
-
+# from google.cloud import pubsub_v1
 
 
 class GoogleLoginView(APIView):
@@ -28,13 +27,24 @@ class GoogleLoginView(APIView):
         redirect_uri = request.build_absolute_uri(reverse('google-callback'))
         scope = 'openid%20email%20profile'
         access_type = "offline"
+
+        login_hint = request.query_params.get('login_hint', None)
+
+
         auth_url = (
             f"https://accounts.google.com/o/oauth2/v2/auth?"
             f"response_type=code&access_type={access_type}&"
             f"redirect_uri={redirect_uri}&scope={scope}&"
-            f"client_id={client_id}&"
-            "prompt=select_account"
+            f"client_id={client_id}"
         )
+
+
+        if login_hint:
+            auth_url += f"&login_hint={login_hint}&prompt=none"  # skips refresh token
+        else:
+            auth_url += "&prompt=consent"
+
+
         return redirect(auth_url)
 
 
@@ -50,8 +60,9 @@ class GoogleAuthCallBackView(APIView):
             token_details = get_google_id_token(code)
             id_info = token_details['id_info']
             google_access_token = token_details['access_token']
-            google_refresh_token = token_details['refresh_token']
+            google_refresh_token = token_details.get('refresh_token',None)
             google_expires_in = token_details['expires_in']
+
 
             sub = id_info['sub']
             email = id_info['email']
@@ -110,14 +121,17 @@ class GoogleAuthCallBackView(APIView):
                 samesite='Strict',
                 secure= True
             )
-            response.set_cookie(
-                'google_refresh_token',
-                google_refresh_token,
-                httponly=True,
-                max_age=14 * 24 * 3600,
-                samesite='Strict',
-                secure= True
-            )
+
+            if google_refresh_token:
+                response.set_cookie(
+                    'google_refresh_token',
+                    google_refresh_token,
+                    httponly=True,
+                    max_age=14 * 24 * 3600,  # 14 days
+                    samesite='Strict',
+                    secure=True
+                )
+
 
             return response
         except Exception as err:
@@ -137,22 +151,22 @@ class LogoutView(APIView):
         if not google_access_token or not google_refresh_token:
             return Response({'success': False, 'error': 'Unauthorized or invalid request'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        message = {
-            "access_token": google_access_token,
-            "refresh_token": google_refresh_token,
-            "user_id": request.user.google_sub
-        }
-
-        message_str = json.dumps(message)
-
-        byte_message = message_str.encode('utf-8')
-
+        # message = {
+        #     "access_token": google_access_token,
+        #     "refresh_token": google_refresh_token,
+        #     "user_id": request.user.google_sub
+        # }
+        #
+        # message_str = json.dumps(message)
+        #
+        # byte_message = message_str.encode('utf-8')
+        #
 
         try:
-            publisher = pubsub_v1.PublisherClient()
-            topic_path = publisher.topic_path(settings.GOOGLE_CLOUD_PROJECT_ID, settings.GOOGLE_CLOUD_PUB_SUB_TOPIC_ID)
-            future = publisher.publish(topic_path, byte_message)
-            print(future.result())
+            # publisher = pubsub_v1.PublisherClient()
+            # topic_path = publisher.topic_path(settings.GOOGLE_CLOUD_PROJECT_ID, settings.GOOGLE_CLOUD_PUB_SUB_TOPIC_ID)
+            # future = publisher.publish(topic_path, byte_message)
+            # print(future.result())
             response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
             for cookie in request.COOKIES:

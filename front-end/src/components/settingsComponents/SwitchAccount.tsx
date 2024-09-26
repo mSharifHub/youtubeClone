@@ -5,7 +5,7 @@ import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useGoogleAuthList } from "./useListAccounts.ts";
+import { useGoogleAuthList } from './useListAccounts.ts';
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 
 import {
@@ -16,14 +16,13 @@ import {
 
 import { ProfileSkeleton } from "./ProfileSkeleton.tsx";
 
-
 export const SwitchAccount: React.FC = (): JSX.Element => {
+
   const {
     state: { user, isLoggedIn },
   } = useUser();
 
-
-  const {usersAuthList,loading,error} = useGoogleAuthList()
+  const {usersAuthList,handleUserClickAccount,loading,error} = useGoogleAuthList()
 
   const logout = useUserLogout();
 
@@ -37,8 +36,9 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     event.stopPropagation();
   };
 
-  // for debugging list of users
-  console.log(...usersAuthList);
+
+  const listOfNotLoggedAccounts = usersAuthList.filter(profile=>profile.email !== user?.email)
+
 
   return (
     <div>
@@ -91,11 +91,12 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
       <section className="flex flex-col justify-start items-start">
         <div className=" w-full  p-2 text-xs font-bold "> other accounts</div>
         {loading && <ProfileSkeleton skeleton={loading} />}
-        {!error && usersAuthList.length > 0 &&
-          usersAuthList
-            .filter((account) => account.email !== user?.email) // Filter accounts that do not match the logged-in user's email
+        {!error && listOfNotLoggedAccounts.length > 0 &&
+          listOfNotLoggedAccounts
             .map((account, index) => (
-              <ul className="min-w-full" key={`${account.id}-${index}`}>
+              <ul
+                onClick={()=> handleUserClickAccount(account)}
+                className="min-w-full" key={`${account.id}-${index}`}>
                 <li>
                   <div className="px-2 text-xs">{account.email} </div>
                   <ProfileSkeleton

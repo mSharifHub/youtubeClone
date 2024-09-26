@@ -42,10 +42,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
     state: { user, isLoggedIn },
   } = useUser();
 
-  // const toggleDarkMode = () => {
-  //   const newTheme = theme === 'dark' ? 'light' : 'dark';
-  //   setTheme(newTheme);
-  // };
 
   const modalRef = useRef<HTMLDivElement>(null);
 

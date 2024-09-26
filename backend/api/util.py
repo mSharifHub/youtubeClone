@@ -40,7 +40,7 @@ def get_google_id_token(code):
     return {
         'id_info': id_info,
         'access_token': token_response_parsed['access_token'],
-        'refresh_token': token_response_parsed['refresh_token'],
+        'refresh_token': token_response_parsed.get('refresh_token',None),
         'expires_in': token_response_parsed['expires_in'],
         }
 

@@ -1,7 +1,9 @@
 import { gapi } from 'gapi-script';
 import React, { useEffect } from 'react';
 
-interface GoogleUserProfile {
+/*Interface used to match with the user object
+ */
+export interface GoogleUserProfile {
   id: string;
   name: string;
   email: string;
@@ -9,26 +11,49 @@ interface GoogleUserProfile {
 }
 
 export const useGoogleAuthList = () => {
-  const [usersAuthList, setUsersAuthListList] = React.useState<
-    GoogleUserProfile[]
-  >([]);
+  // state to set the list of users
+  const [usersAuthList, setUsersAuthList] = React.useState<GoogleUserProfile[]>(
+    [],
+  );
+  // state to use with front end while is loading the user data
   const [loading, setLoading] = React.useState<boolean>(true);
+  // debug for errors
   const [error, setError] = React.useState<Error | null>(null);
 
+  // to handle the list and filter prev logged profiles
+  const onUpdateUserList = (userProfile: GoogleUserProfile) => {
+    setUsersAuthList((prevList) => {
+      const userExist = prevList.some(
+        (user) => user.email === userProfile.email,
+      );
+
+      // If user does not exist then update the list
+      if (!userExist) {
+        return [...prevList, userProfile];
+      }
+      // otherwise return the previous profile list
+      return prevList;
+    });
+  };
+
   useEffect(() => {
+    // Initialize gapi according to documentation
     const initGapi = () => {
+      // load and initialize auth2
       gapi.load('auth2', () => {
         gapi.auth2
+          // Scope and fetching user profile information
           .init({
             client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
             fetch_basic_profile: true,
             scope: 'profile email',
           })
           .then((auth2) => {
+            // If the data has already loaded then set loading to false
             setLoading(false);
+            // Get signed account
             if (auth2.isSignedIn.get()) {
               const currentUser = auth2.currentUser.get();
-
               if (currentUser.isSignedIn()) {
                 const basicProfile = currentUser.getBasicProfile();
                 const userProfile = {
@@ -37,21 +62,12 @@ export const useGoogleAuthList = () => {
                   name: basicProfile.getName(),
                   imageUrl: basicProfile.getImageUrl(),
                 };
-
-                setUsersAuthListList((prevProfile) => {
-                  const userExist = prevProfile.some(
-                    (user) => user.email === userProfile.email,
-                  );
-
-                  if (!userExist) {
-                    return [...prevProfile, userProfile];
-                  }
-
-                  return prevProfile;
-                });
+                // updated the list
+                onUpdateUserList(userProfile);
               }
             }
 
+            // Listen to an events of the current logged user
             auth2.currentUser.listen((user) => {
               if (user.isSignedIn()) {
                 const basicProfile = user.getBasicProfile();
@@ -61,23 +77,17 @@ export const useGoogleAuthList = () => {
                   name: basicProfile.getName(),
                   imageUrl: basicProfile.getImageUrl(),
                 };
-
-                setUsersAuthListList((prevProfile) => {
-                  const userExist = prevProfile.some(
-                    (user) => user.email === userProfile.email,
-                  );
-
-                  if (!userExist) {
-                    return [...prevProfile, userProfile];
-                  }
-
-                  return prevProfile;
-                });
+                //update the list for new user
+                onUpdateUserList(userProfile);
               } else {
-                const signedOutUserEmail = user.getBasicProfile().getEmail();
-                setUsersAuthListList((prevAuth) =>
-                  prevAuth.filter((user) => user.email !== signedOutUserEmail),
-                );
+                const signedOutUserEmail = user.getBasicProfile();
+                const loggedUser = {
+                  id: signedOutUserEmail.getId(),
+                  email: signedOutUserEmail.getEmail(),
+                  name: signedOutUserEmail.getName(),
+                  imageUrl: signedOutUserEmail.getImageUrl(),
+                };
+                onUpdateUserList(loggedUser);
               }
             });
           })
@@ -90,5 +100,15 @@ export const useGoogleAuthList = () => {
     initGapi();
   }, []);
 
-  return { usersAuthList, loading, error };
+  const handleUserClickAccount = (account: GoogleUserProfile) => {
+    let googleLoginUrl = import.meta.env.VITE_GOOGLE_RESOURCE_SERVER;
+
+    if (account) {
+      googleLoginUrl += `?login_hint=${encodeURIComponent(account.email)}`;
+    }
+
+    window.location.href = googleLoginUrl;
+  };
+
+  return { usersAuthList, handleUserClickAccount, loading, error };
 };
