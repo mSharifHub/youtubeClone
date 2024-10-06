@@ -17,6 +17,7 @@ export const useGoogleAuthList = () => {
   );
   // state to use with front end while is loading the user data
   const [loading, setLoading] = React.useState<boolean>(true);
+
   // debug for errors
   const [error, setError] = React.useState<Error | null>(null);
 
@@ -91,7 +92,7 @@ export const useGoogleAuthList = () => {
               }
             });
           })
-          .catch((err) => {
+          .catch((err: Error) => {
             setError(err);
           });
       });
@@ -100,15 +101,5 @@ export const useGoogleAuthList = () => {
     initGapi();
   }, []);
 
-  const handleUserClickAccount = (account: GoogleUserProfile) => {
-    let googleLoginUrl = import.meta.env.VITE_GOOGLE_RESOURCE_SERVER;
-
-    if (account) {
-      googleLoginUrl += `?login_hint=${encodeURIComponent(account.email)}`;
-    }
-
-    window.location.href = googleLoginUrl;
-  };
-
-  return { usersAuthList, handleUserClickAccount, loading, error };
+  return { usersAuthList, loading, error };
 };

@@ -5,7 +5,8 @@ import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useGoogleAuthList } from './useListAccounts.ts';
+import { useGoogleAuthList } from '../hooks/useListAccounts.ts';
+import {useSwitchAccounts} from '../hooks/useSwitchAccounts.ts';
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 
 import {
@@ -22,7 +23,7 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     state: { user, isLoggedIn },
   } = useUser();
 
-  const {usersAuthList,handleUserClickAccount,loading,error} = useGoogleAuthList()
+  const {usersAuthList,loading,error} = useGoogleAuthList()
 
   const logout = useUserLogout();
 
@@ -35,6 +36,11 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     settingsModalDispatch({ type: 'OPEN_SETTINGS_MODAL' });
     event.stopPropagation();
   };
+
+  /**
+   * @param  {GoogleUserProfile}  account - The Google user profile to switch to
+   */
+  const switchAccount = useSwitchAccounts()
 
 
   const listOfNotLoggedAccounts = usersAuthList.filter(profile=>profile.email !== user?.email)
@@ -95,7 +101,7 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
           listOfNotLoggedAccounts
             .map((account, index) => (
               <ul
-                onClick={()=> handleUserClickAccount(account)}
+                onClick={()=> switchAccount(account)}
                 className="min-w-full" key={`${account.id}-${index}`}>
                 <li>
                   <div className="px-2 text-xs">{account.email} </div>
