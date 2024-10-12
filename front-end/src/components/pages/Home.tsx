@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import dummy_videos from '../../../dummyData.json';
+import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 
 export const Home: React.FC = () => {
   const {
@@ -10,6 +11,11 @@ export const Home: React.FC = () => {
   } = useUser();
 
   const api_key: string = import.meta.env.VITE_YOUTUBE_API_3;
+
+  // Using the useVideo hook to control number of videos show per screen size
+  const videosPerRow = useVideoGrid();
+
+  const totalVideosToShow = videosPerRow * 2;
 
   const { videos, loading, error, playVideo, selectedVideoId } =
     useYoutubeVideos(api_key, 10);
@@ -25,11 +31,16 @@ export const Home: React.FC = () => {
         {!isLoggedIn && <NotLoggedInBanner />}
 
         {/* first row of videos */}
-        <div className=" h-[600px] w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 border">
-          {dummy_videos.videos.slice(0, 10).map((video) => (
+        <div
+          className={` h-[600px] w-full  grid  grid-rows-2  gap-4 p-4  overflow-hidden border`}
+          style={{
+            gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1.5fr))`,
+          }}
+        >
+          {dummy_videos.videos.slice(0, totalVideosToShow).map((video) => (
             <div
               key={video.id.videoId}
-              className="flex flex-col justify-center items-center rounded-lg border "
+              className="flex  flex-col justify-center items-center rounded-lg border "
             >
               {/*{selectedVideoId === id.videoId ? (*/}
               {/*  <iframe*/}
