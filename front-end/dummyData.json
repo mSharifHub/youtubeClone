@@ -1,381 +1,193 @@
 {
   "videos": [
     {
-      "id": {
-        "videoId": "1"
-      },
+      "id": { "videoId": "abc123" },
       "snippet": {
-        "title": "Exploring the Mountains",
-        "description": "An adventurous trip to the scenic mountains.",
+        "title": "The Complete Guide to JavaScript: From Basics to Advanced Concepts and Techniques",
+        "description": "Learn JavaScript with this comprehensive tutorial, covering everything from basic syntax to advanced techniques.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel001",
+        "channelTitle": "Programming Hub",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "15000",
+        "likeCount": "1000"
       }
     },
     {
-      "id": {
-        "videoId": "2"
-      },
+      "id": { "videoId": "def456" },
       "snippet": {
-        "title": "How to Cook a Perfect Steak",
-        "description": "Learn the secrets to cooking the best steak.",
+        "title": "How to Build a Full-Stack Application with React, Node.js, and MongoDB",
+        "description": "In this tutorial, we build a full-stack application using React, Node.js, and MongoDB. Learn how to connect your front-end to a backend API.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel002",
+        "channelTitle": "Tech Savvy",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "32000",
+        "likeCount": "3500"
       }
     },
     {
-      "id": {
-        "videoId": "3"
-      },
+      "id": { "videoId": "ghi789" },
       "snippet": {
-        "title": "Top 10 Tech Gadgets of 2024",
-        "description": "A review of the best tech gadgets you can get in 2024.",
+        "title": "The Science Behind Machine Learning: An Introduction to Neural Networks and Deep Learning",
+        "description": "This video explains the basics of machine learning, neural networks, and deep learning, offering a practical understanding of the concepts.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel003",
+        "channelTitle": "AI Hub",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "50000",
+        "likeCount": "6000"
       }
     },
     {
-      "id": {
-        "videoId": "4"
-      },
+      "id": { "videoId": "jkl012" },
       "snippet": {
-        "title": "A Day in the Life of a Software Engineer",
-        "description": "Follow a software engineer through their typical workday.",
+        "title": "The Ultimate Guide to Web Development: HTML, CSS, JavaScript, React, and More",
+        "description": "This comprehensive guide to web development covers HTML, CSS, JavaScript, React, and the latest trends in front-end and back-end development.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel004",
+        "channelTitle": "Dev Academy",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "72000",
+        "likeCount": "9500"
       }
     },
     {
-      "id": {
-        "videoId": "5"
-      },
+      "id": { "videoId": "mno345" },
       "snippet": {
-        "title": "Best Exercises for a Strong Core",
-        "description": "A guide to the most effective core exercises.",
+        "title": "Building a Responsive Website: Modern CSS Techniques for 2024 and Beyond",
+        "description": "Learn modern CSS techniques to create fully responsive websites. We cover Flexbox, Grid, media queries, and advanced styling.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel005",
+        "channelTitle": "Design Matters",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "41000",
+        "likeCount": "2500"
       }
     },
     {
-      "id": {
-        "videoId": "6"
-      },
+      "id": { "videoId": "pqr678" },
       "snippet": {
-        "title": "How to Start a YouTube Channel",
-        "description": "Tips and tricks to launch your own successful YouTube channel.",
+        "title": "How to Deploy a Node.js Application: Step-by-Step with Docker and Kubernetes",
+        "description": "This tutorial walks you through deploying a Node.js application using Docker and Kubernetes. Learn how to containerize and manage your apps.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel006",
+        "channelTitle": "Cloud Mastery",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "54000",
+        "likeCount": "4500"
       }
     },
     {
-      "id": {
-        "videoId": "7"
-      },
+      "id": { "videoId": "stu901" },
       "snippet": {
-        "title": "React.js Crash Course",
-        "description": "A beginner-friendly tutorial on building web apps with React.js.",
+        "title": "Understanding Data Structures and Algorithms: A Practical Guide for Beginners",
+        "description": "This video provides a beginner-friendly introduction to data structures and algorithms, explaining how they are used in real-world applications.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel007",
+        "channelTitle": "Code Simplified",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "67000",
+        "likeCount": "7000"
       }
     },
     {
-      "id": {
-        "videoId": "8"
-      },
+      "id": { "videoId": "vwx234" },
       "snippet": {
-        "title": "Amazing Space Facts You Didn’t Know",
-        "description": "Fascinating and lesser-known facts about outer space.",
+        "title": "Creating a REST API with Node.js and Express: A Comprehensive Guide",
+        "description": "In this tutorial, we create a REST API using Node.js and Express. Learn how to design, build, and deploy your own APIs.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel008",
+        "channelTitle": "API Experts",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "85000",
+        "likeCount": "9500"
       }
     },
     {
-      "id": {
-        "videoId": "9"
-      },
+      "id": { "videoId": "yzb567" },
       "snippet": {
-        "title": "History of Ancient Rome",
-        "description": "A deep dive into the history of one of the greatest empires in history.",
+        "title": "Mastering Git and GitHub: Version Control for Developers",
+        "description": "Master the fundamentals of Git and GitHub in this tutorial, including branching, merging, and collaborating with other developers.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel009",
+        "channelTitle": "DevOps Daily",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+      },
+      "statistics": {
+        "viewCount": "90000",
+        "likeCount": "11000"
       }
     },
     {
-      "id": {
-        "videoId": "10"
-      },
+      "id": { "videoId": "abd890" },
       "snippet": {
-        "title": "Top 5 Coffee Brewing Methods",
-        "description": "A breakdown of the best ways to brew coffee at home.",
+        "title": "Introduction to Cloud Computing: AWS, Google Cloud, and Azure Explained",
+        "description": "A beginner's guide to cloud computing, covering AWS, Google Cloud, and Azure services, and how they are used in modern development.",
         "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "11"
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
       },
-      "snippet": {
-        "title": "Building a Gaming PC on a Budget",
-        "description": "How to assemble a gaming PC without breaking the bank.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "12"
-      },
-      "snippet": {
-        "title": "Morning Yoga Routine",
-        "description": "A simple morning yoga routine to start your day off right.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "13"
-      },
-      "snippet": {
-        "title": "Exploring the Amazon Rainforest",
-        "description": "An expedition deep into the heart of the Amazon rainforest.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "14"
-      },
-      "snippet": {
-        "title": "The Ultimate Guide to Home Gardening",
-        "description": "Tips and tricks for starting and maintaining a thriving garden.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "15"
-      },
-      "snippet": {
-        "title": "How to Speak Confidently in Public",
-        "description": "Practical tips to improve your public speaking skills.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "16"
-      },
-      "snippet": {
-        "title": "Understanding Blockchain Technology",
-        "description": "A simplified explanation of how blockchain works.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "17"
-      },
-      "snippet": {
-        "title": "Top 10 Travel Destinations for 2024",
-        "description": "The best places to visit around the world in 2024.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "18"
-      },
-      "snippet": {
-        "title": "How to Train Your Dog",
-        "description": "Simple steps to train your dog to follow commands.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "19"
-      },
-      "snippet": {
-        "title": "Exploring Underwater Caves",
-        "description": "A thrilling journey through deep underwater caves.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "20"
-      },
-      "snippet": {
-        "title": "Mastering the Art of Photography",
-        "description": "Advanced tips to take your photography to the next level.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "21"
-      },
-      "snippet": {
-        "title": "Learn Python in 30 Minutes",
-        "description": "A quick introduction to the Python programming language.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "22"
-      },
-      "snippet": {
-        "title": "DIY Home Renovation Ideas",
-        "description": "Creative and budget-friendly home renovation ideas.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "23"
-      },
-      "snippet": {
-        "title": "Exploring the History of Jazz Music",
-        "description": "A look into the history and evolution of jazz music.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "24"
-      },
-      "snippet": {
-        "title": "How to Make Homemade Pasta",
-        "description": "A step-by-step guide to making fresh pasta from scratch.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "25"
-      },
-      "snippet": {
-        "title": "The Best Places to Scuba Dive",
-        "description": "Top destinations for scuba diving enthusiasts.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "26"
-      },
-      "snippet": {
-        "title": "Improving Your Mental Health",
-        "description": "Practical ways to improve your mental health and well-being.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
-      }
-    },
-    {
-      "id": {
-        "videoId": "27"
-      },
-      "snippet": {
-        "title": "How to Build an App with Flutter",
-        "description": "A beginner tutorial for building apps using Flutter.",
-        "thumbnails": {
-          "default": {
-            "url": "src/assets/thumbnails/icons8-video-100.png"
-          }
-        }
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000"
       }
     }
   ]

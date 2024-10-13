@@ -12,34 +12,34 @@ export const useVideoGrid = () => {
   const determineVideosToShow = () => {
     const screenWidth = window.innerWidth;
 
-    if (screenWidth <= 500) {
+    if (screenWidth <= 699) {
       setVideosPerRow(1); // 1 video per row on very small screens (2 rows total)
-    } else if (screenWidth > 500 && screenWidth <= 739) {
+    } else if (screenWidth >= 700 && screenWidth <= 1124) {
       setVideosPerRow(2); // 2 videos per row (2 rows total)
-    } else if (screenWidth >= 740 && screenWidth <= 1023) {
+    } else if (screenWidth >= 1125 && screenWidth <= 1420) {
       setVideosPerRow(3); // 3 videos per row (2 rows total)
-    } else if (screenWidth >= 1024 && screenWidth <= 1279) {
+    } else if (screenWidth >= 1421 && screenWidth <= 1739) {
       setVideosPerRow(4); // 4 videos per row (2 rows total)
     } else {
       setVideosPerRow(5); // 5 videos per row (2 rows total)
     }
   };
 
-  // adding the throttle function here with 150 seconds time out
-  const throttleDetermineVideosToSHow = useThrottle(determineVideosToShow, 150);
+  // Adding the throttle function here with 150 seconds time out
+  const throttleVideosToShowPerRow = useThrottle(determineVideosToShow, 100);
 
   // use effect to change the state whenever
   useEffect(() => {
-    throttleDetermineVideosToSHow();
+    throttleVideosToShowPerRow();
 
     const handleVideosToShow = () => {
-      throttleDetermineVideosToSHow();
+      throttleVideosToShowPerRow();
     };
 
     window.addEventListener('resize', handleVideosToShow);
 
     return () => window.removeEventListener('resize', handleVideosToShow);
-  }, [throttleDetermineVideosToSHow]);
+  }, [throttleVideosToShowPerRow]);
 
   return videosPerRow;
 };

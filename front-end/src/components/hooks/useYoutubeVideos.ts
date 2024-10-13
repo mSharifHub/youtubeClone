@@ -15,6 +15,14 @@ export interface VideoSnippet {
       url: string;
     };
   };
+  channelId: string;
+  channelTitle: string;
+  channelLogo?: string;
+}
+
+export interface VideoStatistics {
+  viewCount: string;
+  likeCount: string;
 }
 
 export interface Video {
@@ -22,6 +30,7 @@ export interface Video {
     videoId: string;
   };
   snippet: VideoSnippet;
+  statistics?: VideoStatistics;
 }
 
 interface UseYoutubeVideosResult {
@@ -45,6 +54,55 @@ export default function useYoutubeVideos(
     setSelectedVideoId(videoId);
   }
 
+  /*
+    to fetch video statistics
+   */
+  async function fetchVideoStatistics(videoIds: string[]) {
+    try {
+      const idsString = videoIds.join(',');
+
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics`,
+      );
+
+      const statsMap = response.data.items.reduce(
+        (map, item) => {
+          map[item.id] = item.statistics;
+          return map;
+        },
+        {} as Record<string, VideoStatistics>,
+      );
+
+      return statsMap;
+    } catch (e: Error) {
+      throw new Error(e.message);
+    }
+  }
+
+  /*
+   fetch additional video details
+   */
+  async function fetchChannelDetails(channelIds: string[]) {
+    try {
+      const idsString = channelIds.join(',');
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
+      );
+
+      const channelMap = response.data.items.reduce((map, item) => {
+        map[item.id] = {
+          title: item.snippet.title,
+          logo: item.snippet.thumbnails.default?.url,
+        };
+        return map;
+      }, {});
+
+      return channelMap;
+    } catch (e: Error) {
+      throw new Error(e.message);
+    }
+  }
+
   async function fetchVideos() {
     setLoading(true);
     setError(null);
@@ -53,12 +111,34 @@ export default function useYoutubeVideos(
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`,
       );
-
       if (response.status === 200) {
-        setVideos(response.data.items);
+        const videoItems = response.data.items;
+
+        const videoIds = videoItems.map((video: Video) => video.id.videoId);
+
+        const channelIds: string[] = [
+          ...new Set(
+            videoItems.map((video: Video) => video.snippet.channelId) as string,
+          ),
+        ];
+
+        const statisticsMap = await fetchVideoStatistics(videoIds);
+        const channelMap = await fetchChannelDetails(channelIds);
+
+        const videosWithDetails = videoItems.map((video: Video) => ({
+          ...video,
+          statistics: statisticsMap[video.id.videoId],
+          snippet: {
+            ...video.snippet,
+            channelTitle: channelMap[video.snippet.channelId].title,
+            channelLogo: channelMap[video.snippet.channelId].logo,
+          },
+        }));
+
+        setVideos(videosWithDetails);
       }
-    } catch (error) {
-      setError(error);
+    } catch (e: Error) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
