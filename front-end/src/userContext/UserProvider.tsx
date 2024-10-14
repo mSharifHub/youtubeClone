@@ -40,7 +40,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const { error } = useQuery<ViewerQuery>(VIEWER_QUERY, {
     skip: !authenticatedUser,
-    pollInterval: 60000,
+    pollInterval: 3600000,
     onCompleted: (data) => {
       if (data && data.viewer) {
         const currentData: ViewerQuery['viewer'] =

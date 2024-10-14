@@ -12,11 +12,13 @@
         },
         "channelId": "channel001",
         "channelTitle": "Programming Hub",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-10T08:00:00Z"
       },
       "statistics": {
         "viewCount": "15000",
-        "likeCount": "1000"
+        "likeCount": "1000",
+        "duration": "PT15M33S"
       }
     },
     {
@@ -31,11 +33,13 @@
         },
         "channelId": "channel002",
         "channelTitle": "Tech Savvy",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-12T12:30:00Z"
       },
       "statistics": {
         "viewCount": "32000",
-        "likeCount": "3500"
+        "likeCount": "3500",
+        "duration": "PT20M15S"
       }
     },
     {
@@ -50,11 +54,13 @@
         },
         "channelId": "channel003",
         "channelTitle": "AI Hub",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-15T09:45:00Z"
       },
       "statistics": {
         "viewCount": "50000",
-        "likeCount": "6000"
+        "likeCount": "6000",
+        "duration": "PT18M45S"
       }
     },
     {
@@ -69,11 +75,13 @@
         },
         "channelId": "channel004",
         "channelTitle": "Dev Academy",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-20T14:10:00Z"
       },
       "statistics": {
         "viewCount": "72000",
-        "likeCount": "9500"
+        "likeCount": "9500",
+        "duration": "PT30M10S"
       }
     },
     {
@@ -88,11 +96,13 @@
         },
         "channelId": "channel005",
         "channelTitle": "Design Matters",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-22T17:30:00Z"
       },
       "statistics": {
         "viewCount": "41000",
-        "likeCount": "2500"
+        "likeCount": "2500",
+        "duration": "PT12M5S"
       }
     },
     {
@@ -107,11 +117,13 @@
         },
         "channelId": "channel006",
         "channelTitle": "Cloud Mastery",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-24T11:00:00Z"
       },
       "statistics": {
         "viewCount": "54000",
-        "likeCount": "4500"
+        "likeCount": "4500",
+        "duration": "PT25M30S"
       }
     },
     {
@@ -126,11 +138,13 @@
         },
         "channelId": "channel007",
         "channelTitle": "Code Simplified",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-27T15:20:00Z"
       },
       "statistics": {
         "viewCount": "67000",
-        "likeCount": "7000"
+        "likeCount": "7000",
+        "duration": "PT19M50S"
       }
     },
     {
@@ -145,11 +159,13 @@
         },
         "channelId": "channel008",
         "channelTitle": "API Experts",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-01-30T09:00:00Z"
       },
       "statistics": {
         "viewCount": "85000",
-        "likeCount": "9500"
+        "likeCount": "9500",
+        "duration": "PT16M25S"
       }
     },
     {
@@ -164,11 +180,13 @@
         },
         "channelId": "channel009",
         "channelTitle": "DevOps Daily",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-01T10:10:00Z"
       },
       "statistics": {
         "viewCount": "90000",
-        "likeCount": "11000"
+        "likeCount": "11000",
+        "duration": "PT13M40S"
       }
     },
     {
@@ -183,11 +201,13 @@
         },
         "channelId": "channel010",
         "channelTitle": "Cloud Pioneers",
-        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png"
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
       },
       "statistics": {
         "viewCount": "120000",
-        "likeCount": "15000"
+        "likeCount": "15000",
+        "duration": "PT22M10S"
       }
     }
   ]

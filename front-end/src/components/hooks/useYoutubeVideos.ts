@@ -18,11 +18,13 @@ export interface VideoSnippet {
   channelId: string;
   channelTitle: string;
   channelLogo?: string;
+  publishedAt: string;
 }
 
 export interface VideoStatistics {
   viewCount: string;
-  likeCount: string;
+  likeCount?: string;
+  duration?: string;
 }
 
 export interface Video {
@@ -62,12 +64,16 @@ export default function useYoutubeVideos(
       const idsString = videoIds.join(',');
 
       const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics`,
+        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
       );
 
       const statsMap = response.data.items.reduce(
         (map, item) => {
-          map[item.id] = item.statistics;
+          map[item.id] = {
+            viewCount: item.statistics.viewCount,
+            likeCount: item.statistics.likeCount,
+            duration: item.contentDetails.duration,
+          };
           return map;
         },
         {} as Record<string, VideoStatistics>,
@@ -132,6 +138,7 @@ export default function useYoutubeVideos(
             ...video.snippet,
             channelTitle: channelMap[video.snippet.channelId].title,
             channelLogo: channelMap[video.snippet.channelId].logo,
+            publishedAt: video.snippet.publishedAt,
           },
         }));
 
