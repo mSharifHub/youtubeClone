@@ -147,7 +147,7 @@ export default function useYoutubeVideos(
     } catch (e: Error) {
       setError(e.message);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   }
 

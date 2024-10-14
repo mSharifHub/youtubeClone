@@ -13,8 +13,14 @@ export default {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+
+        opacityAndPulse: {
+          '0%,100%': { opacity: 1 },
+          '50%': { opacity: 0.2 },
+        },
       },
       animation: {
+        'opacity-pulse': 'opacityAndPulse 2s ease-in-out infinite',
         'slide-right': 'slideRight 0.25s  ease-out',
         'slide-left': 'slideLeft 0.25s ease-out ',
       },
