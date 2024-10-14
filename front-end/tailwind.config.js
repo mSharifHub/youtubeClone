@@ -18,9 +18,17 @@ export default {
           '0%,100%': { opacity: 1 },
           '50%': { opacity: 0.2 },
         },
+
+        wave: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-1.5px)' },
+        },
       },
       animation: {
         'opacity-pulse': 'opacityAndPulse 2s ease-in-out infinite',
+        'wave-loading': 'wave 2s ease-in-out infinite',
+        'wave-opacity':
+          'wave 2s ease-in-out infinite,opacityAndPulse 2s ease-in-out infinite',
         'slide-right': 'slideRight 0.25s  ease-out',
         'slide-left': 'slideLeft 0.25s ease-out ',
       },

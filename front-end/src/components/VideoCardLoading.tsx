@@ -2,7 +2,7 @@ import React from 'react';
 
 export const VideoCardLoading: React.FunctionComponent = () => {
   return (
-    <div className="flex flex-col flex-wrap animate-opacity-pulse ">
+    <div className="flex flex-col flex-wrap animate-wave-opacity  ">
       {/* skeleton for video thumbnails */}
       <div className="h-[400px] sm:h-[300px] md:h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal" />
       {/* skeleton for video and channel information */}
@@ -22,7 +22,7 @@ export const VideoCardLoading: React.FunctionComponent = () => {
             {/* skeleton for view count and published time */}
             <div className="flex flex-row gap-x-2 ">
               {/* skeleton for view count */}
-              <div className="h-4 bg-neutral-200 dark:dark-modal rounded-sm w-1/3" />
+              <div className="h-4 bg-neutral-300 dark:dark-modal rounded-sm w-1/3 " />
             </div>
           </div>
         </div>
