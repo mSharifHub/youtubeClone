@@ -20,39 +20,39 @@ export const Home: React.FC = () => {
   const totalVideosToShow = videosPerRow * 2;
 
   const { videos, loading, error, playVideo, selectedVideoId } =
-    useYoutubeVideos(api_key, 10);
+    useYoutubeVideos(api_key, 2);
 
   function handleVideoClick(videoId: string) {
     playVideo(videoId);
   }
 
   return (
-    <>
-      {/* Main Home Frame */}
-      <div className="h-screen flex justify-center items-start overflow-y-auto scroll-smooth ">
-        {!isLoggedIn && <NotLoggedInBanner />}
+    <div className="h-screen flex justify-center items-start overflow-y-auto scroll-smooth ">
+      {!isLoggedIn && <NotLoggedInBanner />}
 
-        {/* First row of videos */}
-        {isLoggedIn && (
-          <div
-            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2 overflow-hidden`}
-            style={{
-              gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
-            }}
-          >
-            {dummyData.videos.slice(0, totalVideosToShow).map((video) => (
-              <>
-                {/* render videos or skeleton if loading*/}
-                {!loading ? (
-                  <VideoCard key={video.id.videoId} video={video} />
-                ) : (
-                  <VideoCardLoading key={video.id.videoId} />
-                )}
-              </>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+      {isLoggedIn && (
+        <div
+          className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2 overflow-hidden`}
+          style={{
+            gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
+          }}
+        >
+          {videos
+            .slice(0, totalVideosToShow)
+            .map((video) =>
+              !loading ? (
+                <VideoCard
+                  key={`${video.id.videoId}-${video.snippet.title}`}
+                  video={video}
+                />
+              ) : (
+                <VideoCardLoading
+                  key={`${video.id.videoId}-${video.snippet.title}`}
+                />
+              ),
+            )}
+        </div>
+      )}
+    </div>
   );
 };

@@ -23,6 +23,8 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-1.5px)' },
         },
+
+
       },
       animation: {
         'opacity-pulse': 'opacityAndPulse 2s ease-in-out infinite',
