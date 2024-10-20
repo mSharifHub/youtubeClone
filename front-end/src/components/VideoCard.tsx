@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { sliceText } from './helpers/sliceText.ts';
 import timeSince from './helpers/timeSince.ts';
 import { Video } from './hooks/useYoutubeVideos.ts';
+import { convertISO } from './helpers/convertISO.ts';
+import decrementTime from './helpers/decrementTime.ts';
 
 interface VideoCardProps {
   video: Video;
 }
 
-declare global {
-  interface Window {
-    YT: typeof YT;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   video,
 }) => {
+  // state to play video on hover
   const [hover, setHover] = useState<boolean>(false);
+  const [remainingTime, setRemainingTime] = useState<{
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const videoURL = `https://www.youtube.com/embed/${video.id.videoId}?autoplay=1&mute=1&controls=0`;
 
@@ -28,6 +30,34 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   const handleMouseLeave = () => {
     setHover(false);
   };
+
+  // remaining time
+  useEffect(() => {
+    if (video.statistics?.duration) {
+      const { hours, minutes, seconds } = convertISO(video.statistics.duration);
+
+      setRemainingTime({
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+      });
+    }
+  }, [video.statistics?.duration]);
+
+  // set time on hover
+  useEffect(() => {
+    if (hover) {
+      timerRef.current = window.setInterval(() => {
+        decrementTime(setRemainingTime, timerRef);
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current as number);
+      timerRef.current = null;
+    }
+    return () => {
+      clearInterval(timerRef.current as number);
+    };
+  }, [hover]);
 
   return (
     <div className="flex flex-col flex-wrap">
@@ -53,6 +83,11 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
             allow="autpplay; encrypted-media; gyroscope; picture-in-picture"
           />
         )}
+        <div className="absolute bottom-0 right-4 px-2 font-bold text-neutral-600 dark:text-white">
+          {remainingTime
+            ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}`
+            : '0:00:00'}
+        </div>
       </div>
 
       {/* video and channel information*/}

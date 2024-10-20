@@ -37,7 +37,7 @@ export const Home: React.FC = () => {
             gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
           }}
         >
-          {videos
+          {dummyData.videos
             .slice(0, totalVideosToShow)
             .map((video) =>
               !loading ? (
