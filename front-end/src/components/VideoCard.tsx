@@ -60,7 +60,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   }, [hover]);
 
   return (
-    <div className="flex flex-col flex-wrap">
+    <div className="flex flex-col flex-wrap cursor-pointer">
       {/* video thumbnails*/}
 
       <div
@@ -72,18 +72,20 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-fill  transition-opacity duration-100 ease-linear cursor-pointer`}
+            className={` absolute  inset-0 h-full w-full rounded-xl object-fill   ease-linear `}
           />
         )}
 
         {hover && (
           <iframe
-            className={`absolute  inset-0 h-full w-full rounded-xl  transition-opacity duration-100 ease-linear cursor-pointer`}
+            className="absolute  inset-0 h-full w-full rounded-xl "
             src={videoURL}
             allow="autpplay; encrypted-media; gyroscope; picture-in-picture"
           />
         )}
-        <div className="absolute bottom-0 right-4 px-2 font-bold text-neutral-600 dark:text-white">
+        <div className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
+             style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}>
+
           {remainingTime
             ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}`
             : '0:00:00'}

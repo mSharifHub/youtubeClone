@@ -37,7 +37,7 @@ export interface Video {
 
 interface UseYoutubeVideosResult {
   videos: Video[];
-  loading: boolean;
+  loading: boolean|null;
   error: string | null;
   playVideo: (videoId: string) => void;
   selectedVideoId: string | null;
@@ -48,7 +48,7 @@ export default function useYoutubeVideos(
   maxResult: number,
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
 
@@ -112,7 +112,6 @@ export default function useYoutubeVideos(
   async function fetchVideos() {
     setLoading(true);
     setError(null);
-
     try {
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`,

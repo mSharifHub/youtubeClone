@@ -5,3 +5,4 @@ dist
 /src/components/Navigation.tsx
 /front-end/src/components/SubModal.tsx
 /src/components/settingsComponents/SwitchAccount.tsx
+/src/components/VideoCard.tsx
