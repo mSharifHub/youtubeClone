@@ -3,7 +3,6 @@ import { useUser } from '../../userContext/UserContext.tsx';
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import dummyData from '../../../dummyData.json';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading';
 
@@ -37,7 +36,7 @@ export const Home: React.FC = () => {
             gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
           }}
         >
-          {dummyData.videos
+          {videos
             .slice(0, totalVideosToShow)
             .map((video) =>
               !loading ? (

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import LocalCache from '../../apiCache/LocalCache.ts';
 
 export interface VideoSnippet {
   title: string;
@@ -37,11 +38,13 @@ export interface Video {
 
 interface UseYoutubeVideosResult {
   videos: Video[];
-  loading: boolean|null;
+  loading: boolean | null;
   error: string | null;
   playVideo: (videoId: string) => void;
   selectedVideoId: string | null;
 }
+
+const cache = LocalCache.getInstance();
 
 export default function useYoutubeVideos(
   apiKey: string,
@@ -109,9 +112,20 @@ export default function useYoutubeVideos(
     }
   }
 
-  async function fetchVideos() {
+  const fetchVideos = async () => {
     setLoading(true);
     setError(null);
+
+    const cacheKey = `videos_${maxResult}`;
+
+    const cacheVideos = cache.get<Video[]>(cacheKey);
+
+    if (cacheVideos) {
+      setVideos(cacheVideos);
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`,
@@ -142,13 +156,14 @@ export default function useYoutubeVideos(
         }));
 
         setVideos(videosWithDetails);
+        cache.set<Video[]>(cacheKey, videosWithDetails);
       }
     } catch (e: Error) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchVideos();
