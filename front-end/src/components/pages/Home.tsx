@@ -18,12 +18,11 @@ export const Home: React.FC = () => {
 
   const totalVideosToShow = videosPerRow * 2;
 
-  const { videos, loading, error, playVideo, selectedVideoId } =
-    useYoutubeVideos(api_key, 2);
-
-  function handleVideoClick(videoId: string) {
-    playVideo(videoId);
-  }
+  const { videos: firstVideoRows, loading: firstLoadingRow } = useYoutubeVideos(
+    api_key,
+    10,
+    'firstSection',
+  );
 
   return (
     <div className="h-screen flex justify-center items-start overflow-y-auto scroll-smooth ">
@@ -36,10 +35,10 @@ export const Home: React.FC = () => {
             gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
           }}
         >
-          {videos
+          {firstVideoRows
             .slice(0, totalVideosToShow)
             .map((video) =>
-              !loading ? (
+              !firstLoadingRow ? (
                 <VideoCard
                   key={`${video.id.videoId}-${video.snippet.title}`}
                   video={video}

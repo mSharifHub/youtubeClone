@@ -20,15 +20,25 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
     seconds: number;
   } | null>(null);
   const timerRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const videoURL = `https://www.youtube.com/embed/${video.id.videoId}?autoplay=1&mute=1&controls=0`;
 
   const handleMouseEnter = () => {
-    setHover(true);
+
+    timeoutRef.current = window.setTimeout(()=>{
+      setHover(true);
+    },500)
+
   };
 
   const handleMouseLeave = () => {
-    setHover(false);
+    if (timeoutRef.current){
+      clearTimeout(timeoutRef.current);
+      timerRef.current = null
+      setHover(false);
+    }
+
   };
 
   // remaining time

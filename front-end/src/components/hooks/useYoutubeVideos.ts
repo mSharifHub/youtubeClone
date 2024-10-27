@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
+import CryptoJS from 'crypto-js';
 
 export interface VideoSnippet {
   title: string;
@@ -49,11 +50,14 @@ const cache = LocalCache.getInstance();
 export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
+  section: string,
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+
+  const cacheKey = `videos_${section}_${maxResult}`;
 
   function playVideo(videoId: string): void {
     setSelectedVideoId(videoId);
@@ -116,14 +120,22 @@ export default function useYoutubeVideos(
     setLoading(true);
     setError(null);
 
-    const cacheKey = `videos_${maxResult}`;
+    const encryptedCacheVideos = cache.get<string>(cacheKey);
 
-    const cacheVideos = cache.get<Video[]>(cacheKey);
+    if (encryptedCacheVideos && encryptedCacheVideos.length > 0) {
+      const bytes = CryptoJS.AES.decrypt(
+        encryptedCacheVideos,
+        import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
+      );
 
-    if (cacheVideos) {
-      setVideos(cacheVideos);
+      const videosMetaData: Video[] = JSON.parse(
+        bytes.toString(CryptoJS.enc.Utf8),
+      );
+      setVideos(videosMetaData);
       setLoading(false);
       return;
+    } else {
+      cache.remove(cacheKey);
     }
 
     try {
@@ -156,7 +168,13 @@ export default function useYoutubeVideos(
         }));
 
         setVideos(videosWithDetails);
-        cache.set<Video[]>(cacheKey, videosWithDetails);
+
+        const cyrptedVideos = CryptoJS.AES.encrypt(
+          JSON.stringify(videosWithDetails),
+          import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
+        ).toString();
+
+        cache.set<string>(cacheKey, cyrptedVideos);
       }
     } catch (e: Error) {
       setError(e.message);
