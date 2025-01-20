@@ -42,8 +42,7 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
    */
   const switchAccount = useSwitchAccounts()
 
-
-  const listOfNotLoggedAccounts = usersAuthList.filter(profile=>profile.email !== user?.email)
+  console.log(usersAuthList)
 
 
   return (
@@ -97,8 +96,8 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
       <section className="flex flex-col justify-start items-start">
         <div className=" w-full  p-2 text-xs font-bold "> other accounts</div>
         {loading && <ProfileSkeleton skeleton={loading} />}
-        {!error && listOfNotLoggedAccounts.length > 0 &&
-          listOfNotLoggedAccounts
+        {!error && usersAuthList.length > 0 &&
+            usersAuthList
             .map((account, index) => (
               <ul
                 onClick={()=> switchAccount(account)}
