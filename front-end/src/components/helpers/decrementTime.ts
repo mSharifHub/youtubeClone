@@ -12,8 +12,10 @@ export default function decrementTime(
   timerRef: React.MutableRefObject<number | null>,
 ) {
   setRemainingTime((prevTime) => {
-    if (!prevTime) return null;
-
+    if (!prevTime) {
+      clearInterval(timerRef.current as number);
+      return null;
+    }
     let { hours, minutes, seconds } = prevTime;
 
     if (seconds > 0) {

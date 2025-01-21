@@ -3,6 +3,8 @@ import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
 import CryptoJS from 'crypto-js';
 
+const cache = LocalCache.getInstance();
+
 export interface VideoSnippet {
   title: string;
   description: string;
@@ -45,8 +47,6 @@ interface UseYoutubeVideosResult {
   selectedVideoId: string | null;
 }
 
-const cache = LocalCache.getInstance();
-
 export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
@@ -87,7 +87,7 @@ export default function useYoutubeVideos(
       );
 
       return statsMap;
-    } catch (e: Error) {
+    } catch (e) {
       throw new Error(e.message);
     }
   }
@@ -111,7 +111,7 @@ export default function useYoutubeVideos(
       }, {});
 
       return channelMap;
-    } catch (e: Error) {
+    } catch (e) {
       throw new Error(e.message);
     }
   }
@@ -120,28 +120,37 @@ export default function useYoutubeVideos(
     setLoading(true);
     setError(null);
 
-    const encryptedCacheVideos = cache.get<string>(cacheKey);
-
-    if (encryptedCacheVideos && encryptedCacheVideos.length > 0) {
-      const bytes = CryptoJS.AES.decrypt(
-        encryptedCacheVideos,
-        import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
-      );
-
-      const videosMetaData: Video[] = JSON.parse(
-        bytes.toString(CryptoJS.enc.Utf8),
-      );
-      setVideos(videosMetaData);
-      setLoading(false);
-      return;
-    } else {
-      cache.remove(cacheKey);
-    }
-
+    // Handle  pulling from local cache before making an api request to the end point
     try {
+      // Retrieving cached videos
+      const encryptedCacheVideos = cache.get<string>(cacheKey);
+
+      if (encryptedCacheVideos) {
+        console.log(`[Cache] found cache videos for key: ${cacheKey}`);
+
+        // Decrypt the data
+        const bytes = CryptoJS.AES.decrypt(
+          encryptedCacheVideos,
+          import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
+        );
+
+        // Parsing decrypted data
+        const decryptData = bytes.toString(CryptoJS.enc.Utf8);
+        const videosMetaData: Video[] = JSON.parse(decryptData);
+
+        setVideos(videosMetaData);
+        setLoading(false);
+        return;
+      } else {
+        console.log(`[Cache] no valid cache found for key ${cacheKey}`);
+        cache.remove(cacheKey);
+      }
+
+      // If no videos in local cache then proceed with making an api GET request to the end point
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`,
       );
+
       if (response.status === 200) {
         const videoItems = response.data.items;
 
@@ -169,15 +178,16 @@ export default function useYoutubeVideos(
 
         setVideos(videosWithDetails);
 
-        const cyrptedVideos = CryptoJS.AES.encrypt(
+        const encryptedVideos = CryptoJS.AES.encrypt(
           JSON.stringify(videosWithDetails),
           import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
         ).toString();
 
-        cache.set<string>(cacheKey, cyrptedVideos);
+        cache.set<string>(cacheKey, encryptedVideos);
       }
-    } catch (e: Error) {
-      setError(e.message);
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
     } finally {
       setLoading(false);
     }
