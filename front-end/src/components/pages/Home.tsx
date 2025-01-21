@@ -30,16 +30,15 @@ export const Home: React.FC = () => {
   const { videos } = dummyData;
 
   const firstLoadingRow = false;
-  const shortsLoadingRow = false;
 
   return (
-    <div className="h-full w-full flex flex-col justify-start items-start overflow-y-auto scroll-smooth  border">
+    <div className="h-full w-full flex flex-col justify-start items-start">
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
         <>
           <div
-            className={` w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2 overflow-hidden `}
+            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2 overflow-y-auto scroll-smooth border `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
@@ -51,6 +50,7 @@ export const Home: React.FC = () => {
                   <VideoCard
                     key={`${video.id.videoId}-${video.snippet.title}`}
                     video={video}
+                    style="relative h-[400px] sm:h-[300px]  md:h-[300px] rounded-lg border-[0.5px]"
                   />
                 ) : (
                   <VideoCardLoading
@@ -58,36 +58,6 @@ export const Home: React.FC = () => {
                   />
                 ),
               )}
-          </div>
-
-          {/* shorts scrolling div */}
-          <div className="mt-12 h-[600px] w-full flex flex-col  border">
-            {/*shorts logo*/}
-            <div className="flex flex-row justify-start items-center mx-4 space-x-2 border">
-              <img
-                src="https://img.icons8.com/?size=100&id=ot8QhAKun4rZ&format=png&color=000000"
-                className="min-h-10 min-w-10 h-10 w-10"
-                alt="shorts logo"
-              />
-              <span className="font-bold dark:dark-modal text-xl">Shorts</span>
-            </div>
-
-            <div className="mx-4 mt-2 h-full border justify-start grid grid-flow-col auto-cols-[400px] gap-12 overflow-x-auto scroll-smooth ">
-              {videos.slice(0, totalVideosToShow).map((video) =>
-                !shortsLoadingRow ? (
-                  <div className="border rounded-lg">
-                    <VideoCard
-                      key={`${video.id.videoId}-${video.snippet.title}`}
-                      video={video}
-                    />
-                  </div>
-                ) : (
-                  <VideoCardLoading
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                  />
-                ),
-              )}
-            </div>
           </div>
         </>
       )}

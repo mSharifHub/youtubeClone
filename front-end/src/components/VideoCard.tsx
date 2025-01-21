@@ -7,10 +7,12 @@ import decrementTime from './helpers/decrementTime.ts';
 
 interface VideoCardProps {
   video: Video;
+  style:string| undefined
 }
 
 export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   video,
+  style,
 }) => {
   // state to play video on hover
   const [hover, setHover] = useState<boolean>(false);
@@ -82,7 +84,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
       {/* video thumbnails*/}
 
       <div
-        className="relative h-[400px] sm:h-[300px] md:h-[200px]"
+        className={style}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -90,7 +92,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-fill   ease-linear `}
+            className={` absolute  inset-0 h-full w-full rounded-xl object-contain   ease-linear `}
           />
         )}
 
