@@ -1,6 +1,6 @@
 class LocalCache {
   private static instance: LocalCache;
-  private readonly MAX_KB_SIZE: number = 1024;
+  private readonly MAX_KB_SIZE: number = 5120;
 
   private constructor() {}
 

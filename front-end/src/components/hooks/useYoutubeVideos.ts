@@ -122,29 +122,17 @@ export default function useYoutubeVideos(
 
     // Handle  pulling from local cache before making an api request to the end point
     try {
-      // Retrieving cached videos
-      const encryptedCacheVideos = cache.get<string>(cacheKey);
+      const cachedVideos = cache.get<Video[]>(cacheKey);
 
-      if (encryptedCacheVideos) {
+      if (cachedVideos) {
         console.log(`[Cache] found cache videos for key: ${cacheKey}`);
-
-        // Decrypt the data
-        const bytes = CryptoJS.AES.decrypt(
-          encryptedCacheVideos,
-          import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
-        );
-
-        // Parsing decrypted data
-        const decryptData = bytes.toString(CryptoJS.enc.Utf8);
-        const videosMetaData: Video[] = JSON.parse(decryptData);
-
-        setVideos(videosMetaData);
+        setVideos(cachedVideos);
         setLoading(false);
         return;
-      } else {
-        console.log(`[Cache] no valid cache found for key ${cacheKey}`);
-        cache.remove(cacheKey);
       }
+
+      console.log(`[Cache] No valid cache found for key: ${cacheKey}`);
+      cache.remove(cacheKey);
 
       // If no videos in local cache then proceed with making an api GET request to the end point
       const response = await axios.get(
@@ -176,14 +164,9 @@ export default function useYoutubeVideos(
           },
         }));
 
+        cache.set<Video[]>(cacheKey, videosWithDetails);
+
         setVideos(videosWithDetails);
-
-        const encryptedVideos = CryptoJS.AES.encrypt(
-          JSON.stringify(videosWithDetails),
-          import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
-        ).toString();
-
-        cache.set<string>(cacheKey, encryptedVideos);
       }
     } catch (err) {
       setError(err.message);

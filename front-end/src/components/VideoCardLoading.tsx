@@ -1,13 +1,16 @@
 import React from 'react';
 
-export const VideoCardLoading: React.FunctionComponent = () => {
+interface VideoCardLoadingProps {
+  style: string;
+}
+
+export const VideoCardLoading: React.FC<VideoCardLoadingProps> = ({
+  style,
+}) => {
   return (
     <div className="flex flex-col flex-wrap animate-wave-opacity  ">
       {/* skeleton for video thumbnails */}
-      <div
-        className=" relavtive  h-[400px] sm:h-[300px] md:h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal">
-
-      </div>
+      <div className={style}></div>
       {/* skeleton for video and channel information */}
       <div className="flex flex-initial p-2 space-x-2">
         {/* skeleton for channel logo */}

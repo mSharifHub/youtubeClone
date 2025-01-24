@@ -92,13 +92,13 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-contain   ease-linear `}
+            className={` absolute  inset-0 h-full w-full rounded-xl object-cover   ease-linear `}
           />
         )}
 
         {hover && (
           <iframe
-            className="absolute  inset-0 h-full w-full rounded-xl "
+            className="absolute  inset-0 h-full w-full rounded-xl  "
             src={videoURL}
             allow="autpplay; encrypted-media; gyroscope; picture-in-picture"
           />
