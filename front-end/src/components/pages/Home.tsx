@@ -40,14 +40,14 @@ export const Home: React.FC = () => {
 
 
   return (
-    <div className="h-full w-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto">
+    <div className="h-screen  flex flex-col justify-start items-start scroll-smooth overflow-y-auto">
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
         <>
           {/* first row of videos */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2`}
+            className={`min-h-fit flex-1 w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2`}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
@@ -59,11 +59,11 @@ export const Home: React.FC = () => {
                   <VideoCard
                     key={`${video.id.videoId}-${video.snippet.title}`}
                     video={video}
-                    style="relative h-[400px] sm:h-[300px]  md:h-[300px]  rounded-lg"
+                    style="relative h-[200px] rounded-lg"
                   />
                 ) : (
                   <VideoCardLoading
-                    style=" relavtive  h-[400px] sm:h-[300px] md:h-[300px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
+                    style=" relavtive  h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
                     key={`${video.id.videoId}-${video.snippet.title}`}
                   />
                 ),
@@ -71,7 +71,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="mt-8 h-[800px]  w-full overflow-hidden">
+          <div className="mt-8 min-h-fit  flex-1  w-full ">
             {/*YouTube Shorts logo */}
             <div className="flex flex-row  justify-start items-center">
               <img
@@ -84,7 +84,7 @@ export const Home: React.FC = () => {
 
             {/*YouTube Shorts scroll row */}
             <div
-              className={`min-h-fit w-full mt-8 grid grid-flow-col  gap-x-5 justify-start items-center `}
+              className={` min-h-fit  flex-1  mt-8 grid grid-flow-col  gap-x-5 justify-start items-center `}
               style={{
                 gridTemplateColumns: `repeat(${videosPerRowShorts},minmax(0,1fr))`,
               }}
@@ -94,7 +94,7 @@ export const Home: React.FC = () => {
                 .map((video) =>
                   !shortsLoading ? (
                     <div
-                      className="h-full flex justify-center items-center"
+                      className="h-full flex-1 justify-center items-center"
                       key={`${video.id.videoId}-${video.snippet.title}`}
                     >
                       <VideoCard
