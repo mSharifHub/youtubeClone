@@ -5,7 +5,11 @@ import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading';
-import dummyData from '../../../dummyData.json';
+
+import {
+  firstShortsRowsDisplayValues,
+  firstVideoRowsDisplayValues,
+} from '../helpers/homeVideoDisplayOptions.ts';
 
 export const Home: React.FC = () => {
   const {
@@ -16,30 +20,9 @@ export const Home: React.FC = () => {
 
   // Using the useVideo hook to control number of videos show per screen size
 
-  const firstVideoRowsDisplayValues = {
-    display_less_480: 1,
-    display_481_699: 1,
-    display_700_899: 2,
-    display_900_1124: 2,
-    display_1125_1420: 3,
-    display_1421_1739: 4,
-    display_1740_1920: 5,
-    display_full: 5,
-  };
-
   const videosPerRow = useVideoGrid(firstVideoRowsDisplayValues);
   const totalVideosToShowFirstRow = videosPerRow ? videosPerRow * 2 : 0;
 
-  const firstShortsRowsDisplayValues = {
-    display_less_480: 1,
-    display_481_699: 1,
-    display_700_899: 2,
-    display_900_1124: 2,
-    display_1125_1420: 3,
-    display_1421_1739: 5,
-    display_1740_1920: 6,
-    display_full: 7,
-  };
   const videosPerRowShorts = useVideoGrid(firstShortsRowsDisplayValues);
   const totalShortsToShowFirstRow = videosPerRowShorts;
 
@@ -55,9 +38,6 @@ export const Home: React.FC = () => {
     'shortsVideoRows',
   );
 
-  // const { videos } = dummyData;
-  //
-  // const firstLoadingRow = false;
 
   return (
     <div className="h-full w-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto">
@@ -104,7 +84,7 @@ export const Home: React.FC = () => {
 
             {/*YouTube Shorts scroll row */}
             <div
-              className={`min-h-fit w-full grid grid-flow-col  gap-x-5 justify-start items-center `}
+              className={`min-h-fit w-full mt-8 grid grid-flow-col  gap-x-5 justify-start items-center `}
               style={{
                 gridTemplateColumns: `repeat(${videosPerRowShorts},minmax(0,1fr))`,
               }}

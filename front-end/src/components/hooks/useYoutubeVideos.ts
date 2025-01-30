@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
-import CryptoJS from 'crypto-js';
-
 const cache = LocalCache.getInstance();
 
 export interface VideoSnippet {
