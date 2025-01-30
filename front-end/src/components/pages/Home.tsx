@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
@@ -17,6 +17,9 @@ export const Home: React.FC = () => {
   } = useUser();
 
   const api_key: string = import.meta.env.VITE_YOUTUBE_API_3;
+
+  const bottomPageDiv = useRef<HTMLDivElement | null>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
 
   // Using the useVideo hook to control number of videos show per screen size
 
@@ -38,6 +41,31 @@ export const Home: React.FC = () => {
     'shortsVideoRows',
   );
 
+  // fetching lazy load videos
+  const {
+    videos: infiniteVideoRows,
+    loading: infiniteRowsIsLoading,
+    loadMoreVideos,
+  } = useYoutubeVideos(api_key, 10, 'infiniteVideoRows');
+
+  useEffect(() => {
+    if (infiniteRowsIsLoading) return;
+
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreVideos();
+        }
+      },
+      { threshold: 1.0 },
+    );
+
+    if (bottomPageDiv.current) observer.current.observe(bottomPageDiv.current);
+
+    return () => {
+      if (bottomPageDiv.current) observer.current?.disconnect();
+    };
+  }, [infiniteVideoRows, infiniteRowsIsLoading]);
 
   return (
     <div className="h-screen  flex flex-col justify-start items-start scroll-smooth overflow-y-auto">
@@ -113,6 +141,9 @@ export const Home: React.FC = () => {
           </div>
         </>
       )}
+
+      {/* bottom of the page  load detection*/}
+      <div>div to hold infinite scroll</div>
     </div>
   );
 };

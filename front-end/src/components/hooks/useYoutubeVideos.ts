@@ -119,6 +119,7 @@ export default function useYoutubeVideos(
   }
 
   const fetchVideos = async (isLoadMore = false) => {
+    // prevents calling if is still loading
     if (loading) return;
 
     setLoading(true);
@@ -142,6 +143,7 @@ export default function useYoutubeVideos(
 
       let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`;
 
+      // Add nextPage
       if (isLoadMore && nextPageToken) {
         url += `&nextPageToken=${nextPageToken}`;
       }
@@ -150,6 +152,7 @@ export default function useYoutubeVideos(
 
       if (response.status === 200) {
         const videoItems = response.data.items;
+
         setNextPageToken(response.data.nextPageToken);
 
         const videoIds = videoItems.map((video: Video) => video.id.videoId);
@@ -199,6 +202,6 @@ export default function useYoutubeVideos(
     error,
     playVideo,
     selectedVideoId,
-    loadMoreVideos:() => fetchVideos(true)
+    loadMoreVideos: () => fetchVideos(true),
   };
 }
