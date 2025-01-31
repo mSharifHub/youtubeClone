@@ -7,18 +7,29 @@ import decrementTime from './helpers/decrementTime.ts';
 
 interface VideoCardProps {
   video: Video;
+  style:string| undefined
 }
 
 export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   video,
+  style,
 }) => {
   // state to play video on hover
   const [hover, setHover] = useState<boolean>(false);
+
   const [remainingTime, setRemainingTime] = useState<{
     hours: number;
     minutes: number;
     seconds: number;
   } | null>(null);
+
+  const [originalTime, setOriginalTime] = useState<{
+    hours:number;
+    minutes:number;
+    seconds:number;
+  }| null>(null)
+
+
   const timerRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
@@ -35,26 +46,24 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   const handleMouseLeave = () => {
     if (timeoutRef.current){
       clearTimeout(timeoutRef.current);
-      timerRef.current = null
       setHover(false);
     }
 
   };
 
-  // remaining time
+  // Initializing remaining time
   useEffect(() => {
     if (video.statistics?.duration) {
       const { hours, minutes, seconds } = convertISO(video.statistics.duration);
 
-      setRemainingTime({
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-      });
+      const timeObj = {hours, minutes, seconds};
+      setRemainingTime(timeObj);
+      setOriginalTime(timeObj);
+
     }
   }, [video.statistics?.duration]);
 
-  // set time on hover
+  // Updating timer on hover
   useEffect(() => {
     if (hover) {
       timerRef.current = window.setInterval(() => {
@@ -63,18 +72,19 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
     } else {
       clearInterval(timerRef.current as number);
       timerRef.current = null;
+      setRemainingTime(originalTime);
     }
     return () => {
       clearInterval(timerRef.current as number);
     };
-  }, [hover]);
+  }, [hover,originalTime]);
 
   return (
     <div className="flex flex-col flex-wrap cursor-pointer">
       {/* video thumbnails*/}
 
       <div
-        className="relative h-[400px] sm:h-[300px] md:h-[200px]"
+        className={style}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -82,13 +92,13 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-fill   ease-linear `}
+            className={` absolute  inset-0 h-full w-full rounded-xl object-cover   ease-linear `}
           />
         )}
 
         {hover && (
           <iframe
-            className="absolute  inset-0 h-full w-full rounded-xl "
+            className="absolute  inset-0 h-full w-full rounded-xl  "
             src={videoURL}
             allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
           />

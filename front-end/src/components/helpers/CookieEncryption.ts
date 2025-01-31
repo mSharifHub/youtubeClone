@@ -1,13 +1,13 @@
 import CryptoJS from 'crypto-js';
 
-export const encryptData = (data) => {
+export const encryptData = (data: string) => {
   return CryptoJS.AES.encrypt(
     JSON.stringify(data),
     import.meta.env.VITE_COOKIE_KEY_ENCRYPTION,
   ).toString();
 };
 
-export const decryptData = (encryptedData) => {
+export const decryptData = (encryptedData: string) => {
   try {
     const bytes = CryptoJS.AES.decrypt(
       encryptedData,

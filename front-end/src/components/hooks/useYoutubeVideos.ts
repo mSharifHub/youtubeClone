@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
-import CryptoJS from 'crypto-js';
+
+// local cache to store videos
+const cache = LocalCache.getInstance();
 
 export interface VideoSnippet {
   title: string;
@@ -43,9 +45,8 @@ interface UseYoutubeVideosResult {
   error: string | null;
   playVideo: (videoId: string) => void;
   selectedVideoId: string | null;
+  loadMoreVideos: () => void;
 }
-
-const cache = LocalCache.getInstance();
 
 export default function useYoutubeVideos(
   apiKey: string,
@@ -56,6 +57,7 @@ export default function useYoutubeVideos(
   const [loading, setLoading] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
   const cacheKey = `videos_${section}_${maxResult}`;
 
@@ -87,7 +89,7 @@ export default function useYoutubeVideos(
       );
 
       return statsMap;
-    } catch (e: Error) {
+    } catch (e) {
       throw new Error(e.message);
     }
   }
@@ -111,42 +113,49 @@ export default function useYoutubeVideos(
       }, {});
 
       return channelMap;
-    } catch (e: Error) {
+    } catch (e) {
       throw new Error(e.message);
     }
   }
 
-  const fetchVideos = async () => {
+  const fetchVideos = async (isLoadMore = false) => {
+    // prevents calling if is still loading
+    if (loading) return;
+
     setLoading(true);
     setError(null);
 
-    const encryptedCacheVideos = cache.get<string>(cacheKey);
-
-    if (encryptedCacheVideos && encryptedCacheVideos.length > 0) {
-      const bytes = CryptoJS.AES.decrypt(
-        encryptedCacheVideos,
-        import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
-      );
-
-      const videosMetaData: Video[] = JSON.parse(
-        bytes.toString(CryptoJS.enc.Utf8),
-      );
-      setVideos(videosMetaData);
-      setLoading(false);
-      return;
-    } else {
-      cache.remove(cacheKey);
-    }
-
+    // Handle  pulling from local cache before making an api request to the end point
     try {
-      const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`,
-      );
+      const cachedVideos = cache.get<Video[]>(cacheKey);
+
+      if (!isLoadMore && cachedVideos) {
+        console.log(`[Cache] found cache videos for key: ${cacheKey}`);
+        setVideos(cachedVideos);
+        setLoading(false);
+        return;
+      }
+
+      console.log(`[Cache] No valid cache found for key: ${cacheKey}`);
+      cache.remove(cacheKey);
+
+      // If no videos in local cache then proceed with making an api GET request to the end point
+
+      let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`;
+
+      // Add nextPage
+      if (isLoadMore && nextPageToken) {
+        url += `&nextPageToken=${nextPageToken}`;
+      }
+
+      const response = await axios.get(url);
+
       if (response.status === 200) {
         const videoItems = response.data.items;
 
-        const videoIds = videoItems.map((video: Video) => video.id.videoId);
+        setNextPageToken(response.data.nextPageToken);
 
+        const videoIds = videoItems.map((video: Video) => video.id.videoId);
         const channelIds: string[] = [
           ...new Set(
             videoItems.map((video: Video) => video.snippet.channelId) as string,
@@ -156,7 +165,7 @@ export default function useYoutubeVideos(
         const statisticsMap = await fetchVideoStatistics(videoIds);
         const channelMap = await fetchChannelDetails(channelIds);
 
-        const videosWithDetails = videoItems.map((video: Video) => ({
+        const newVideos = videoItems.map((video: Video) => ({
           ...video,
           statistics: statisticsMap[video.id.videoId],
           snippet: {
@@ -167,17 +176,17 @@ export default function useYoutubeVideos(
           },
         }));
 
-        setVideos(videosWithDetails);
+        const updatedVideos = isLoadMore
+          ? [...videos, ...newVideos]
+          : newVideos;
 
-        const cyrptedVideos = CryptoJS.AES.encrypt(
-          JSON.stringify(videosWithDetails),
-          import.meta.env.VITE_BASIC_16_KEY_VIDEO_METADATA,
-        ).toString();
+        cache.set<Video[]>(cacheKey, updatedVideos);
 
-        cache.set<string>(cacheKey, cyrptedVideos);
+        setVideos(updatedVideos);
       }
-    } catch (e: Error) {
-      setError(e.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : null);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -193,5 +202,6 @@ export default function useYoutubeVideos(
     error,
     playVideo,
     selectedVideoId,
+    loadMoreVideos: () => fetchVideos(true),
   };
 }

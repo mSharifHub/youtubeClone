@@ -150,7 +150,7 @@ export const MenuModal: React.FC = () => {
                     customIconSrc={chevronRight}
                     title="You"
                     reverse={true}
-                    link="#"
+                  link="#"
                     isOffCanvas={true}
                     onMouseEnter={mouseEnter}
                     onMouseLeave={mouseLeave}
