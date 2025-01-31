@@ -99,7 +99,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="mt-8 min-h-fit  flex-1  w-full ">
+          <div className=" min-h-fit h-[800px] flex-1  w-full   ">
             {/*YouTube Shorts logo */}
             <div className="flex flex-row  justify-start items-center">
               <img
@@ -110,9 +110,9 @@ export const Home: React.FC = () => {
               <h1 className="font-bold  text-lg dark:dark-modal">Shorts</h1>
             </div>
 
-            {/*YouTube Shorts scroll row */}
+            {/* YouTube Shorts scroll row */}
             <div
-              className={` min-h-fit  flex-1  mt-8 grid grid-flow-col  gap-x-5 justify-start items-center `}
+              className="grid grid-flow-col gap-x-5  "
               style={{
                 gridTemplateColumns: `repeat(${videosPerRowShorts},minmax(0,1fr))`,
               }}
@@ -122,28 +122,27 @@ export const Home: React.FC = () => {
                 .map((video) =>
                   !shortsLoading ? (
                     <div
-                      className="h-full flex-1 justify-center items-center"
+                      className=" h-full w-full   flex-1 justify-center items-center "
                       key={`${video.id.videoId}-${video.snippet.title}`}
                     >
                       <VideoCard
                         video={video}
-                        style="relative flex justify-center items-center  h-[500px] rounded-lg"
+                        style="relative flex justify-center items-center  h-[500px] rounded-lg "
                       />
                     </div>
                   ) : (
                     <VideoCardLoading
-                      style=" relavtive  h-[500px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
+                      style=" relative h-[500px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
                       key={`${video.id.videoId}-${video.snippet.title}`}
                     />
                   ),
                 )}
             </div>
           </div>
+          <div>div to hold infinite scroll</div>
         </>
       )}
 
-      {/* bottom of the page  load detection*/}
-      <div>div to hold infinite scroll</div>
     </div>
   );
 };
