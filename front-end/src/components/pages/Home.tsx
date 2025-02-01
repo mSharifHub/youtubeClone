@@ -1,74 +1,46 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
-import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
-import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import { VideoCard } from '../VideoCard.tsx';
-import { VideoCardLoading } from '../VideoCardLoading';
-
 import {
   firstShortsRowsDisplayValues,
   firstVideoRowsDisplayValues,
 } from '../helpers/homeVideoDisplayOptions.ts';
+import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
+import dummyData from '../../../dummyData.json';
+import { VideoCard } from '../VideoCard.tsx';
+import { VideoCardLoading } from '../VideoCardLoading.tsx';
 
 export const Home: React.FC = () => {
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
+
+  // useState to check if user is logged in
   const {
     state: { isLoggedIn },
   } = useUser();
+  // This api key is to use along with use hook youtube videos
+  const apiKey = import.meta.env.VITE_YOUTUBE_API_3;
 
-  const api_key: string = import.meta.env.VITE_YOUTUBE_API_3;
-
-  const bottomPageDiv = useRef<HTMLDivElement | null>(null);
-  const observer = useRef<IntersectionObserver | null>(null);
-
-  // Using the useVideo hook to control number of videos show per screen size
-
+  // changes the number of video columns as the screen width changes
   const videosPerRow = useVideoGrid(firstVideoRowsDisplayValues);
-  const totalVideosToShowFirstRow = videosPerRow ? videosPerRow * 2 : 0;
 
-  const videosPerRowShorts = useVideoGrid(firstShortsRowsDisplayValues);
-  const totalShortsToShowFirstRow = videosPerRowShorts;
+  // changes the columns for the shorts rows as the screen width changes
+  const shortsVideosPerRow = useVideoGrid(firstShortsRowsDisplayValues);
 
-  const { videos: firstVideoRows, loading: firstLoadingRow } = useYoutubeVideos(
-    api_key,
-    10,
-    'firstSection',
-  );
+  // This will make the first batch of videos rows
+  const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
 
-  const { videos: shortsVideoRows, loading: shortsLoading } = useYoutubeVideos(
-    api_key,
-    7,
-    'shortsVideoRows',
-  );
+  const VIDEOS_PER_LOAD = totalVideosFirstRow;
 
-  // fetching lazy load videos
-  const {
-    videos: infiniteVideoRows,
-    loading: infiniteRowsIsLoading,
-    loadMoreVideos,
-  } = useYoutubeVideos(api_key, 10, 'infiniteVideoRows');
-
-  useEffect(() => {
-    if (infiniteRowsIsLoading) return;
-
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMoreVideos();
-        }
-      },
-      { threshold: 1.0 },
-    );
-
-    if (bottomPageDiv.current) observer.current.observe(bottomPageDiv.current);
-
-    return () => {
-      if (bottomPageDiv.current) observer.current?.disconnect();
-    };
-  }, [infiniteVideoRows, infiniteRowsIsLoading]);
+  /* For debugging use the dummy data to not exceed Youtube's api limit*/
+  const { videos } = dummyData;
+  const firstRowVideos = videos.slice(0, totalVideosFirstRow);
+  const shortsVideosRow = videos.slice(0, shortsVideosPerRow);
+  const isLoading = false;
+  /* end of debugging*/
 
   return (
-    <div className="h-screen  flex flex-col justify-start items-start scroll-smooth overflow-y-auto">
+    <div className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto border">
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
@@ -80,22 +52,20 @@ export const Home: React.FC = () => {
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {firstVideoRows
-              .slice(0, totalVideosToShowFirstRow)
-              .map((video) =>
-                !firstLoadingRow ? (
-                  <VideoCard
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                    video={video}
-                    style="relative h-[200px] rounded-lg"
-                  />
-                ) : (
-                  <VideoCardLoading
-                    style=" relavtive  h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                  />
-                ),
-              )}
+            {firstRowVideos.map((video) =>
+              !isLoading ? (
+                <VideoCard
+                  key={`${video.id.videoId}-${video.snippet.title}`}
+                  video={video}
+                  style="relative flex justify-center items-center h-[200px] rounded-lg border"
+                />
+              ) : (
+                <VideoCardLoading
+                  style=" relavtive  h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
+                  key={`${video.id.videoId}-${video.snippet.title}`}
+                />
+              ),
+            )}
           </div>
 
           {/*YouTube Shorts row */}
@@ -110,39 +80,34 @@ export const Home: React.FC = () => {
               <h1 className="font-bold  text-lg dark:dark-modal">Shorts</h1>
             </div>
 
-            {/* YouTube Shorts scroll row */}
             <div
               className="grid grid-flow-col gap-x-5  "
               style={{
-                gridTemplateColumns: `repeat(${videosPerRowShorts},minmax(0,1fr))`,
+                gridTemplateColumns: `repeat(${shortsVideosPerRow},minmax(0,1fr))`,
               }}
             >
-              {shortsVideoRows
-                .slice(0, totalShortsToShowFirstRow)
-                .map((video) =>
-                  !shortsLoading ? (
-                    <div
-                      className=" h-full w-full   flex-1 justify-center items-center "
-                      key={`${video.id.videoId}-${video.snippet.title}`}
-                    >
-                      <VideoCard
-                        video={video}
-                        style="relative flex justify-center items-center  h-[500px] rounded-lg "
-                      />
-                    </div>
-                  ) : (
-                    <VideoCardLoading
-                      style=" relative h-[500px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
-                      key={`${video.id.videoId}-${video.snippet.title}`}
+              {shortsVideosRow.map((video) =>
+                !isLoading ? (
+                  <div
+                    className=" h-full w-full   flex-1 justify-center items-center  border"
+                    key={`${video.id.videoId}-${video.snippet.title}`}
+                  >
+                    <VideoCard
+                      video={video}
+                      style="relative flex justify-center items-center  h-[500px] rounded-lg "
                     />
-                  ),
-                )}
+                  </div>
+                ) : (
+                  <VideoCardLoading
+                    style=" relative h-[500px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
+                    key={`${video.id.videoId}-${video.snippet.title}`}
+                  />
+                ),
+              )}
             </div>
           </div>
-          <div>div to hold infinite scroll</div>
         </>
       )}
-
     </div>
   );
 };
