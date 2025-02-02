@@ -209,6 +209,1057 @@
         "likeCount": "15000",
         "duration": "PT22M10S"
       }
+    },
+    {
+      "id": { "videoId": "vid001" },
+      "snippet": {
+        "title": "Exploring Cloud Architecture: An Overview",
+        "description": "An in-depth look at the fundamentals of cloud architecture and its key components for building scalable systems.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid002" },
+      "snippet": {
+        "title": "AWS Basics: Getting Started with Amazon Web Services",
+        "description": "A beginner's guide to setting up and using AWS for your first cloud project.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid003" },
+      "snippet": {
+        "title": "Understanding Google Cloud: Key Concepts and Benefits",
+        "description": "Discover the core features of Google Cloud and how it can transform your business operations.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid004" },
+      "snippet": {
+        "title": "Azure Essentials: Navigating Microsoft Cloud Services",
+        "description": "Learn the fundamentals of Microsoft Azure and its practical applications in the modern tech landscape.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid005" },
+      "snippet": {
+        "title": "Cloud Computing Trends in 2024",
+        "description": "Explore the latest trends and innovations shaping the future of cloud computing.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid006" },
+      "snippet": {
+        "title": "Building Scalable Applications on the Cloud",
+        "description": "Techniques and best practices for developing applications that can scale effortlessly in the cloud.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid007" },
+      "snippet": {
+        "title": "Securing Cloud Infrastructure: Best Practices",
+        "description": "A guide to securing your cloud-based infrastructure against modern cyber threats.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid008" },
+      "snippet": {
+        "title": "Serverless Computing Explained: Advantages and Use Cases",
+        "description": "Understand serverless architecture and how it can streamline your application development process.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid009" },
+      "snippet": {
+        "title": "Multi-Cloud Strategies: Leveraging Multiple Providers",
+        "description": "Learn how to effectively use multiple cloud platforms to enhance reliability and performance.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid010" },
+      "snippet": {
+        "title": "Cloud Storage Solutions: Comparing AWS S3, Google Cloud Storage, and Azure Blob",
+        "description": "A comparative analysis of leading cloud storage options to help you choose the best fit.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid011" },
+      "snippet": {
+        "title": "DevOps in the Cloud: CI/CD Best Practices",
+        "description": "Discover how cloud-based DevOps can accelerate your development and deployment cycles.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid012" },
+      "snippet": {
+        "title": "Data Analytics on the Cloud: Tools and Techniques",
+        "description": "A look at various cloud analytics tools and methods for harnessing big data.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid013" },
+      "snippet": {
+        "title": "Migrating to the Cloud: Step-by-Step Guide",
+        "description": "A practical guide for businesses looking to move their operations to the cloud.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid014" },
+      "snippet": {
+        "title": "Cloud Cost Optimization: Saving Money in the Cloud",
+        "description": "Strategies for reducing expenses and maximizing efficiency in your cloud deployments.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid015" },
+      "snippet": {
+        "title": "Hybrid Cloud Explained: Benefits and Challenges",
+        "description": "An overview of hybrid cloud solutions and how they integrate on-premises and cloud resources.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid016" },
+      "snippet": {
+        "title": "Introduction to Kubernetes on Cloud Platforms",
+        "description": "Learn how Kubernetes simplifies container orchestration in the cloud environment.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid017" },
+      "snippet": {
+        "title": "Cloud Networking Essentials: VPC, Subnets, and More",
+        "description": "Understand the basics of cloud networking and how to configure virtual networks effectively.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid018" },
+      "snippet": {
+        "title": "Cloud Database Services: A Comparative Analysis",
+        "description": "Explore the various database solutions offered by cloud providers and their use cases.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid019" },
+      "snippet": {
+        "title": "Cloud AI and Machine Learning: Harnessing the Power of the Cloud",
+        "description": "Discover how AI and ML services in the cloud can drive innovation and efficiency.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid020" },
+      "snippet": {
+        "title": "Optimizing Cloud Performance: Tips and Tricks",
+        "description": "Best practices to ensure your cloud applications run smoothly and efficiently.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid021" },
+      "snippet": {
+        "title": "Cloud Disaster Recovery: Planning and Implementation",
+        "description": "Learn how to design a robust disaster recovery plan for your cloud infrastructure.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid022" },
+      "snippet": {
+        "title": "Cloud Compliance and Governance: What You Need to Know",
+        "description": "An essential guide to managing compliance and governance in the cloud.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid023" },
+      "snippet": {
+        "title": "Edge Computing and the Cloud: Future Trends",
+        "description": "Examine the interplay between edge computing and cloud technology and its future impact.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid024" },
+      "snippet": {
+        "title": "IoT and Cloud Integration: Enabling Smart Solutions",
+        "description": "Discover how IoT devices leverage cloud services to create innovative smart solutions.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid025" },
+      "snippet": {
+        "title": "Cloud Automation: Tools and Technologies",
+        "description": "An overview of automation tools that can streamline your cloud management and operations.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid026" },
+      "snippet": {
+        "title": "Serverless vs Containers: Modern Cloud Architectures",
+        "description": "A comparison of serverless computing and containerization for modern cloud applications.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid027" },
+      "snippet": {
+        "title": "Deep Dive into Cloud Security: Protecting Your Data",
+        "description": "An advanced exploration of cloud security measures and how to safeguard your data.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid028" },
+      "snippet": {
+        "title": "Real-time Data Processing in the Cloud",
+        "description": "Learn about real-time data processing techniques and the cloud platforms that support them.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid029" },
+      "snippet": {
+        "title": "Cloud Virtualization: Concepts and Practices",
+        "description": "Understand the role of virtualization in cloud computing and its practical applications.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid030" },
+      "snippet": {
+        "title": "Cloud Storage Strategies: Balancing Cost and Performance",
+        "description": "Tips for optimizing cloud storage to achieve the right balance between cost and performance.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid031" },
+      "snippet": {
+        "title": "Exploring Cloud Service Models: IaaS, PaaS, SaaS",
+        "description": "An introduction to different cloud service models and their distinct advantages.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid032" },
+      "snippet": {
+        "title": "Cloud Solutions for Startups: Affordable and Scalable Options",
+        "description": "A guide for startups in choosing cost-effective and scalable cloud solutions.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid033" },
+      "snippet": {
+        "title": "Cloud Computing for Enterprises: Strategies for Growth",
+        "description": "How large organizations can leverage cloud computing for business growth and innovation.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid034" },
+      "snippet": {
+        "title": "Navigating Cloud Certifications: Which One is Right for You?",
+        "description": "A guide to cloud certification programs and how to choose the best path for your career.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid035" },
+      "snippet": {
+        "title": "The Future of Cloud Computing: Innovations and Predictions",
+        "description": "Expert insights into where cloud computing is headed and what to expect in the coming years.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid036" },
+      "snippet": {
+        "title": "Cloud Migration Challenges and How to Overcome Them",
+        "description": "Identify common challenges in cloud migration and learn strategies to overcome them.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid037" },
+      "snippet": {
+        "title": "Optimizing Cloud Workloads: Best Practices for Developers",
+        "description": "Practical tips for developers to optimize their applications running in the cloud.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid038" },
+      "snippet": {
+        "title": "Building a Cloud-Native Application: A Practical Guide",
+        "description": "Step-by-step instructions for designing and developing cloud-native applications.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid039" },
+      "snippet": {
+        "title": "Cloud Integration: Connecting On-Premises and Cloud Systems",
+        "description": "Learn how to seamlessly integrate your on-premises systems with cloud services.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid040" },
+      "snippet": {
+        "title": "Leveraging Cloud APIs: Enhancing Application Functionality",
+        "description": "Explore the power of cloud APIs and how they can extend your application's capabilities.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid041" },
+      "snippet": {
+        "title": "Cloud Management Tools: An Overview",
+        "description": "Review of top cloud management tools to help you streamline your operations.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid042" },
+      "snippet": {
+        "title": "Cloud DevOps: Automating Your Infrastructure",
+        "description": "Understand how DevOps practices are applied in cloud environments to improve efficiency.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid043" },
+      "snippet": {
+        "title": "Cloud Backup Solutions: Ensuring Data Safety",
+        "description": "Best practices and solutions for backing up your data in the cloud.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid044" },
+      "snippet": {
+        "title": "Cloud-based AI Solutions: Transforming Industries",
+        "description": "How AI solutions hosted in the cloud are driving change across various industries.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid045" },
+      "snippet": {
+        "title": "Cloud Scalability: Strategies for High Traffic Applications",
+        "description": "Learn strategies for scaling your cloud applications to handle high volumes of traffic.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid046" },
+      "snippet": {
+        "title": "Modern Cloud Architecture: Trends and Technologies",
+        "description": "An overview of the latest trends and technologies shaping modern cloud architecture.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid047" },
+      "snippet": {
+        "title": "Cloud Innovation: Emerging Tools and Platforms",
+        "description": "Discover emerging tools and platforms that are pushing the boundaries of cloud technology.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid048" },
+      "snippet": {
+        "title": "Cloud Computing: From Fundamentals to Advanced Techniques",
+        "description": "A comprehensive guide covering everything from cloud basics to advanced computing techniques.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid049" },
+      "snippet": {
+        "title": "Mastering Cloud Integration: Best Practices for Seamless Connectivity",
+        "description": "Strategies and best practices for achieving seamless integration between cloud services and on-premises systems.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
+    },
+    {
+      "id": { "videoId": "vid050" },
+      "snippet": {
+        "title": "The Evolution of Cloud Services: Past, Present, and Future",
+        "description": "Explore the evolution of cloud services and gain insights into future developments in the industry.",
+        "thumbnails": {
+          "default": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "medium": { "url": "/src/assets/thumbnails/icons8-video-100.png" },
+          "high": { "url": "/src/assets/thumbnails/icons8-video-100.png" }
+        },
+        "channelId": "channel010",
+        "channelTitle": "Cloud Pioneers",
+        "channelLogo": "/src/assets/thumbnails/icons8-video-100.png",
+        "publishedAt": "2024-02-03T12:45:00Z"
+      },
+      "statistics": {
+        "viewCount": "120000",
+        "likeCount": "15000",
+        "duration": "PT22M10S"
+      }
     }
+
   ]
 }

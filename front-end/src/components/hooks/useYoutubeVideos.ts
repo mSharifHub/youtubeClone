@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
-import LocalCache from '../../apiCache/LocalCache.ts';
 
-// local cache to store videos
-const cache = LocalCache.getInstance();
-
+/*
+ * Check YouTube Documentation for the properties
+ *
+ */
 export interface VideoSnippet {
   title: string;
   description: string;
@@ -58,8 +58,6 @@ export default function useYoutubeVideos(
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
-
-  const cacheKey = `videos_${section}_${maxResult}`;
 
   function playVideo(videoId: string): void {
     setSelectedVideoId(videoId);
@@ -118,83 +116,74 @@ export default function useYoutubeVideos(
     }
   }
 
-  const fetchVideos = async (isLoadMore = false) => {
-    // prevents calling if is still loading
-    if (loading) return;
+  const fetchVideos = useCallback(
+    async (pageToken?: string) => {
+      if (loading) return;
+      setLoading(true);
+      setError(null);
 
-    setLoading(true);
-    setError(null);
+      try {
+        let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`;
 
-    // Handle  pulling from local cache before making an api request to the end point
-    try {
-      const cachedVideos = cache.get<Video[]>(cacheKey);
+        if (pageToken) {
+          url += `&pageToken=${pageToken}`;
+        }
 
-      if (!isLoadMore && cachedVideos) {
-        console.log(`[Cache] found cache videos for key: ${cacheKey}`);
-        setVideos(cachedVideos);
+        const response = await axios.get(url);
+
+        if (response.status === 200) {
+          const videoItems = response.data.items;
+
+          const videoIds = videoItems.map((video: Video) => video.id.videoId);
+          const channelIds: string[] = [
+            ...new Set(
+              videoItems.map(
+                (video: Video) => video.snippet.channelId,
+              ) as string,
+            ),
+          ];
+
+          const statisticsMap = await fetchVideoStatistics(videoIds);
+          const channelMap = await fetchChannelDetails(channelIds);
+
+          const newVideos = videoItems.map((video: Video) => ({
+            ...video,
+            statistics: statisticsMap[video.id.videoId],
+            snippet: {
+              ...video.snippet,
+              channelTitle: channelMap[video.snippet.channelId].title,
+              channelLogo: channelMap[video.snippet.channelId].logo,
+              publishedAt: video.snippet.publishedAt,
+            },
+          }));
+
+          setVideos((previousVideos) => [...previousVideos, ...newVideos]);
+
+          console.log(
+            `[Debugging] next page token ${response.data.nextPageToken}`,
+          );
+          setNextPageToken(response.data.nextPageToken || null);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : null);
+        console.error(err);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      console.log(`[Cache] No valid cache found for key: ${cacheKey}`);
-      cache.remove(cacheKey);
-
-      // If no videos in local cache then proceed with making an api GET request to the end point
-
-      let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`;
-
-      // Add nextPage
-      if (isLoadMore && nextPageToken) {
-        url += `&nextPageToken=${nextPageToken}`;
-      }
-
-      const response = await axios.get(url);
-
-      if (response.status === 200) {
-        const videoItems = response.data.items;
-
-        setNextPageToken(response.data.nextPageToken);
-
-        const videoIds = videoItems.map((video: Video) => video.id.videoId);
-        const channelIds: string[] = [
-          ...new Set(
-            videoItems.map((video: Video) => video.snippet.channelId) as string,
-          ),
-        ];
-
-        const statisticsMap = await fetchVideoStatistics(videoIds);
-        const channelMap = await fetchChannelDetails(channelIds);
-
-        const newVideos = videoItems.map((video: Video) => ({
-          ...video,
-          statistics: statisticsMap[video.id.videoId],
-          snippet: {
-            ...video.snippet,
-            channelTitle: channelMap[video.snippet.channelId].title,
-            channelLogo: channelMap[video.snippet.channelId].logo,
-            publishedAt: video.snippet.publishedAt,
-          },
-        }));
-
-        const updatedVideos = isLoadMore
-          ? [...videos, ...newVideos]
-          : newVideos;
-
-        cache.set<Video[]>(cacheKey, updatedVideos);
-
-        setVideos(updatedVideos);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : null);
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [loading, nextPageToken],
+  );
 
   useEffect(() => {
+    console.log(`[Debugging] calling the fetchVideos`);
     fetchVideos();
   }, []);
+
+  function loadMoreVideos() {
+    if (nextPageToken) {
+      fetchVideos(nextPageToken);
+    }
+  }
 
   return {
     videos,
@@ -202,6 +191,6 @@ export default function useYoutubeVideos(
     error,
     playVideo,
     selectedVideoId,
-    loadMoreVideos: () => fetchVideos(true),
+    loadMoreVideos,
   };
 }
