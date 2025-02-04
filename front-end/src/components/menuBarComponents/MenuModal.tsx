@@ -38,8 +38,7 @@ import { useToolTip } from '../hooks/useToolTip.ts';
 import { ToolTip } from '../helpers/ToolTip.tsx';
 
 export const MenuModal: React.FC = () => {
-
-  const {state, dispatch} = useMenuBar()
+  const { state, dispatch } = useMenuBar();
 
   const {
     state: { isLoggedIn },
@@ -47,351 +46,338 @@ export const MenuModal: React.FC = () => {
 
   const { redirectGoogleAuth } = useUserLogin();
 
-
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
-
 
   const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
     useToolTip();
 
-
   useEffect(() => {
+    const handleRemoveClass = () => {
+      const reactModalContent = document.querySelector('.ReactModal__Content');
 
-    const handleRemoveClass = () =>{
-      const reactModalContent = document.querySelector('.ReactModal__Content')
-
-      if ( reactModalContent && window.innerWidth > 1280){
+      if (reactModalContent && window.innerWidth > 1280) {
         reactModalContent.classList.remove('animate-slide-left');
-        console.assert(!reactModalContent.classList.contains('animate-slide-left'), {message:"token has been removed"});
+        console.assert(
+          !reactModalContent.classList.contains('animate-slide-left'),
+          { message: 'token has been removed' },
+        );
       }
-    }
-    handleRemoveClass()
+    };
+    handleRemoveClass();
 
     window.addEventListener('resize', handleRemoveClass);
 
-    return()=> window.removeEventListener('resize', handleRemoveClass);
-
+    return () => window.removeEventListener('resize', handleRemoveClass);
   }, []);
 
+  return (
+    <ReactModal
+      isOpen={state.menu}
+      onRequestClose={() => {
+        dispatch({ type: 'HANDLE_MENU' });
+      }}
+      closeTimeoutMS={200}
+      overlayClassName={`fixed inset-0  bg-neutral-950  transition duration-500 ease-in-out ${state.menu ? 'bg-opacity-50' : 'bg-opacity-0'}  z-10 `}
+      style={{ content: { outline: 'none' } }}
+      className={`h-screen w-56  grid-flow-row   bg-white  dark:bg-darkTheme rounded-sm shadow-lg ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}
+    >
+      <div className="h-full py-5 px-4 grid grid-cols-1 auto-rows-min space-y-4 overflow-y-auto overflow-hidden scroll-smooth no-scrollbar">
+        {/* row-1*/}
+        <div className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-2 ">
+          {/* fa-bars */}
+          <FontAwesomeIcon
+            icon={faBars}
+            onClick={() => {
+              dispatch({ type: 'HANDLE_MENU' });
+            }}
+            title="Menu Bar"
+            className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
+          />
 
-  return(
-      <ReactModal
-        isOpen={state.menu}
-        onRequestClose={() => {
-          dispatch({ type: 'HANDLE_MENU' })
-        }}
-        closeTimeoutMS={200}
-        overlayClassName={`fixed inset-0  bg-neutral-950  transition duration-500 ease-in-out ${state.menu ? "bg-opacity-50" : "bg-opacity-0"}  z-10`}
-        style={{ content: { outline: 'none' } }}
-        className={`h-screen w-56  grid-flow-row   bg-white  dark:bg-darkTheme rounded-sm shadow-lg ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}>
-        <div
-          className="h-full py-5 px-4 grid grid-cols-1 auto-rows-min space-y-4 overflow-y-auto overflow-hidden scroll-smooth">
-          {/* row-1*/}
           <div
-            className=" w-auto col-span-1 col-start-1 row-start-1 row-span-1 px-4 flex justify-start items-center space-x-2 ">
-            {/* fa-bars */}
-            <FontAwesomeIcon
-              icon={faBars}
-              onClick={() => {
-                dispatch({ type: 'HANDLE_MENU' })
-              }}
-              title="Menu Bar"
-              className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
+            onClick={() => (window.location.href = '/')}
+            title="Youtube Home"
+            className="flex justify-center items-center cursor-pointer"
+          >
+            <img
+              src={youtubeIconPath}
+              alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
+              className="h-8 w-8  min-w-8"
             />
-
-            <div
-              onClick={() => (window.location.href = '/')}
-              title="Youtube Home"
-              className="flex justify-center items-center cursor-pointer"
-            >
-              <img
-                src={youtubeIconPath}
-                alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
-                className="h-8 w-8  min-w-8"
-              />
-              <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">
-                YouTube
-              </h3>
-            </div>
+            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">
+              YouTube
+            </h3>
           </div>
-          <section
-            className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-          >
-            <MenuComponent
-              customIconSrc={homeIconPath}
-              title="Home"
-              link="/"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}/>
-            <MenuComponent
-              title="Shorts"
-              customIconSrc={shortsIconPath}
-              link="#" isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}/>
-            <MenuComponent
-              title="Subscriptions"
-              customIconSrc={subscriptionIconPath}
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-          </section>
-          {isLoggedIn ? (
-            <>
-              {/* row-2*/}
-              <section
-                className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-              >
-                <div>
-                  <MenuComponent
-                    customIconSrc={chevronRight}
-                    title="You"
-                    reverse={true}
-                  link="#"
-                    isOffCanvas={true}
-                    onMouseEnter={mouseEnter}
-                    onMouseLeave={mouseLeave}
-                  />
-                </div>
-                <MenuComponent
-                  customIconSrc={yourChannelPath}
-                  title="Your Channel"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-                <MenuComponent
-                  customIconSrc={historyIconPath}
-                  title="History"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-                <MenuComponent
-                  customIconSrc={playListPath}
-                  title="Playlist"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-                <MenuComponent
-                  customIconSrc={watchLaterPath}
-                  title="Watch Later"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-                <MenuComponent
-                  customIconSrc={thumbsUpIconPath}
-                  title="liked Videos"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-
-              </section>
-              {/* row-3*/}
-              <section
-                className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-              >
-                <h1 className="capitalize mx-4 ">subscriptions</h1>
-                <MenuComponent
-                  customIconSrc={allSubscriptionIconPath}
-                  title="Subscriptions"
-                  link="#"
-                  isOffCanvas={true}
-                  onMouseEnter={mouseEnter}
-                  onMouseLeave={mouseLeave}
-                />
-              </section>
-            </>
-          ) : (
-            <>
-              {/* login component */}
-              <section
-                className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-              >
-                <div className="mx-4 space-y-3">
-                  <h3 className="flex flex-initial w-[80%]   text-sm text-start">
-                    Sign in to like videos, comment, and subscribe.
-                  </h3>
-                  <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />
-                </div>
-              </section>
-            </>
-          )}
-
-          {/* row-4 Explore */}
-          <section
-            className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-          >
-            <h1 className="capitalize mx-4">explore</h1>
-            <MenuComponent
-              customIconSrc={trendingIconPath}
-              title="Trending"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={shoppingIconPath}
-              title="Shopping"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={musicIconPath}
-              title="Music"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={moviesIconPath}
-              title="Movies"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={liveIconPath}
-              title="Live"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={gamingIconPath}
-              title="Gaming"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={newsIconPath}
-              title="News"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={sportsIconPath}
-              title="Sports"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={coursesIconPath}
-              title="Courses"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={fashionBeautyIconPath}
-              title="Fashion"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={podcastIconPath}
-              title="Podcast"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={playableIconPath}
-              title="Playables"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-          </section>
-          {/* row-5 */}
-          <section
-            className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-          >
-            <MenuComponent
-              customIconSrc={settingsIconPath}
-              title="Settings"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={reportIconPath}
-              title="Report"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={helpIconPatch}
-              title="Help"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={sendFeedBackPath}
-              title="Feedback"
-              link="#"
-              isOffCanvas={true}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-          </section>
-          {/* row-6 */}
-          <section
-            className="flex flex-col space-y-3"
-          >
-            <div className="capitalize mx-4 text-nowrap space-y-2">
-              <h1 className="text-md">developer information</h1>
-              <ul className="space-y-2">
-                {aboutArr.map((item, index) => (
-                  <li className="cursor-pointer text-sm " key={`key-${index}`}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
         </div>
-        <ToolTip
-          visible={showTooltip}
-          text={toolTipText}
-          position={tooltipPosition}
-        />
-      </ReactModal>
+        <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
+          <MenuComponent
+            customIconSrc={homeIconPath}
+            title="Home"
+            link="/"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            title="Shorts"
+            customIconSrc={shortsIconPath}
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            title="Subscriptions"
+            customIconSrc={subscriptionIconPath}
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+        </section>
+        {isLoggedIn ? (
+          <>
+            {/* row-2*/}
+            <section
+              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
+            >
+              <div>
+                <MenuComponent
+                  customIconSrc={chevronRight}
+                  title="You"
+                  reverse={true}
+                  link="#"
+                  isOffCanvas={true}
+                  onMouseEnter={mouseEnter}
+                  onMouseLeave={mouseLeave}
+                />
+              </div>
+              <MenuComponent
+                customIconSrc={yourChannelPath}
+                title="Your Channel"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+              <MenuComponent
+                customIconSrc={historyIconPath}
+                title="History"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+              <MenuComponent
+                customIconSrc={playListPath}
+                title="Playlist"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+              <MenuComponent
+                customIconSrc={watchLaterPath}
+                title="Watch Later"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+              <MenuComponent
+                customIconSrc={thumbsUpIconPath}
+                title="liked Videos"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+            </section>
+            {/* row-3*/}
+            <section
+              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
+            >
+              <h1 className="capitalize mx-4 ">subscriptions</h1>
+              <MenuComponent
+                customIconSrc={allSubscriptionIconPath}
+                title="Subscriptions"
+                link="#"
+                isOffCanvas={true}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
+              />
+            </section>
+          </>
+        ) : (
+          <>
+            {/* login component */}
+            <section
+              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
+            >
+              <div className="mx-4 space-y-3">
+                <h3 className="flex flex-initial w-[80%]   text-sm text-start">
+                  Sign in to like videos, comment, and subscribe.
+                </h3>
+                <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />
+              </div>
+            </section>
+          </>
+        )}
 
-  )
-
-
+        {/* row-4 Explore */}
+        <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
+          <h1 className="capitalize mx-4">explore</h1>
+          <MenuComponent
+            customIconSrc={trendingIconPath}
+            title="Trending"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={shoppingIconPath}
+            title="Shopping"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={musicIconPath}
+            title="Music"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={moviesIconPath}
+            title="Movies"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={liveIconPath}
+            title="Live"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={gamingIconPath}
+            title="Gaming"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={newsIconPath}
+            title="News"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={sportsIconPath}
+            title="Sports"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={coursesIconPath}
+            title="Courses"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={fashionBeautyIconPath}
+            title="Fashion"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={podcastIconPath}
+            title="Podcast"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={playableIconPath}
+            title="Playables"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+        </section>
+        {/* row-5 */}
+        <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
+          <MenuComponent
+            customIconSrc={settingsIconPath}
+            title="Settings"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={reportIconPath}
+            title="Report"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={helpIconPatch}
+            title="Help"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+          <MenuComponent
+            customIconSrc={sendFeedBackPath}
+            title="Feedback"
+            link="#"
+            isOffCanvas={true}
+            onMouseEnter={mouseEnter}
+            onMouseLeave={mouseLeave}
+          />
+        </section>
+        {/* row-6 */}
+        <section className="flex flex-col space-y-3">
+          <div className="capitalize mx-4 text-nowrap space-y-2">
+            <h1 className="text-md">developer information</h1>
+            <ul className="space-y-2">
+              {aboutArr.map((item, index) => (
+                <li className="cursor-pointer text-sm " key={`key-${index}`}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </div>
+      <ToolTip
+        visible={showTooltip}
+        text={toolTipText}
+        position={tooltipPosition}
+      />
+    </ReactModal>
+  );
 };

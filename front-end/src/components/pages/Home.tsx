@@ -87,7 +87,7 @@ export const Home: React.FC = () => {
 
   return (
     <div
-      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto"
+      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto pb-10 "
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -162,7 +162,7 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row space-x-2  mt-8 p-1 `}
+            className={`min-h-fit w-full grid grid-flow-row gap-4  mt-2 p-1`}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',
@@ -189,7 +189,7 @@ export const Home: React.FC = () => {
           {/* loading  */}
           {hasMore && loading && (
             <div className="flex w-full justify-center items-center">
-              <div className="min-h-12 min-w-12  h-12 w-12  border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
+              <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
             </div>
           )}
         </>
