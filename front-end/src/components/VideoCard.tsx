@@ -92,7 +92,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-cover   ease-linear `}
+            className={` absolute  inset-0 h-full w-full rounded-xl object-cover  ease-linear `}
           />
         )}
 

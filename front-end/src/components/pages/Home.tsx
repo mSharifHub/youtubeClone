@@ -9,14 +9,13 @@ import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import dummyData from '../../../dummyData.json';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
+import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 
 export const Home: React.FC = () => {
   // useState to check if user is logged in
   const {
     state: { isLoggedIn },
   } = useUser();
-  // This api key is to use along with use hook youtube videos
-  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
 
   // changes the number of video columns as the screen width changes
   const videosPerRow = useVideoGrid(firstVideoRowsDisplayValues);
@@ -27,17 +26,19 @@ export const Home: React.FC = () => {
   // This will make the first batch of videos rows
   const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
 
-  const VIDEOS_PER_LOAD = totalVideosFirstRow;
+  const totalShortsRow = shortsVideosPerRow;
 
   /*********************************************************************
   For debugging use the dummy data to not exceed Youtube's api limit*/
   const { videos } = dummyData;
   const firstRowVideos = videos.slice(0, totalVideosFirstRow);
   const shortsVideosRow = videos.slice(0, shortsVideosPerRow);
-  const [displayVideos, setDisplayVideos] = useState<typeof videos>([]);
+  const [displayVideos, setDisplayVideos] = useState<typeof videos>(
+    videos.slice(0, 5),
+  );
   const [count, setCount] = useState(0);
   const [hasMore, setHasMore] = useState<boolean>(
-    videos.length > VIDEOS_PER_LOAD,
+    videos.length > totalVideosFirstRow,
   );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,7 +54,7 @@ export const Home: React.FC = () => {
       setDisplayVideos((prevVideos) => {
         const nextVideos = videos.slice(
           prevVideos.length,
-          prevVideos.length + VIDEOS_PER_LOAD,
+          prevVideos.length + totalVideosFirstRow,
         );
         if (nextVideos.length == 0) setHasMore(false);
         return [...prevVideos, ...nextVideos];
@@ -85,9 +86,27 @@ export const Home: React.FC = () => {
   }, [handleScroll]);
   /* end of debugging*******************************************************************/
 
+  /************** API Call to fetch videos***************************/
+
+  // This api key is to use along with use hook youtube videos
+  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
+  const containerLazyLoadRer = useRef<HTMLDivElement | null>(null);
+  const {
+    videos: firstRow,
+    loading: firstRowLoading,
+    error: firstRowError,
+  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
+  const {
+    videos: shortsRow,
+    loading: shortsLoading,
+    error: shortsError,
+  } = useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
+
+  /***************End of API Call To Fetch Videos **********************************/
+
   return (
     <div
-      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto pb-10 "
+      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto pb-10"
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -101,8 +120,8 @@ export const Home: React.FC = () => {
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {firstRowVideos.map((video) =>
-              !loadingStaticVideos ? (
+            {firstRow.slice(0,totalVideosFirstRow).map((video) =>
+              !firstRowLoading ? (
                 <div className="justify-center items-center overflow-hidden">
                   <VideoCard
                     key={`${video.id.videoId}-${video.snippet.title}`}
@@ -120,9 +139,9 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="h-[800px] w-full">
+          <div className="min-h-fit w-full flex flex-col mb-20 ">
             {/*YouTube Shorts logo */}
-            <div className="flex flex-row  justify-start items-center mb-4">
+            <div className="flex flex-row  justify-start items-center mb-4 ">
               <img
                 src="https://img.icons8.com/?size=100&id=ot8QhAKun4rZ&format=png&color=000000"
                 className="min-h-10 min-w-10 h-10 w-10"
@@ -132,24 +151,21 @@ export const Home: React.FC = () => {
             </div>
 
             <div
-              className="grid grid-flow-col gap-x-5 "
+              className=" grid grid-flow-row gap-8 "
               style={{
                 gridTemplateColumns: `repeat(${shortsVideosPerRow},minmax(0,1fr))`,
               }}
             >
-              {shortsVideosRow.map((video) =>
-                !loadingStaticVideos ? (
+              {shortsRow.slice(0, shortsVideosPerRow).map((video) =>
+                !shortsLoading ? (
                   <div
-                    className="h-full"
+                    className="h-full w-auto flex flex-col"
                     key={`${video.id.videoId}-${video.snippet.title}`}
                   >
-                    <VideoCard
-                      video={video}
-                      style="relative h-[500px]  rounded-lg"
-                    />
+                    <VideoCard video={video} style="relative h-[500px]" />
                   </div>
                 ) : (
-                  <div className=" h-full w-full justify-center items-center ">
+                  <div className=" h-full justify-center items-center ">
                     <VideoCardLoading
                       style="relative  flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
                       key={`${video.id.videoId}-${video.snippet.title}`}
@@ -162,7 +178,7 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row gap-4  mt-2 p-1`}
+            className={`min-h-fit w-full grid grid-flow-row gap-4 mt-2 p-1 `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',

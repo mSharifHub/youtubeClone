@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import LocalCache from '../../apiCache/LocalCache.ts';
 
 /*
  * Check YouTube Documentation for the properties
@@ -52,12 +53,17 @@ export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
   section: string,
+  isInfiniteScroll: boolean = false,
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+
+  const cachedVideos = LocalCache.getInstance();
+
+  const cacheKey = `youtube_videos_${section}`;
 
   function playVideo(videoId: string): void {
     setSelectedVideoId(videoId);
@@ -118,6 +124,19 @@ export default function useYoutubeVideos(
 
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
+      if (!isInfiniteScroll && !pageToken) {
+        const cacheData = cachedVideos.get<Video[]>(cacheKey);
+
+        // if cache exist do not make a fetch call
+        if (cacheData && cacheData.length > 0) {
+          console.log(
+            `[Cache] Loading videos for ${cacheKey} from local cache instance`,
+          );
+          setVideos(cacheData);
+          return;
+        }
+      }
+
       if (loading) return;
       setLoading(true);
       setError(null);
@@ -157,11 +176,18 @@ export default function useYoutubeVideos(
             },
           }));
 
-          setVideos((previousVideos) => [...previousVideos, ...newVideos]);
-
+          if (isInfiniteScroll) {
+            setVideos((previousVideos) => {
+              const updatedVideos = [...previousVideos, ...newVideos];
+              cachedVideos.set<Video[]>(cacheKey, updatedVideos);
+              return updatedVideos;
+            });
+          } else {
+            setVideos(newVideos);
+            cachedVideos.set<Video[]>(cacheKey, newVideos);
+          }
           console.log(
-            `[Debugging] next page token ${response.data.nextPageToken}`,
-          );
+            `[Debugging] next page token ${response.data.nextPageToken}`);
           setNextPageToken(response.data.nextPageToken || null);
         }
       } catch (err) {
@@ -171,11 +197,10 @@ export default function useYoutubeVideos(
         setLoading(false);
       }
     },
-    [loading, nextPageToken],
+    [loading, nextPageToken, isInfiniteScroll],
   );
 
   useEffect(() => {
-    console.log(`[Debugging] calling the fetchVideos`);
     fetchVideos();
   }, []);
 
