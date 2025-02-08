@@ -124,13 +124,12 @@ export default function useYoutubeVideos(
 
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
-      if (!isInfiniteScroll && !pageToken) {
+      if (!pageToken) {
         const cacheData = cachedVideos.get<Video[]>(cacheKey);
-
         // if cache exist do not make a fetch call
         if (cacheData && cacheData.length > 0) {
           console.log(
-            `[Cache] Loading videos for ${cacheKey} from local cache instance`,
+            `[Cache] Loading videos for ${cacheKey} from local cache instance and cache data length: ${cacheData.length}`,
           );
           setVideos(cacheData);
           return;
@@ -178,6 +177,9 @@ export default function useYoutubeVideos(
 
           if (isInfiniteScroll) {
             setVideos((previousVideos) => {
+              if (newVideos.length === 0) {
+                return previousVideos;
+              }
               const updatedVideos = [...previousVideos, ...newVideos];
               cachedVideos.set<Video[]>(cacheKey, updatedVideos);
               return updatedVideos;
@@ -187,7 +189,8 @@ export default function useYoutubeVideos(
             cachedVideos.set<Video[]>(cacheKey, newVideos);
           }
           console.log(
-            `[Debugging] next page token ${response.data.nextPageToken}`);
+            `[Debugging] next page token ${response.data.nextPageToken}`,
+          );
           setNextPageToken(response.data.nextPageToken || null);
         }
       } catch (err) {
@@ -197,7 +200,7 @@ export default function useYoutubeVideos(
         setLoading(false);
       }
     },
-    [loading, nextPageToken, isInfiniteScroll],
+    [loading, nextPageToken, isInfiniteScroll, cachedVideos, cachedVideos],
   );
 
   useEffect(() => {

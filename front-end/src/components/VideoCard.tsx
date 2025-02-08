@@ -100,7 +100,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <iframe
             className="absolute  inset-0 h-full w-full rounded-xl  "
             src={videoURL}
-            allow="autpplay; encrypted-media; gyroscope; picture-in-picture"
+            allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
           />
         )}
         <div className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
