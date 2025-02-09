@@ -32,8 +32,6 @@ export const Home: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
 
-  const [reachedBottom, setReachedBottom] = useState<boolean>(false);
-
   // First row of videos API call
   const {
     videos: firstRow,
@@ -63,12 +61,13 @@ export const Home: React.FC = () => {
     const { scrollTop, scrollHeight, clientHeight } =
       containerLazyLoadRef.current;
 
-    if (scrollTop + clientHeight >= scrollHeight) {
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      console.log(`[Debugging] reached bottom and loading more videos`);
       loadMoreVideos();
     }
   }, [isInfiniteVideosLoading, loadMoreVideos]);
 
-  const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 0);
+  const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 100);
 
   useEffect(() => {
     const container = containerLazyLoadRef.current;
@@ -100,9 +99,11 @@ export const Home: React.FC = () => {
           >
             {firstRow.slice(0, totalVideosFirstRow).map((video) =>
               !firstRowLoading ? (
-                <div className="justify-center items-center overflow-hidden">
+                <div
+                  key={`${video.id.videoId}-${video.snippet.title}`}
+                  className="justify-center items-center overflow-hidden"
+                >
                   <VideoCard
-                    key={`${video.id.videoId}-${video.snippet.title}`}
                     video={video}
                     style="relative flex w-[100%]  justify-center items-center h-[200px]  rounded-lg  "
                   />
@@ -175,18 +176,17 @@ export const Home: React.FC = () => {
               gridAutoRows: '300px',
             }}
           >
-            {infiniteVideos.map(
-              (video) =>
-                !isInfiniteVideosLoading && (
-                  <div className="justify-center items-center overflow-hidden">
-                    <VideoCard
-                      key={`${video.id.videoId}-${video.snippet.title}`}
-                      video={video}
-                      style="relative flex w-full h-[200px]  justify-center items-center   rounded-lg"
-                    />
-                  </div>
-                ),
-            )}
+            {infiniteVideos.map((video) => (
+              <div
+                key={`${video.id.videoId}-${video.snippet.title}`}
+                className="justify-center items-center overflow-hidden"
+              >
+                <VideoCard
+                  video={video}
+                  style="relative flex w-full h-[200px]  justify-center items-center   rounded-lg"
+                />
+              </div>
+            ))}
           </div>
 
           {/* loading  */}
