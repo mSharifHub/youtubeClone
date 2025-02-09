@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
+import { set } from 'js-cookie';
 
 /*
  * Check YouTube Documentation for the properties
@@ -176,21 +177,13 @@ export default function useYoutubeVideos(
           }));
 
           if (isInfiniteScroll) {
-            setVideos((previousVideos) => {
-              if (newVideos.length === 0) {
-                return previousVideos;
-              }
-              const updatedVideos = [...previousVideos, ...newVideos];
-              cachedVideos.set<Video[]>(cacheKey, updatedVideos);
-              return updatedVideos;
-            });
+            setVideos((previous) => [...previous, ...newVideos]);
+            cachedVideos.append<Video[]>(cacheKey, newVideos);
           } else {
             setVideos(newVideos);
             cachedVideos.set<Video[]>(cacheKey, newVideos);
           }
-          console.log(
-            `[Debugging] next page token ${response.data.nextPageToken}`,
-          );
+
           setNextPageToken(response.data.nextPageToken || null);
         }
       } catch (err) {

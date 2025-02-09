@@ -6,7 +6,6 @@ import {
   firstVideoRowsDisplayValues,
 } from '../helpers/homeVideoDisplayOptions.ts';
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
-import dummyData from '../../../dummyData.json';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
 import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
@@ -28,66 +27,6 @@ export const Home: React.FC = () => {
   const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
 
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
-
-  /*********************************************************************
-  For debugging use the dummy data to not exceed Youtube's api limit*/
-  // const { videos } = dummyData;
-  // const firstRowVideos = videos.slice(0, totalVideosFirstRow);
-  // const shortsVideosRow = videos.slice(0, shortsVideosPerRow);
-  // const [displayVideos, setDisplayVideos] = useState<typeof videos>(
-  //   videos.slice(0, 5),
-  // );
-  // const [count, setCount] = useState(0);
-  // const [hasMore, setHasMore] = useState<boolean>(
-  //   videos.length > totalVideosFirstRow,
-  // );
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const [loading, setLoading] = useState<boolean>(false);
-  // const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
-  //
-  // const loadMoreItems = useCallback(() => {
-  //   if (!hasMore || loading) return;
-  //
-  //   setLoading(true);
-  //   setCount((prevCount) => prevCount + 1);
-  //
-  //   setTimeout(() => {
-  //     setDisplayVideos((prevVideos) => {
-  //       const nextVideos = videos.slice(
-  //         prevVideos.length,
-  //         prevVideos.length + totalVideosFirstRow,
-  //       );
-  //       if (nextVideos.length == 0) setHasMore(false);
-  //       return [...prevVideos, ...nextVideos];
-  //     });
-  //     setLoading(false);
-  //   }, 500);
-  // }, [loading, hasMore]);
-  //
-  // const handleScroll = useCallback(() => {
-  //   if (!containerLazyLoadRef.current || loading || !hasMore) return;
-  //
-  //   const { scrollTop, scrollHeight, clientHeight } =
-  //     containerLazyLoadRef.current;
-  //
-  //   if (scrollTop + clientHeight >= scrollHeight) {
-  //     loadMoreItems();
-  //   }
-  // }, [loading, loadMoreItems, hasMore]);
-  //
-  // const loadingStaticVideos = false;
-  //
-  // useEffect(() => {
-  //   console.log(`[Debugging] load more count: ${count}`);
-  //   const scrollContainer = containerLazyLoadRef.current;
-  //   if (scrollContainer) {
-  //     scrollContainer.addEventListener('scroll', handleScroll);
-  //     return () => scrollContainer.removeEventListener('scroll', handleScroll);
-  //   }
-  // }, [handleScroll]);
-  /* end of debugging*******************************************************************/
-
-  /************** API Call to fetch videos***************************/
 
   // This api key is to use along with use hook youtube videos
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -111,29 +50,25 @@ export const Home: React.FC = () => {
 
   // infinite scroll API call
   const {
-    videos: cachedVideos,
-    loading: cachedLoading,
-    error: cachedError,
+    videos: infiniteVideos,
+    loading: isInfiniteVideosLoading,
+    error: infiniteVideosError,
     loadMoreVideos,
   } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
 
   // function to call the function that handles fetching more videos
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || cachedLoading) return;
+    if (!containerLazyLoadRef.current || isInfiniteVideosLoading) return;
 
     const { scrollTop, scrollHeight, clientHeight } =
       containerLazyLoadRef.current;
 
     if (scrollTop + clientHeight >= scrollHeight) {
-      if (!reachedBottom) {
-        setReachedBottom(true);
-        console.log(` reached bottom`);
-        // loadMoreVideos()
-      }
+      loadMoreVideos();
     }
-  }, [cachedLoading, loadMoreVideos, reachedBottom]);
+  }, [isInfiniteVideosLoading, loadMoreVideos]);
 
-  const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll,0);
+  const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 0);
 
   useEffect(() => {
     const container = containerLazyLoadRef.current;
@@ -144,12 +79,6 @@ export const Home: React.FC = () => {
       container.removeEventListener('scroll', infiniteScrollWithThrottle);
     };
   }, [infiniteScrollWithThrottle]);
-
-  // useEffect(() => {
-  //   if (!cachedLoading && reachedBottom) {
-  //     setReachedBottom(false);
-  //   }
-  // }, [cachedLoading, reachedBottom]);
 
   /***************End of API Call To Fetch Videos **********************************/
 
@@ -246,9 +175,9 @@ export const Home: React.FC = () => {
               gridAutoRows: '300px',
             }}
           >
-            {cachedVideos.map(
+            {infiniteVideos.map(
               (video) =>
-                !cachedLoading && (
+                !isInfiniteVideosLoading && (
                   <div className="justify-center items-center overflow-hidden">
                     <VideoCard
                       key={`${video.id.videoId}-${video.snippet.title}`}
@@ -261,14 +190,14 @@ export const Home: React.FC = () => {
           </div>
 
           {/* loading  */}
-          {reachedBottom && (
+          {isInfiniteVideosLoading && (
             <div className="flex w-full justify-center items-center border">
               <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
             </div>
           )}
 
           {/*error display */}
-          {cachedError && (
+          {infiniteVideosError && (
             <div className="flex w-full justify-center items-center">
               <h1>
                 The daily limit has been reached. It can not fetch more videos.
