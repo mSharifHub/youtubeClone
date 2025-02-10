@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
-import { set } from 'js-cookie';
 
 /*
  * Check YouTube Documentation for the properties
@@ -57,14 +56,15 @@ export default function useYoutubeVideos(
   isInfiniteScroll: boolean = false,
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
   const cachedVideos = LocalCache.getInstance();
 
-  const cacheKey = `youtube_videos_${section}`;
+  const cacheVideosKey = `youtube_videos_${section}`;
+  const cacheNextPageTokenKey = `next_page_${section}`;
 
   function playVideo(videoId: string): void {
     setSelectedVideoId(videoId);
@@ -123,37 +123,32 @@ export default function useYoutubeVideos(
     }
   }
 
+  // [Debug] number of re-renders
+  const fetchVideosCallref = useRef(0);
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
-      if (!pageToken) {
-        const cacheData = cachedVideos.get<Video[]>(cacheKey);
-        // if cache exist do not make a fetch call
-        if (cacheData && cacheData.length > 0) {
-          console.log(
-            `[Cache] Loading videos for ${cacheKey} from local cache instance and cache data length: ${cacheData.length}`,
-          );
-          setVideos(cacheData);
-          return;
-        }
-      }
+      fetchVideosCallref.current++;
+      console.log(
+        `fetchVideos has been called ${fetchVideosCallref.current} times`,
+      );
 
       if (loading) return;
       setLoading(true);
       setError(null);
 
       try {
-        let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&maxResults=${maxResult}`;
-
-        if (pageToken) {
-          url += `&pageToken=${pageToken}`;
-        }
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
 
         const response = await axios.get(url);
 
         if (response.status === 200) {
-          const videoItems = response.data.items;
+          const newPageToken = response.data.nextPageToken || null;
+          setNextPageToken(newPageToken);
+          cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
 
+          const videoItems = response.data.items;
           const videoIds = videoItems.map((video: Video) => video.id.videoId);
+
           const channelIds: string[] = [
             ...new Set(
               videoItems.map(
@@ -163,6 +158,7 @@ export default function useYoutubeVideos(
           ];
 
           const statisticsMap = await fetchVideoStatistics(videoIds);
+
           const channelMap = await fetchChannelDetails(channelIds);
 
           const newVideos = videoItems.map((video: Video) => ({
@@ -176,42 +172,62 @@ export default function useYoutubeVideos(
             },
           }));
 
-          if (isInfiniteScroll) {
-            setVideos((previous) => [...previous, ...newVideos]);
-            cachedVideos.append<Video[]>(cacheKey, newVideos);
-          } else {
-            setVideos(newVideos);
-            cachedVideos.set<Video[]>(cacheKey, newVideos);
-          }
+          // setVideos((previousVideos) =>  [...previousVideos, ...newVideos]);
 
-          setNextPageToken(response.data.nextPageToken || null);
+          setVideos((previousVideos) =>
+            nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
+          );
+
+          if (isInfiniteScroll) {
+            cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
+          } else {
+            cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
+          }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : null);
-        console.error(err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     },
-    [loading, nextPageToken, isInfiniteScroll, cachedVideos, cachedVideos],
+    [loading, nextPageToken],
   );
 
-  useEffect(() => {
-    fetchVideos();
-  }, []);
+  const loadMoreVideos = () => {
+    const token = nextPageToken
+      ? nextPageToken
+      : cachedVideos.get<string>(cacheNextPageTokenKey);
 
-  function loadMoreVideos() {
-    if (nextPageToken) {
-      fetchVideos(nextPageToken);
+    if (token) {
+      console.log(`[useYoutubeVideos] load more called nextPageToken ${token}`);
+      fetchVideos(token);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (nextPageToken) {
+      cachedVideos.set<string>(cacheNextPageTokenKey, nextPageToken);
+    }
+  }, [nextPageToken]);
+
+  // when  component mount for the first load
+  useEffect(() => {
+    const cached = cachedVideos.get<Video[]>(cacheVideosKey);
+    if (cached && cached.length > 0) {
+      console.log(`[useYoutubeVideos]  loaded from cached`);
+      setVideos(cached);
+    } else {
+      console.log(`[useYoutubeVideos] loaded from API call`);
+      fetchVideos();
+    }
+  }, []);
 
   return {
     videos,
+    loadMoreVideos,
     loading,
     error,
     playVideo,
     selectedVideoId,
-    loadMoreVideos,
   };
 }
