@@ -124,12 +124,12 @@ export default function useYoutubeVideos(
   }
 
   // [Debug] number of re-renders
-  const fetchVideosCallref = useRef(0);
+  const fetchRef = useRef(0);
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
-      fetchVideosCallref.current++;
+      fetchRef.current++;
       console.log(
-        `fetchVideos has been called ${fetchVideosCallref.current} times`,
+        `fetchVideos has been called ${fetchRef.current} times`,
       );
 
       if (loading) return;
