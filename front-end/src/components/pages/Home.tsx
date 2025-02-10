@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import {
@@ -8,7 +8,7 @@ import {
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
-import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
+import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useThrottle } from '../hooks/useThrottle.ts';
 
 export const Home: React.FC = () => {
@@ -79,6 +79,10 @@ export const Home: React.FC = () => {
     };
   }, [infiniteScrollWithThrottle]);
 
+  const dailyQuoteReached = infiniteVideosError?.includes('403')
+    ? 'Daily Quote Reached'
+    : infiniteVideosError;
+
   /***************End of API Call To Fetch Videos **********************************/
 
   return (
@@ -116,12 +120,6 @@ export const Home: React.FC = () => {
               ),
             )}
           </div>
-          {/*first row videos error */}
-          {firstRowError && (
-            <div className="flex w-full justify-center items-center">
-              <h1>{shortsError}</h1>
-            </div>
-          )}
 
           {/*YouTube Shorts row */}
           <div className="min-h-fit w-full flex flex-col mb-20 ">
@@ -161,16 +159,9 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Error display */}
-          {shortsError && (
-            <div className="flex w-full justify-center items-center">
-              <h1>{shortsError}</h1>
-            </div>
-          )}
-
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row gap-4 mt-2 p-1 border `}
+            className={`min-h-fit w-full grid grid-flow-row gap-4 mt-2 p-1 `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',
@@ -191,7 +182,7 @@ export const Home: React.FC = () => {
 
           {/* loading  */}
           {isInfiniteVideosLoading && (
-            <div className="flex w-full justify-center items-center border">
+            <div className="flex w-full justify-center items-center">
               <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
             </div>
           )}
@@ -199,10 +190,7 @@ export const Home: React.FC = () => {
           {/*error display */}
           {infiniteVideosError && (
             <div className="flex w-full justify-center items-center">
-              <h1>
-                The daily limit has been reached. It can not fetch more videos.
-                Try tomorrow
-              </h1>
+              <h1>{infiniteVideosError}</h1>
             </div>
           )}
         </>

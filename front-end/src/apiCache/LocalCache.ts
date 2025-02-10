@@ -1,3 +1,5 @@
+import { Video } from '../components/hooks/useYoutubeVideos.ts';
+
 class LocalCache {
   private static instance: LocalCache;
   private readonly MAX_KB_SIZE: number = 5120;
@@ -46,13 +48,13 @@ class LocalCache {
     }
   }
 
-  public append<T>(key: string, newValue: T[]): void {
+  public append<T>(key: string, newValue: Video[]): void {
     const existingValue = this.get<T[]>(key) || [];
     const updatedValue = [...existingValue, ...newValue];
     const valueString = JSON.stringify(updatedValue);
     const sizeInKb = this.getSizeInKb(valueString);
 
-    if (sizeInKb > this.MAX_KB_SIZE * 2) {
+    if (sizeInKb > this.MAX_KB_SIZE) {
       console.error(
         `[cache] data exceeds max size (${this.MAX_KB_SIZE}, key:${key}, Size: ${sizeInKb} Kb`,
       );
