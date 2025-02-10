@@ -30,7 +30,6 @@ class LocalCache {
 
       return;
     }
-
     console.log(`[Cache] setting key: ${key}`);
     localStorage.setItem(key, JSON.stringify(value));
   }
@@ -45,6 +44,22 @@ class LocalCache {
       console.log(`[Cache] get ${key} not found`);
       return null;
     }
+  }
+
+  public append<T>(key: string, newValue: T[]): void {
+    const existingValue = this.get<T[]>(key) || [];
+    const updatedValue = [...existingValue, ...newValue];
+    const valueString = JSON.stringify(updatedValue);
+    const sizeInKb = this.getSizeInKb(valueString);
+
+    if (sizeInKb > this.MAX_KB_SIZE * 2) {
+      console.error(
+        `[cache] data exceeds max size (${this.MAX_KB_SIZE}, key:${key}, Size: ${sizeInKb} Kb`,
+      );
+      return;
+    }
+    console.log(`[Cache] appending key: ${key}`);
+    localStorage.setItem(key, valueString);
   }
 
   public remove(key: string): void {

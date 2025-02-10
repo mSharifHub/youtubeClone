@@ -132,8 +132,7 @@ export default function useYoutubeVideos(
             `[Cache] Loading videos for ${cacheKey} from local cache instance and cache data length: ${cacheData.length}`,
           );
           setVideos(cacheData);
-
-          if (!isInfiniteScroll) return;
+          return;
         }
       }
 
