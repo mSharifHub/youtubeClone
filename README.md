@@ -3,7 +3,7 @@
 ## Youtube Clone Development Branch
 
 
-**The current application is to be deployed using docker. Currently, to run the application, all the dependencies needs to be installed, and .env content for front end and backend is required. The backend also needs google client id and secret. Therefore, the application can not preview locally without the above. Till the application demo is deploy on cloud, I can show a preview while running locally.**
+**The current application is not yet deployable, Check the links below for previews**
 
 ## **Application Stack**
 
