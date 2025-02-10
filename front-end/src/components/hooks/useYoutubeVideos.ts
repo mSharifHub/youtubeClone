@@ -2,10 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
 
-/*
- * Check YouTube Documentation for the properties
- *
- */
+export interface ChannelDetails {
+  channelId: string;
+  title: string;
+  logo?: string;
+}
+
 export interface VideoSnippet {
   title: string;
   description: string;
@@ -20,10 +22,8 @@ export interface VideoSnippet {
       url: string;
     };
   };
-  channelId: string;
-  channelTitle: string;
-  channelLogo?: string;
   publishedAt: string;
+  channel: ChannelDetails;
 }
 
 export interface VideoStatistics {
@@ -32,10 +32,12 @@ export interface VideoStatistics {
   duration?: string;
 }
 
+export interface VideoId {
+  videoId: string;
+}
+
 export interface Video {
-  id: {
-    videoId: string;
-  };
+  id: VideoId;
   snippet: VideoSnippet;
   statistics?: VideoStatistics;
 }
@@ -45,7 +47,6 @@ interface UseYoutubeVideosResult {
   loading: boolean | null;
   error: string | null;
   playVideo: (videoId: string) => void;
-  selectedVideoId: string | null;
   loadMoreVideos: () => void;
 }
 
@@ -81,27 +82,25 @@ export default function useYoutubeVideos(
         `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
       );
 
-      const statsMap = response.data.items.reduce(
-        (map, item) => {
+      return response.data.items.reduce(
+        (map: Record<string, VideoStatistics>, item) => {
           map[item.id] = {
-            viewCount: item.statistics.viewCount,
-            likeCount: item.statistics.likeCount,
-            duration: item.contentDetails.duration,
+            viewCount: item.statistics?.viewCount || '0',
+            likeCount: item.statistics?.likeCount || '0',
+            duration: item.contentDetails?.duration || '0',
           };
           return map;
         },
-        {} as Record<string, VideoStatistics>,
+        {},
       );
-
-      return statsMap;
     } catch (e) {
-      throw new Error(e.message);
+      throw new Error(
+        e instanceof Error ? e.message : 'Failed to fetch video statistics.',
+      );
     }
   }
 
-  /*
-   fetch additional video details
-   */
+  /*Fetch additional video details*/
   async function fetchChannelDetails(channelIds: string[]) {
     try {
       const idsString = channelIds.join(',');
@@ -109,30 +108,43 @@ export default function useYoutubeVideos(
         `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
       );
 
-      const channelMap = response.data.items.reduce((map, item) => {
-        map[item.id] = {
-          title: item.snippet.title,
-          logo: item.snippet.thumbnails.default?.url,
-        };
-        return map;
-      }, {});
-
-      return channelMap;
+      return response.data.items.reduce(
+        (map: Record<string, ChannelDetails>, item) => {
+          map[item.id] = {
+            channelId: item.id,
+            title: item.snippet.title,
+            logo: item.snippet.thumbnails?.default?.url,
+          };
+          return map;
+        },
+        {},
+      );
     } catch (e) {
-      throw new Error(e.message);
+      throw new Error(
+        e instanceof Error ? e.message : 'Failed to fetch video Details.',
+      );
     }
   }
 
-  // [Debug] number of re-renders
+  //[Debug] number of re-renders
   const fetchRef = useRef(0);
+  const loadMoreRef = useRef(0);
+
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
+      // if loading return
+      if (loading) {
+        console.log('[useYoutube] Loading..., returning function fetch');
+        return;
+      }
+
+      //Counting number of times this function is called
       fetchRef.current++;
       console.log(
-        `fetchVideos has been called ${fetchRef.current} times`,
+        `%c[useYoutubeVideos] fetchVideos called ${fetchRef.current} times (section: ${section})`,
+        'color: blue; font-weight: bold;',
       );
 
-      if (loading) return;
       setLoading(true);
       setError(null);
 
@@ -142,18 +154,24 @@ export default function useYoutubeVideos(
         const response = await axios.get(url);
 
         if (response.status === 200) {
-          const newPageToken = response.data.nextPageToken || null;
-          setNextPageToken(newPageToken);
-          cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
+          if (isInfiniteScroll) {
+            const newPageToken = response.data.nextPageToken || null;
+            console.log(
+              `[useYoutubeVideos] New pageToken received: ${newPageToken} (section: ${section})`,
+            );
 
-          const videoItems = response.data.items;
-          const videoIds = videoItems.map((video: Video) => video.id.videoId);
+            setNextPageToken(newPageToken);
+            cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
+          }
+
+          const videoItems: Video[] = response.data.items;
+          const videoIds: string[] = videoItems.map(
+            (video: Video) => video.id.videoId,
+          );
 
           const channelIds: string[] = [
             ...new Set(
-              videoItems.map(
-                (video: Video) => video.snippet.channelId,
-              ) as string,
+              videoItems.map((video: Video) => video.snippet.channel.channelId),
             ),
           ];
 
@@ -166,23 +184,20 @@ export default function useYoutubeVideos(
             statistics: statisticsMap[video.id.videoId],
             snippet: {
               ...video.snippet,
-              channelTitle: channelMap[video.snippet.channelId].title,
-              channelLogo: channelMap[video.snippet.channelId].logo,
+              channel: {
+                channelId: video.snippet.channel.channelId,
+                title: channelMap[video.snippet.channel.channelId].title,
+                logo: channelMap[video.snippet.channel.channelId]?.logo,
+              },
               publishedAt: video.snippet.publishedAt,
             },
           }));
-
-          // setVideos((previousVideos) =>  [...previousVideos, ...newVideos]);
 
           setVideos((previousVideos) =>
             nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
           );
 
-          if (isInfiniteScroll) {
-            cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
-          } else {
-            cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
-          }
+          cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -194,18 +209,28 @@ export default function useYoutubeVideos(
   );
 
   const loadMoreVideos = () => {
+    loadMoreRef.current++;
+    console.log(
+      `%c[useYoutubeVideos] loadMoreVideos called ${loadMoreRef.current} times (section: ${section})`,
+      'color: orange; font-weight: bold;',
+    );
     const token = nextPageToken
       ? nextPageToken
       : cachedVideos.get<string>(cacheNextPageTokenKey);
 
     if (token) {
-      console.log(`[useYoutubeVideos] load more called nextPageToken ${token}`);
+      console.log(
+        `[useYoutubeVideos] Loading more videos with token: ${token} (section: ${section})`,
+      );
       fetchVideos(token);
     }
   };
 
   useEffect(() => {
     if (nextPageToken) {
+      console.log(
+        `[useYoutubeVideos] Storing nextPageToken in cache: ${nextPageToken} (section: ${section})`,
+      );
       cachedVideos.set<string>(cacheNextPageTokenKey, nextPageToken);
     }
   }, [nextPageToken]);
@@ -228,6 +253,5 @@ export default function useYoutubeVideos(
     loading,
     error,
     playVideo,
-    selectedVideoId,
   };
 }
