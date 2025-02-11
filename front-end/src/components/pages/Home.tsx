@@ -33,18 +33,18 @@ export const Home: React.FC = () => {
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
 
   // First row of videos API call
-  const {
-    videos: firstRow,
-    loading: firstRowLoading,
-    error: firstRowError,
-  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
+  const { videos: firstRow, loading: firstRowLoading } = useYoutubeVideos(
+    apiKey,
+    totalVideosFirstRow,
+    'first_row_videos',
+  );
 
   // Short row of videos API call
-  const {
-    videos: shortsRow,
-    loading: shortsLoading,
-    error: shortsError,
-  } = useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
+  const { videos: shortsRow, loading: shortsLoading } = useYoutubeVideos(
+    apiKey,
+    totalShortsRow,
+    'shorts_videos',
+  );
 
   // infinite scroll API call
   const {
@@ -61,7 +61,7 @@ export const Home: React.FC = () => {
     const { scrollTop, scrollHeight, clientHeight } =
       containerLazyLoadRef.current;
 
-    if (scrollTop + clientHeight >= scrollHeight - 100) {
+    if (scrollTop + clientHeight >= scrollHeight - 200) {
       console.log(`[Debugging] reached bottom and loading more videos`);
       loadMoreVideos();
     }
@@ -78,10 +78,6 @@ export const Home: React.FC = () => {
       container.removeEventListener('scroll', infiniteScrollWithThrottle);
     };
   }, [infiniteScrollWithThrottle]);
-
-  const dailyQuoteReached = infiniteVideosError?.includes('403')
-    ? 'Daily Quote Reached'
-    : infiniteVideosError;
 
   /***************End of API Call To Fetch Videos **********************************/
 
