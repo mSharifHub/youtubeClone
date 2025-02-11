@@ -31,6 +31,4 @@ subjected to change as the application is being developed
 
 
 ### Link To video Previews
-https://www.linkedin.com/posts/activity-7293753650504445953-Zp48?utm_source=share&utm_medium=member_desktop&rcm=ACoAADU3pVcBAL_VLlfn48JrgdfLvqY1sMOXEVA
-
-https://www.linkedin.com/posts/activity-7294494785468256256-2rIV?utm_source=share&utm_medium=member_desktop&rcm=ACoAADU3pVcBAL_VLlfn48JrgdfLvqY1sMOXEVA
+https://www.linkedin.com/posts/activity-7294907620027416578-TMlf?utm_source=share&utm_medium=member_desktop&rcm=ACoAADU3pVcBAL_VLlfn48JrgdfLvqY1sMOXEVA
