@@ -118,8 +118,8 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
         <div className="flex min-w-12 min-h-12 justify-center items-start">
           {/*channel logo image*/}
           <img
-            src={video.snippet.channel.logo}
-            alt={video.snippet.title}
+            src={video.snippet.channelLogo}
+            alt={video.snippet.channelTitle}
             className="h-12 w-12 rounded-full "
           />
         </div>
@@ -128,7 +128,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           {sliceText(video.snippet.title)}
           {/*channel title and views*/}
           <div className="flex flex-col w-full text-sm dark:text-neutral-400">
-            <div>{video.snippet.channel.title}</div>
+            <div>{video.snippet.channelTitle}</div>
             {/*video views */}
             <div className="flex flex-row gap-x-2">
               {video.statistics?.viewCount}
