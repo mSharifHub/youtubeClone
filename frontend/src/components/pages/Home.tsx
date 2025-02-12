@@ -54,6 +54,8 @@ export const Home: React.FC = () => {
     loadMoreVideos,
   } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
 
+  const bottom = true;
+
   // function to call the function that handles fetching more videos
   const handleInfiniteScroll = useCallback(() => {
     if (!containerLazyLoadRef.current || isInfiniteVideosLoading) return;
@@ -63,7 +65,7 @@ export const Home: React.FC = () => {
 
     if (scrollTop + clientHeight >= scrollHeight - 200) {
       console.log(`[Debugging] reached bottom and loading more videos`);
-      loadMoreVideos();
+      // loadMoreVideos();
     }
   }, [isInfiniteVideosLoading, loadMoreVideos]);
 
@@ -83,7 +85,7 @@ export const Home: React.FC = () => {
 
   return (
     <div
-      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto pb-10"
+      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto"
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -92,33 +94,30 @@ export const Home: React.FC = () => {
         <>
           {/* first row of videos */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 md:gap-2  md:p-2`}
+            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto gap-8 p-2 border `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {firstRow.slice(0, totalVideosFirstRow).map((video) =>
-              !firstRowLoading ? (
-                <div
-                  key={`${video.id.videoId}-${video.snippet.title}`}
-                  className="justify-center items-center overflow-hidden"
-                >
+            {firstRow
+              .slice(0, totalVideosFirstRow)
+              .map((video) =>
+                !firstRowLoading ? (
                   <VideoCard
+                    key={`${video.id.videoId}-${video.snippet.title}`}
                     video={video}
-                    style="relative flex w-[100%]  justify-center items-center h-[200px]  rounded-lg  "
                   />
-                </div>
-              ) : (
-                <VideoCardLoading
-                  style=" relative  h-[200px] w-full rounded-lg  bg-neutral-200 dark:dark-modal"
-                  key={`${video.id.videoId}-${video.snippet.title}`}
-                />
-              ),
-            )}
+                ) : (
+                  <VideoCardLoading
+                    style="flex justify-center items-center h-[200px] rounded-lg  bg-neutral-200 dark:dark-modal"
+                    key={`${video.id.videoId}-${video.snippet.title}`}
+                  />
+                ),
+              )}
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="min-h-fit w-full flex flex-col mb-20 ">
+          <div className="min-h-fit w-full flex flex-col mb-20 border ">
             {/*YouTube Shorts logo */}
             <div className="flex flex-row  justify-start items-center mb-4 ">
               <img
@@ -137,16 +136,15 @@ export const Home: React.FC = () => {
             >
               {shortsRow.slice(0, shortsVideosPerRow).map((video) =>
                 !shortsLoading ? (
-                  <div
-                    className="h-full w-auto flex flex-col"
+                  <VideoCard
                     key={`${video.id.videoId}-${video.snippet.title}`}
-                  >
-                    <VideoCard video={video} style="relative h-[500px]" />
-                  </div>
+                    video={video}
+                    shorts={true}
+                  />
                 ) : (
                   <div className=" h-full justify-center items-center ">
                     <VideoCardLoading
-                      style="relative  flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
+                      style="flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
                       key={`${video.id.videoId}-${video.snippet.title}`}
                     />
                   </div>
@@ -157,24 +155,36 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row gap-4 mt-2 p-1 `}
+            className={`min-h-fit w-full grid grid-flow-row gap-8  p-2 border`}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',
             }}
           >
             {infiniteVideos.map((video) => (
-              <div
+              <VideoCard
                 key={`${video.id.videoId}-${video.snippet.title}`}
-                className="justify-center items-center overflow-hidden"
-              >
-                <VideoCard
-                  video={video}
-                  style="relative flex w-full h-[200px]  justify-center items-center   rounded-lg"
-                />
-              </div>
+                video={video}
+              />
             ))}
           </div>
+
+          {bottom && (
+            <div
+              className="min-h-fit w-full grid grid-flow-row   p-2 border"
+              style={{
+                gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
+                gridAutoRows: '300px',
+              }}
+            >
+              {Array.from({ length: videosPerRow! }).map((_, index) => (
+                <VideoCardLoading
+                  key={`loading-${index}`}
+                  style=" h-[200px] rounded-lg  bg-neutral-200 dark:dark-modal"
+                />
+              ))}
+            </div>
+          )}
 
           {/* loading  */}
           {isInfiniteVideosLoading && (
