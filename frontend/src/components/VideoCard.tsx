@@ -7,12 +7,14 @@ import decrementTime from './helpers/decrementTime.ts';
 
 interface VideoCardProps {
   video: Video;
-  style:string| undefined
+  style?:string| undefined
+  shorts?:boolean| undefined
 }
 
 export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   video,
   style,
+  shorts,
 }) => {
   // state to play video on hover
   const [hover, setHover] = useState<boolean>(false);
@@ -80,11 +82,11 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
   }, [hover,originalTime]);
 
   return (
-    <div className="flex flex-col flex-wrap cursor-pointer">
+    <div className={style ? style : "flex flex-col  space-y-4 flex-wrap cursor-pointer"}>
       {/* video thumbnails*/}
 
       <div
-        className={style}
+        className={`relative flex  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  rounded-lg `}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -92,13 +94,13 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
           <img
             src={video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
-            className={` absolute  inset-0 h-full w-full rounded-xl object-cover  ease-linear `}
+            className={` absolute flex justify-center items-center  h-full w-full rounded-xl object-cover  ease-linear brightness-100 `}
           />
         )}
 
         {hover && (
           <iframe
-            className="absolute  inset-0 h-full w-full rounded-xl  "
+            className="absolute flex justify-center items-center  h-full w-full rounded-xl "
             src={videoURL}
             allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
           />
@@ -125,7 +127,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
         </div>
         {/*video title*/}
         <div className="flex flex-col justify-center items-start w-full ">
-          {sliceText(video.snippet.title)}
+          {sliceText(video.snippet.title ? video.snippet.title : '')}
           {/*channel title and views*/}
           <div className="flex flex-col w-full text-sm dark:text-neutral-400">
             <div>{video.snippet.channelTitle}</div>
