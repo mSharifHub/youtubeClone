@@ -8,7 +8,7 @@ import {
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
-import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
+import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
 import { useThrottle } from '../hooks/useThrottle.ts';
 
 export const Home: React.FC = () => {
@@ -88,11 +88,16 @@ export const Home: React.FC = () => {
    * designed to provide an infinite or continuously loading video experience.
    */
   const {
-    videos: infiniteVideos,
-    loading: isInfiniteVideosLoading,
-    error: infiniteVideosError,
+    videos: infScrollVideos,
+    loading: isInfScrollLoading,
+    error: infScrollError,
     loadMoreVideos,
   } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
+
+  /**
+   *@constant defines number of videos to fetch from api based on the number of videos per row
+   */
+  const [videosToRender, setvideosToRender] = useState<number>(0);
 
   /**
    * A callback function to handle infinite scrolling behavior. This function listens
@@ -101,7 +106,7 @@ export const Home: React.FC = () => {
    *
    * Dependencies:
    * - The function uses a ref to the scrollable container (`containerLazyLoadRef`).
-   * - It is also dependent on `isInfiniteVideosLoading` to check if videos are currently being loaded.
+   * - It is also dependent on `isInfScrollLoading` to check if videos are currently being loaded.
    * - `loadMoreVideos` is a function that loads additional videos when triggered.
    *
    * Key logic:
@@ -115,22 +120,31 @@ export const Home: React.FC = () => {
    * Memoization:
    * - The function is memoized using `useCallback` to optimize performance and prevent unnecessary re-renderings.
    */
-  const [reachedBottom, setReachedBottom] = useState<boolean>(false);
 
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || isInfiniteVideosLoading) return;
+    if (!containerLazyLoadRef.current || isInfScrollLoading) return;
 
     const { scrollTop, scrollHeight, clientHeight } =
       containerLazyLoadRef.current;
 
     if (scrollTop + clientHeight >= scrollHeight - 200) {
-      if (!reachedBottom) {
-        setReachedBottom(true);
-        console.log(`[Debugging] Reached bottom is set to true`);
-      }
-      // loadMoreVideos();
+      loadMoreVideos();
     }
-  }, [reachedBottom]);
+  }, [loadMoreVideos, isInfScrollLoading]);
+
+  /**
+   *Updates the videos to render when the number of videos or rows changes
+   *Behavior:
+   * - When the screen width changes either more or less videos per row is to display.  Only fetch number of videos
+   * that are to fill each row to prevent  unnecessary fetching  of incomplete rows
+   */
+  useEffect(() => {
+    if (videosPerRow) {
+      const fullRows =
+        Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
+      setvideosToRender(fullRows);
+    }
+  }, [infScrollVideos.length, videosPerRow]);
 
   const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 100);
 
@@ -143,6 +157,8 @@ export const Home: React.FC = () => {
       container.removeEventListener('scroll', infiniteScrollWithThrottle);
     };
   }, [infiniteScrollWithThrottle]);
+
+  const bottom = true;
 
   /***************End of API Call To Fetch Videos **********************************/
 
@@ -224,7 +240,7 @@ export const Home: React.FC = () => {
               gridAutoRows: '300px',
             }}
           >
-            {infiniteVideos.map((video) => (
+            {infScrollVideos.slice(0, videosToRender).map((video) => (
               <VideoCard
                 key={`${video.id.videoId}-${video.snippet.title}`}
                 video={video}
@@ -233,7 +249,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/*loading videos per row */}
-          {reachedBottom && !infiniteVideosError ? (
+          {isInfScrollLoading && !infScrollError ? (
             <>
               <div
                 className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10"
@@ -243,7 +259,7 @@ export const Home: React.FC = () => {
                 }}
               >
                 {Array.from({
-                  length: videosPerRow ? totalVideosFirstRow : 0,
+                  length: totalVideosFirstRow,
                 }).map((_, index) => (
                   <VideoCardLoading
                     key={`loading-${index}`}
@@ -258,7 +274,7 @@ export const Home: React.FC = () => {
             </>
           ) : (
             <div className="flex w-full justify-center items-center text-white">
-              <h1>{infiniteVideosError}</h1>
+              <h1>{infScrollError}</h1>
             </div>
           )}
         </>

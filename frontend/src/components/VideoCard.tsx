@@ -178,7 +178,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
 
       <div className="h-full w-full flex flex-col space-y-4">
         <div
-          className={`relative  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  w-full   border-2 border-red-700 `}
+          className={`relative  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  w-full  `}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -207,7 +207,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
         </div>
 
         {/* video and channel information*/}
-        <div className="flex grow space-x-2 border   ">
+        <div className="flex grow space-x-2">
           {/*channel logo*/}
           <div className="flex min-w-12 min-h-12 justify-center items-start">
             {/*channel logo image*/}
