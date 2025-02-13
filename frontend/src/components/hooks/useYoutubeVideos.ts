@@ -77,6 +77,11 @@ export default function useYoutubeVideos(
         `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
       );
 
+      if (!response.data.items || response.data.items.length === 0) {
+        console.warn('No video statistics found for the given video ids');
+        return {};
+      }
+
       return response.data.items.reduce(
         (map: Record<string, VideoStatistics>, item) => {
           map[item.id] = {
@@ -104,6 +109,11 @@ export default function useYoutubeVideos(
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
       );
+
+      if (!response.data.items || response.data.items.length === 0) {
+        console.warn('No video details found for the given video ids');
+        return {};
+      }
 
       return response.data.items.reduce(
         (
@@ -158,6 +168,10 @@ export default function useYoutubeVideos(
         const response = await axios.get(url);
 
         if (response.status === 200) {
+          if (!response.data.items || response.data.items.length === 0) {
+            return;
+          }
+
           if (isInfiniteScroll) {
             const newPageToken = response.data.nextPageToken || null;
 
