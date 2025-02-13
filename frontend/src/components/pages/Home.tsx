@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import {
@@ -15,6 +15,7 @@ export const Home: React.FC = () => {
   /**
    * A boolean variable that indicates whether a user is currently logged in.
    * It is set to true when the user has successfully authenticated, and false otherwise.
+   * @see ../userContext
    */
   const {
     state: { isLoggedIn },
@@ -114,6 +115,8 @@ export const Home: React.FC = () => {
    * Memoization:
    * - The function is memoized using `useCallback` to optimize performance and prevent unnecessary re-renderings.
    */
+  const [reachedBottom, setReachedBottom] = useState<boolean>(false);
+
   const handleInfiniteScroll = useCallback(() => {
     if (!containerLazyLoadRef.current || isInfiniteVideosLoading) return;
 
@@ -121,10 +124,13 @@ export const Home: React.FC = () => {
       containerLazyLoadRef.current;
 
     if (scrollTop + clientHeight >= scrollHeight - 200) {
-      console.log(`[Debugging] reached bottom and loading more videos`);
-      loadMoreVideos();
+      if (!reachedBottom) {
+        setReachedBottom(true);
+        console.log(`[Debugging] Reached bottom is set to true`);
+      }
+      // loadMoreVideos();
     }
-  }, [isInfiniteVideosLoading, loadMoreVideos]);
+  }, [reachedBottom]);
 
   const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 100);
 
@@ -227,35 +233,31 @@ export const Home: React.FC = () => {
           </div>
 
           {/*loading videos per row */}
-          {isInfiniteVideosLoading && (
-            <div
-              className="min-h-fit w-full grid grid-flow-row p-2"
-              style={{
-                gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
-                gridAutoRows: '300px',
-              }}
-            >
-              {Array.from({ length: videosPerRow ? videosPerRow : 0 }).map(
-                (_, index) => (
+          {reachedBottom && !infiniteVideosError ? (
+            <>
+              <div
+                className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10"
+                style={{
+                  gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
+                  gridAutoRows: '300px',
+                }}
+              >
+                {Array.from({
+                  length: videosPerRow ? totalVideosFirstRow : 0,
+                }).map((_, index) => (
                   <VideoCardLoading
                     key={`loading-${index}`}
-                    style=" h-[200px] rounded-lg  bg-neutral-200 dark:dark-modal"
+                    style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal"
                   />
-                ),
-              )}
-            </div>
-          )}
+                ))}
+              </div>
 
-          {/*/!* loading  *!/*/}
-          {/*{isInfiniteVideosLoading && (*/}
-          {/*  <div className="flex w-full justify-center items-center">*/}
-          {/*    <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />*/}
-          {/*  </div>*/}
-          {/*)}*/}
-
-          {/*error display */}
-          {infiniteVideosError && (
-            <div className="flex w-full justify-center items-center">
+              <div className="flex w-full justify-center items-center">
+                <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
+              </div>
+            </>
+          ) : (
+            <div className="flex w-full justify-center items-center text-white">
               <h1>{infiniteVideosError}</h1>
             </div>
           )}
