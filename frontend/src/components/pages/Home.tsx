@@ -105,14 +105,12 @@ export const Home: React.FC = () => {
   // const [dummyVideos, setDummyVideos] = useState<Video[]>(
   //   dummyVideosData.slice(0, 10),
   // );
-  // const [loadCount, setLoadCount] = useState<number>(0);
   //
   // const [dummyVideosLoading, setDummyVideosLoading] = useState<boolean>(false);
   // const [index, setIndex] = useState<number>(10);
   //
   // const loadDummyVideos = useCallback(() => {
   //   if (dummyVideosLoading || index >= dummyVideosData.length) return;
-  //   setLoadCount(loadCount + 1);
   //   setDummyVideosLoading(true);
   //   setTimeout(() => {
   //     const nextPage = dummyVideosData.slice(index, index + 10);
@@ -120,11 +118,8 @@ export const Home: React.FC = () => {
   //     setIndex((prev) => prev + 10);
   //     setDummyVideosLoading(false); // Reset loading state
   //   }, 600); // Simulating API call delay
-  // }, [dummyVideosLoading, index, dummyVideosData, loadCount]);
-  //
-  // useEffect(() => {
-  //   console.log(` number of times loadMoreVideos was called: ${loadCount}`);
-  // }, [loadCount, loadDummyVideos]);
+  // }, [dummyVideosLoading, index, dummyVideosData]);
+
   /**** End Debug Scrolling ********/
 
   /**
@@ -148,11 +143,11 @@ export const Home: React.FC = () => {
    */
 
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError)
+    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError) {
       return;
-    console.log('loading more videos');
+    }
     loadMoreVideos();
-  }, [isInfScrollLoading, loadMoreVideos, infScrollError]);
+  }, [isInfScrollLoading]);
 
   /**
    *Updates the videos to render when the number of videos or rows changes
@@ -162,22 +157,23 @@ export const Home: React.FC = () => {
    */
   useEffect(() => {
     if (videosPerRow) {
-      const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
+      const fullRows =
+        Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
       setVideosToRender(fullRows);
     }
   }, [infScrollVideos.length]);
 
+  //intersectionObserver
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (!isInfScrollLoading && entries[0].isIntersecting)
           handleInfiniteScroll();
-        }
       },
       {
         root: containerLazyLoadRef.current,
         rootMargin: '100px',
-        threshold: 0.0,
+        threshold: 0.1,
       },
     );
 
@@ -192,17 +188,13 @@ export const Home: React.FC = () => {
         observer.unobserve(sentinel);
       }
     };
-  }, [handleInfiniteScroll, isInfScrollLoading]);
-
-  // useEffect(() => {
-  //   console.log('infScrollVideos loading', isInfScrollLoading);
-  // }, [isInfScrollLoading]);
+  }, [handleInfiniteScroll]);
 
   /***************End of API Call To Fetch Videos **********************************/
 
   return (
     <div
-      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto"
+      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto border"
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -234,7 +226,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="min-h-fit w-full flex flex-col mb-20">
+          <div className="min-h-fit w-full flex flex-col mb-10">
             {/*YouTube Shorts logo */}
             <div className="flex flex-row  justify-start items-center mb-4 ">
               <img
@@ -272,7 +264,7 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row gap-8  p-2`}
+            className={`min-h-fit mb-20  w-full grid grid-flow-row gap-8  p-2`}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',
@@ -316,8 +308,9 @@ export const Home: React.FC = () => {
               </>
             )
           )}
+
           {/* SentinelRef*/}
-          <div ref={sentinelRef} className="h-10 w-full border" />
+          <div ref={sentinelRef} className=" h-5 w-full bg-yellow-500" />
         </>
       )}
     </div>

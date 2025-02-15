@@ -155,9 +155,7 @@ export default function useYoutubeVideos(
       fetchVideosRef.current++;
       console.log(`[Debugging] fetched video called ${fetchVideosRef.current}`);
 
-      if (loading) {
-        return;
-      }
+      if (loading || error) return;
 
       setLoading(true);
       setError(null);
