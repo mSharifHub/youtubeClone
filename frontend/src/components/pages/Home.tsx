@@ -8,8 +8,8 @@ import {
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
-import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
-import { useThrottle } from '../hooks/useThrottle.ts';
+import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
+// import dummyData from '../../../dummyData.json';
 
 export const Home: React.FC = () => {
   /**
@@ -48,6 +48,11 @@ export const Home: React.FC = () => {
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
 
   /**
+   *@constant defines number of videos to fetch from api based on the number of videos per row
+   */
+  const [videosToRender, setVideosToRender] = useState<number>(0);
+
+  /**
    * The `apiKey` variable holds the YouTube Data API v3 key,
    * which is required for authenticating requests to the YouTube API.
    *
@@ -62,6 +67,7 @@ export const Home: React.FC = () => {
    * load more videos
    */
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef(null);
 
   /**
    * Represents the first row of a dataset, grid, table, or any similar structure.
@@ -92,12 +98,34 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
-  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
+  } = useYoutubeVideos(apiKey, videosToRender, 'infinite_scroll', true);
 
-  /**
-   *@constant defines number of videos to fetch from api based on the number of videos per row
-   */
-  const [videosToRender, setvideosToRender] = useState<number>(0);
+  /*********** Debug Scrolling ***********/
+  // const dummyVideosData = dummyData.videos;
+  // const [dummyVideos, setDummyVideos] = useState<Video[]>(
+  //   dummyVideosData.slice(0, 10),
+  // );
+  // const [loadCount, setLoadCount] = useState<number>(0);
+  //
+  // const [dummyVideosLoading, setDummyVideosLoading] = useState<boolean>(false);
+  // const [index, setIndex] = useState<number>(10);
+  //
+  // const loadDummyVideos = useCallback(() => {
+  //   if (dummyVideosLoading || index >= dummyVideosData.length) return;
+  //   setLoadCount(loadCount + 1);
+  //   setDummyVideosLoading(true);
+  //   setTimeout(() => {
+  //     const nextPage = dummyVideosData.slice(index, index + 10);
+  //     setDummyVideos((prev) => [...prev, ...nextPage]);
+  //     setIndex((prev) => prev + 10);
+  //     setDummyVideosLoading(false); // Reset loading state
+  //   }, 600); // Simulating API call delay
+  // }, [dummyVideosLoading, index, dummyVideosData, loadCount]);
+  //
+  // useEffect(() => {
+  //   console.log(` number of times loadMoreVideos was called: ${loadCount}`);
+  // }, [loadCount, loadDummyVideos]);
+  /**** End Debug Scrolling ********/
 
   /**
    * A callback function to handle infinite scrolling behavior. This function listens
@@ -116,21 +144,15 @@ export const Home: React.FC = () => {
    *
    * Debugging:
    * - Logs a debugging message to the console when additional videos are being loaded.
-   *
-   * Memoization:
-   * - The function is memoized using `useCallback` to optimize performance and prevent unnecessary re-renderings.
+   *.
    */
 
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || isInfScrollLoading) return;
-
-    const { scrollTop, scrollHeight, clientHeight } =
-      containerLazyLoadRef.current;
-
-    if (scrollTop + clientHeight >= scrollHeight - 200) {
-      loadMoreVideos();
-    }
-  }, [loadMoreVideos, isInfScrollLoading]);
+    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError)
+      return;
+    console.log('loading more videos');
+    loadMoreVideos();
+  }, [isInfScrollLoading, loadMoreVideos, infScrollError]);
 
   /**
    *Updates the videos to render when the number of videos or rows changes
@@ -140,25 +162,41 @@ export const Home: React.FC = () => {
    */
   useEffect(() => {
     if (videosPerRow) {
-      const fullRows =
-        Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
-      setvideosToRender(fullRows);
+      const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
+      setVideosToRender(fullRows);
     }
-  }, [infScrollVideos.length, videosPerRow]);
-
-  const infiniteScrollWithThrottle = useThrottle(handleInfiniteScroll, 100);
+  }, [infScrollVideos.length]);
 
   useEffect(() => {
-    const container = containerLazyLoadRef.current;
-    if (!container) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleInfiniteScroll();
+        }
+      },
+      {
+        root: containerLazyLoadRef.current,
+        rootMargin: '100px',
+        threshold: 0.0,
+      },
+    );
 
-    container.addEventListener('scroll', infiniteScrollWithThrottle);
+    const sentinel = sentinelRef.current;
+
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
     return () => {
-      container.removeEventListener('scroll', infiniteScrollWithThrottle);
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
     };
-  }, [infiniteScrollWithThrottle]);
+  }, [handleInfiniteScroll, isInfScrollLoading]);
 
-  const bottom = true;
+  // useEffect(() => {
+  //   console.log('infScrollVideos loading', isInfScrollLoading);
+  // }, [isInfScrollLoading]);
 
   /***************End of API Call To Fetch Videos **********************************/
 
@@ -213,22 +251,22 @@ export const Home: React.FC = () => {
                 gridTemplateColumns: `repeat(${shortsVideosPerRow},minmax(0,1fr))`,
               }}
             >
-              {shortsRow.slice(0, shortsVideosPerRow).map((video) =>
-                !shortsLoading ? (
-                  <VideoCard
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                    video={video}
-                    shorts={true}
-                  />
-                ) : (
-                  <div className=" h-full justify-center items-center ">
+              {shortsRow
+                .slice(0, shortsVideosPerRow)
+                .map((video) =>
+                  !shortsLoading ? (
+                    <VideoCard
+                      key={`${video.id.videoId}-${video.snippet.title}`}
+                      video={video}
+                      shorts={true}
+                    />
+                  ) : (
                     <VideoCardLoading
                       style="flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
                       key={`${video.id.videoId}-${video.snippet.title}`}
                     />
-                  </div>
-                ),
-              )}
+                  ),
+                )}
             </div>
           </div>
 
@@ -248,35 +286,38 @@ export const Home: React.FC = () => {
             ))}
           </div>
 
-          {/*loading videos per row */}
-          {isInfScrollLoading && !infScrollError ? (
-            <>
-              <div
-                className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10"
-                style={{
-                  gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-                  gridAutoRows: '300px',
-                }}
-              >
-                {Array.from({
-                  length: totalVideosFirstRow,
-                }).map((_, index) => (
-                  <VideoCardLoading
-                    key={`loading-${index}`}
-                    style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal"
-                  />
-                ))}
-              </div>
-
-              <div className="flex w-full justify-center items-center">
-                <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
-              </div>
-            </>
-          ) : (
+          {infScrollError ? (
             <div className="flex w-full justify-center items-center text-white">
               <h1>{infScrollError}</h1>
             </div>
+          ) : (
+            isInfScrollLoading && (
+              <>
+                <div
+                  className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10"
+                  style={{
+                    gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
+                    gridAutoRows: '300px',
+                  }}
+                >
+                  {Array.from({
+                    length: totalVideosFirstRow,
+                  }).map((_, index) => (
+                    <VideoCardLoading
+                      key={`loading-${index}`}
+                      style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal"
+                    />
+                  ))}
+                </div>
+
+                <div className="flex w-full justify-center items-center">
+                  <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
+                </div>
+              </>
+            )
           )}
+          {/* SentinelRef*/}
+          <div ref={sentinelRef} className="h-10 w-full border" />
         </>
       )}
     </div>
