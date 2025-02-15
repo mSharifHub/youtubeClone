@@ -172,9 +172,8 @@ export default function useYoutubeVideos(
             return;
           }
 
-          if (isInfiniteScroll) {
-            const newPageToken = response.data.nextPageToken || null;
-
+          if (isInfiniteScroll && response.data.nextPageToken.length > 0) {
+            const newPageToken = response.data.nextPageToken;
             setNextPageToken(newPageToken);
             cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
           }
