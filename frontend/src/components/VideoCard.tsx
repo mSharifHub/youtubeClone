@@ -207,9 +207,9 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
         </div>
 
         {/* video and channel information*/}
-        <div className="flex  justify-start items-top grow  space-x-4">
+        <div className="flex  justify-start items-top grow">
           {/*channel logo*/}
-          <div className="flex  flex-grow min-w-20 min-h-12 justify-center items-start">
+          <div className="flex  flex-grow min-w-20 min-h-fit justify-center items-top">
             {/*channel logo image*/}
             <img
               src={video.snippet.channelLogo || "../src/assets/thumbnails/icons8-video-100.png"}

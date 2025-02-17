@@ -139,11 +139,21 @@ export default function useYoutubeVideos(
     }
   };
 
+  const loadingRef = useRef(loading);
+  const errorRef = useRef(error);
+
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+
+  useEffect(() => {
+    errorRef.current = error;
+  }, [error]);
+
   /*
   To debug re-renders and fetchFirst needed while strict mode is being used
   */
   const fetchFirst = useRef(true);
-  const fetchVideosRef = useRef(0);
   /**
   @param{string} [pageToken]- (Optional) Token for the infinite scroll
    *
@@ -152,12 +162,7 @@ export default function useYoutubeVideos(
    **/
   const fetchVideos = useCallback(
     async (pageToken?: string) => {
-      fetchVideosRef.current++;
-      console.log(`[Debugging] fetched video called ${fetchVideosRef.current}`);
-
-      if (loading) {
-        return;
-      }
+      if (loadingRef.current) return;
 
       setLoading(true);
       setError(null);
@@ -203,10 +208,10 @@ export default function useYoutubeVideos(
           }));
 
           setVideos((previousVideos) =>
-            nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
+            pageToken ? [...previousVideos, ...newVideos] : [...newVideos],
           );
 
-          if (isInfiniteScroll && nextPageToken) {
+          if (isInfiniteScroll && pageToken) {
             cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
           } else {
             cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
@@ -218,7 +223,7 @@ export default function useYoutubeVideos(
         setLoading(false);
       }
     },
-    [loading, nextPageToken],
+    [loading, nextPageToken, maxResult],
   );
 
   const getNextPageToken = () => {
@@ -228,13 +233,13 @@ export default function useYoutubeVideos(
     return cachedVideos.get<string>(cacheNextPageTokenKey);
   };
 
-
   const loadMoreVideos = useCallback(() => {
-    if (loading) return;
+    if (loadingRef.current || errorRef.current) return;
 
     const token = getNextPageToken();
-
-    if (token) fetchVideos(token);
+    if (token) {
+      fetchVideos(token);
+    }
   }, [loading, nextPageToken]);
 
   /*
