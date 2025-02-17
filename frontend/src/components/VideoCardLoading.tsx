@@ -8,9 +8,9 @@ export const VideoCardLoading: React.FC<VideoCardLoadingProps> = ({
   style,
 }) => {
   return (
-    <div className="flex flex-col flex-wrap animate-wave-opacity ">
+    <div className="flex flex-col animate-wave-opacity ">
       {/* skeleton for video thumbnails */}
-      <div className={style}></div>
+      <div className={style}/>
       {/* skeleton for video and channel information */}
       <div className="flex flex-initial p-2 space-x-2">
         {/* skeleton for channel logo */}

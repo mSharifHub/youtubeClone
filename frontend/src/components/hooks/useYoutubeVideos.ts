@@ -168,11 +168,9 @@ export default function useYoutubeVideos(
         const response = await axios.get(url);
 
         if (response.status === 200) {
-          if (!response.data.items || response.data.items.length === 0) {
-            return;
-          }
+          if (!response.data.items) return;
 
-          if (isInfiniteScroll && response.data.nextPageToken.length > 0) {
+          if (isInfiniteScroll && response.data.nextPageToken) {
             const newPageToken = response.data.nextPageToken;
             setNextPageToken(newPageToken);
             cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
@@ -208,7 +206,7 @@ export default function useYoutubeVideos(
             nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
           );
 
-          if (isInfiniteScroll) {
+          if (isInfiniteScroll && nextPageToken) {
             cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
           } else {
             cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
@@ -223,9 +221,13 @@ export default function useYoutubeVideos(
     [loading, nextPageToken],
   );
 
-  const getNextPageToken = (): string | null => {
-    return nextPageToken || cachedVideos.get<string>(cacheNextPageTokenKey);
+  const getNextPageToken = () => {
+    if (nextPageToken) {
+      return nextPageToken;
+    }
+    return cachedVideos.get<string>(cacheNextPageTokenKey);
   };
+
 
   const loadMoreVideos = useCallback(() => {
     if (loading) return;
