@@ -33,6 +33,7 @@ import { LoginComponent } from '../LoginComponent.tsx';
 import { useMenuBar } from './menuBarContext/MenuBarContext.ts';
 import { useToolTip } from '../hooks/useToolTip.ts';
 import { ToolTip } from '../helpers/ToolTip.tsx';
+import { useEffect, useRef } from 'react';
 
 export default function MenuBar() {
   const {
@@ -49,6 +50,14 @@ export default function MenuBar() {
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
 
+  const homeMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!toggler && homeMenuRef.current) {
+      homeMenuRef.current.focus();
+    }
+  }, [toggler]);
+
   return (
     <div
       className={`min-h-fit ${toggler ? 'w-28 ' : 'w-72'} my-2 hidden md:grid grid-cols-1 grid-flow-row auto-rows-min space-y-4 overflow-y-auto scroll-smooth ${toggler && 'no-scrollbar'} overflow-hidden `}
@@ -64,6 +73,8 @@ export default function MenuBar() {
           link="/"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
+          homeMenuRef={homeMenuRef}
+          tabIndex={0}
         />
         <MenuComponent
           title="Shorts"

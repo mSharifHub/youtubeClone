@@ -148,7 +148,6 @@ export const Home: React.FC = () => {
    *.
    */
 
-
   const handleInfiniteScroll = useCallback(() => {
     if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError) {
       return;
