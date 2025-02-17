@@ -50,7 +50,8 @@ export const Home: React.FC = () => {
   /**
    *@constant defines number of videos to fetch from api based on the number of videos per row
    */
-  const [videosToRender, setVideosToRender] = useState<number>(0);
+  const [videosToRender, setVideosToRender] =
+    useState<number>(totalVideosFirstRow);
 
   /**
    * The `apiKey` variable holds the YouTube Data API v3 key,
@@ -98,7 +99,7 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
-  } = useYoutubeVideos(apiKey, videosToRender, 'infinite_scroll', true);
+  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
 
   /*********** Debug Scrolling ***********/
   // const dummyVideosData = dummyData.videos;
@@ -162,22 +163,24 @@ export const Home: React.FC = () => {
    */
   useEffect(() => {
     if (videosPerRow) {
-      const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
+      const fullRows =
+        Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
       setVideosToRender(fullRows);
     }
-  }, [infScrollVideos.length]);
+  }, [infScrollVideos.length, videosPerRow]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
+          console.log('triggered');
           handleInfiniteScroll();
         }
       },
       {
         root: containerLazyLoadRef.current,
-        rootMargin: '100px',
-        threshold: 0.0,
+        rootMargin: '300px',
+        threshold: 0.1,
       },
     );
 
@@ -193,10 +196,6 @@ export const Home: React.FC = () => {
       }
     };
   }, [handleInfiniteScroll, isInfScrollLoading]);
-
-  // useEffect(() => {
-  //   console.log('infScrollVideos loading', isInfScrollLoading);
-  // }, [isInfScrollLoading]);
 
   /***************End of API Call To Fetch Videos **********************************/
 
@@ -316,10 +315,11 @@ export const Home: React.FC = () => {
               </>
             )
           )}
-          {/* SentinelRef*/}
-          <div ref={sentinelRef} className="h-10 w-full border" />
         </>
       )}
+
+      {/* SentinelRef*/}
+      <div ref={sentinelRef} className=" h-10 w-full" />
     </div>
   );
 };
