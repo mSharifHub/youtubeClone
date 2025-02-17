@@ -148,10 +148,11 @@ export const Home: React.FC = () => {
    *.
    */
 
+
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError)
+    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError) {
       return;
-    console.log('loading more videos');
+    }
     loadMoreVideos();
   }, [isInfScrollLoading, loadMoreVideos, infScrollError]);
 
@@ -195,7 +196,7 @@ export const Home: React.FC = () => {
         observer.unobserve(sentinel);
       }
     };
-  }, [handleInfiniteScroll, isInfScrollLoading]);
+  }, [handleInfiniteScroll]);
 
   /***************End of API Call To Fetch Videos **********************************/
 
@@ -287,7 +288,11 @@ export const Home: React.FC = () => {
 
           {infScrollError ? (
             <div className="flex w-full justify-center items-center text-white">
-              <h1>{infScrollError}</h1>
+              <h1 className="uppercase">
+                {infScrollError.includes('403')
+                  ? ' daily fetched limit has reached'
+                  : infScrollError}
+              </h1>
             </div>
           ) : (
             isInfScrollLoading && (
@@ -304,7 +309,7 @@ export const Home: React.FC = () => {
                   }).map((_, index) => (
                     <VideoCardLoading
                       key={`loading-${index}`}
-                      style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal"
+                      style="h-[250px] rounded-lg bg-neutral-200 dark:dark-modal"
                     />
                   ))}
                 </div>
