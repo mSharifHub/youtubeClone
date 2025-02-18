@@ -150,92 +150,85 @@ export default function useYoutubeVideos(
    *Behavior:
    * - If loading is True prevents in calling a duplicate fetch
    **/
-  const fetchVideos = useCallback(
-    async (pageToken?: string) => {
-      fetchVideosRef.current++;
-      console.log(`[Debugging] fetched video called ${fetchVideosRef.current}`);
+  const fetchVideos = async (pageToken?: string) => {
+    fetchVideosRef.current++;
+    // console.log(`[Debugging] fetched video called ${fetchVideosRef.current}`);
 
-      if (loading) {
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
-
-        const response = await axios.get(url);
-
-        if (response.status === 200) {
-          if (!response.data.items) return;
-
-          if (isInfiniteScroll && response.data.nextPageToken) {
-            const newPageToken = response.data.nextPageToken;
-            setNextPageToken(newPageToken);
-            cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
-          }
-
-          const videoItems: Video[] = response.data.items;
-          const videoIds: string[] = videoItems.map(
-            (video: Video) => video.id.videoId,
-          );
-
-          const channelIds: string[] = [
-            ...new Set(
-              videoItems.map((video: Video) => video.snippet.channelId),
-            ),
-          ];
-
-          const statisticsMap = await fetchVideoStatistics(videoIds);
-
-          const channelMap = await fetchChannelDetails(channelIds);
-
-          const newVideos = videoItems.map((video: Video) => ({
-            ...video,
-            statistics: statisticsMap[video.id.videoId],
-            snippet: {
-              ...video.snippet,
-              channelTitle: channelMap[video.snippet.channelId]?.title,
-              channelLogo: channelMap[video.snippet.channelId]?.logo,
-              publishedAt: video.snippet.publishedAt,
-            },
-          }));
-
-          setVideos((previousVideos) =>
-            nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
-          );
-
-          if (isInfiniteScroll && nextPageToken) {
-            cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
-          } else {
-            cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
-          }
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loading, nextPageToken],
-  );
-
-  const getNextPageToken = () => {
-    if (nextPageToken) {
-      return nextPageToken;
+    if (loading) {
+      return;
     }
-    return cachedVideos.get<string>(cacheNextPageTokenKey);
-  };
 
+    setLoading(true);
+    setError(null);
+
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
+
+      const response = await axios.get(url);
+
+      if (response.status === 200) {
+        if (!response.data.items) return;
+
+        if (isInfiniteScroll && response.data.nextPageToken) {
+          const newPageToken = response.data.nextPageToken;
+          setNextPageToken(newPageToken);
+          cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
+        }
+
+        const videoItems: Video[] = response.data.items;
+        const videoIds: string[] = videoItems.map(
+          (video: Video) => video.id.videoId,
+        );
+
+        const channelIds: string[] = [
+          ...new Set(videoItems.map((video: Video) => video.snippet.channelId)),
+        ];
+
+        const statisticsMap = await fetchVideoStatistics(videoIds);
+
+        const channelMap = await fetchChannelDetails(channelIds);
+
+        const newVideos = videoItems.map((video: Video) => ({
+          ...video,
+          statistics: statisticsMap[video.id.videoId],
+          snippet: {
+            ...video.snippet,
+            channelTitle: channelMap[video.snippet.channelId]?.title,
+            channelLogo: channelMap[video.snippet.channelId]?.logo,
+            publishedAt: video.snippet.publishedAt,
+          },
+        }));
+
+        setVideos((previousVideos) =>
+          nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
+        );
+
+        if (isInfiniteScroll && nextPageToken) {
+          cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
+        } else {
+          cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadMoreVideos = useCallback(() => {
     if (loading) return;
 
-    const token = getNextPageToken();
+    if (nextPageToken) {
+      return nextPageToken;
+    }
+
+    const token = nextPageToken
+      ? nextPageToken
+      : cachedVideos.get<string>(cacheNextPageTokenKey);
 
     if (token) fetchVideos(token);
-  }, [loading, nextPageToken]);
+  }, []);
 
   /*
    * Behavior:
