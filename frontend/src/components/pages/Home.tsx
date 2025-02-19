@@ -9,7 +9,6 @@ import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
-import dummyData from '../../../dummyData.json';
 
 export const Home: React.FC = () => {
   /**
@@ -75,83 +74,30 @@ export const Home: React.FC = () => {
    * This row is typically used to hold data or metadata associated with the
    * first entry in a collection.
    */
-  const { videos: firstRow, loading: firstRowLoading } = useYoutubeVideos(
-    apiKey,
-    totalVideosFirstRow,
-    'first_row_videos',
-  );
+  const { dummyVideos: firstRow, dummyDataLoading: firstRowLoading } =
+    useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
 
   /**
    * Represents a row of data or information related to shorts.
    */
-  const { videos: shortsRow, loading: shortsLoading } = useYoutubeVideos(
-    apiKey,
-    totalShortsRow,
-    'shorts_videos',
-  );
+  const { dummyVideos: shortsRow, dummyDataLoading: shortsLoading } =
+    useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
 
   /**
    * A variable that represents a collection or stream of video data
    * designed to provide an infinite or continuously loading video experience.
    */
   const {
-    videos: infScrollVideos,
-    loading: isInfScrollLoading,
-    error: infScrollError,
-    loadMoreVideos,
+    dummyVideos: infScrollVideos,
+    dummyDataLoading: isInfScrollLoading,
+    dummyDataError: infScrollError,
+    dummyLoadMoreVideos,
   } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
 
-  /*********** Debug Scrolling ***********/
-  // const dummyVideosData = dummyData.videos;
-  // const [dummyVideos, setDummyVideos] = useState<Video[]>(
-  //   dummyVideosData.slice(0, 10),
-  // );
-  // const [loadCount, setLoadCount] = useState<number>(0);
-  //
-  // const [dummyVideosLoading, setDummyVideosLoading] = useState<boolean>(false);
-  // const [index, setIndex] = useState<number>(10);
-  //
-  // const loadDummyVideosRef = useRef(0);
-  // const loadDummyVideos = useCallback(() => {
-  //   loadDummyVideosRef.current++;
-  //   console.log(`loadDummyVideos called ${loadDummyVideosRef.current} times`);
-  //   if (dummyVideosLoading || index >= dummyVideosData.length) return;
-  //   setLoadCount(loadCount + 1);
-  //   setDummyVideosLoading(true);
-  //   setTimeout(() => {
-  //     const nextPage = dummyVideosData.slice(index, index + 10);
-  //     setDummyVideos((prev) => [...prev, ...nextPage]);
-  //     setIndex((prev) => prev + 10);
-  //     setDummyVideosLoading(false); // Reset loading state
-  //   }, 600); // Simulating API call delay
-  // }, [index, dummyVideosLoading]);
-  //
-  // useEffect(() => {
-  //   console.log(` number of times loadMoreVideos was called: ${loadCount}`);
-  // }, [loadCount]);
-
-  // const handleInfiniteScrollRef = useRef(0);
-  // const handleInfiniteScroll = useCallback(() => {
-  //   handleInfiniteScrollRef.current++;
-  //   console.log(
-  //     `handleInfiniteScroll called ${handleInfiniteScrollRef.current} times`,
-  //   );
-  //   if (!containerLazyLoadRef.current || dummyVideosLoading) return;
-  //   loadDummyVideos();
-  // }, [dummyVideosLoading, loadDummyVideos]);
-  /**** End Debug Scrolling ********/
-
-  const handleInfiniteScrollRef = useRef(0);
   const handleInfiniteScroll = useCallback(() => {
-    if (!containerLazyLoadRef.current || isInfScrollLoading || infScrollError) {
-      return;
-    }
-    handleInfiniteScrollRef.current++;
-    console.log(
-      `handleInfiniteScroll called ${handleInfiniteScrollRef.current} times`,
-    );
-    loadMoreVideos();
-  }, [infScrollError, loadMoreVideos, isInfScrollLoading]);
+    if (isInfScrollLoading || infScrollError) return
+    dummyLoadMoreVideos();
+  }, [isInfScrollLoading, infScrollError, dummyLoadMoreVideos]);
 
   /**
    *Updates the videos to render when the number of videos or rows changes
@@ -171,7 +117,7 @@ export const Home: React.FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && isLoggedIn) {
           console.log('Observer Triggered...');
           handleInfiniteScroll();
         }
@@ -192,13 +138,12 @@ export const Home: React.FC = () => {
         observer.unobserve(sentinelRef.current);
       }
     };
-  }, [handleInfiniteScroll]);
+  }, [handleInfiniteScroll, isLoggedIn]);
 
   /***************End of API Call To Fetch Videos **********************************/
-
   return (
     <div
-      className="h-full flex flex-col justify-start items-start scroll-smooth overflow-y-auto"
+      className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto"
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -207,12 +152,12 @@ export const Home: React.FC = () => {
         <>
           {/* first row of videos */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row auto-rows-auto  mb-8 gap-8 p-2`}
+            className={`min-h-fit grow w-full grid grid-flow-row auto-rows-auto  mb-8 gap-8 p-2  `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {dummyData.videos
+            {firstRow
               .slice(0, totalVideosFirstRow)
               .map((video) =>
                 !firstRowLoading ? (
@@ -230,7 +175,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="min-h-fit  w-full flex flex-col mb-8">
+          <div className="min-h-fit grow w-full flex flex-col mb-8 ">
             {/*YouTube Shorts logo */}
             <div className="flex flex-row  justify-start items-center mb-4 ">
               <img
@@ -247,7 +192,7 @@ export const Home: React.FC = () => {
                 gridTemplateColumns: `repeat(${shortsVideosPerRow},minmax(0,1fr))`,
               }}
             >
-              {dummyData.videos
+              {shortsRow
                 .slice(0, shortsVideosPerRow)
                 .map((video) =>
                   !shortsLoading ? (
@@ -268,13 +213,13 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit w-full grid grid-flow-row gap-8  p-2 `}
+            className={`min-h-fit grow w-full grid grid-flow-row gap-8  p-2  `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
               gridAutoRows: '300px',
             }}
           >
-            {dummyData.videos.slice(0, 10).map((video) => (
+            {infScrollVideos.slice(0, videosToRender).map((video) => (
               <VideoCard
                 key={`${video.id.videoId}-${video.snippet.title}`}
                 video={video}
@@ -308,8 +253,9 @@ export const Home: React.FC = () => {
           )}
         </>
       )}
+
       {/* SentinelRef*/}
-      <div ref={sentinelRef} className="mt-20 h-10 w-full" />
+      <div ref={sentinelRef} className="h-2 w-full" />
     </div>
   );
 };
