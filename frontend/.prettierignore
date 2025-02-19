@@ -6,3 +6,4 @@ dist
 /front-end/src/components/SubModal.tsx
 /src/components/settingsComponents/SwitchAccount.tsx
 /src/components/VideoCard.tsx
+/src/components/hooks/useYoutubeVideos.ts
