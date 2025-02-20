@@ -1,8 +1,4 @@
-
-
 ## Youtube Clone Development Branch
-
-
 
 ## User Agreement
 
@@ -28,31 +24,31 @@ By using this application, you agree to the following terms:
 
 By cloning, modifying, or using this repository, you acknowledge and agree to abide by these terms.
 
-
 ## **Application Stack**
 
 check package.json for details about the version
 
-### Front End  Stack
-* ***React Vite***
-* ***TypeScript***
-* ***TailwindCss***
-* ***Apollo***
-* ***EsLint***
-* ***Prettier***
-* ***FontAwesome***
-* ***GraphQl Codegen***
+### Front End Stack
 
+- **_React Vite_**
+- **_TypeScript_**
+- **_TailwindCss_**
+- **_Apollo_**
+- **_EsLint_**
+- **_Prettier_**
+- **_FontAwesome_**
+- **_GraphQl Codegen_**
 
-### Back End  Stack
-check requirements.txt to see all installed libraries needed in the project. the list of 
+### Back End Stack
+
+check requirements.txt to see all installed libraries needed in the project. the list of
 subjected to change as the application is being developed
 
-- ***Django*** 
-- ***Django Graph QL***
-- ***MySql***
-- ***Google Oauth2***
-
+- **_Django_**
+- **_Django Graph QL_**
+- **_MySql_**
+- **_Google Oauth2_**
 
 ### Link To video Previews
-https://www.linkedin.com/posts/activity-7294907620027416578-TMlf?utm_source=share&utm_medium=member_desktop&rcm=ACoAADU3pVcBAL_VLlfn48JrgdfLvqY1sMOXEVA
+
+https://www.linkedin.com/posts/activity-7298179409209958401-RbIu?utm_source=share&utm_medium=member_desktop&rcm=ACoAADU3pVcBAL_VLlfn48JrgdfLvqY1sMOXEVA
