@@ -6,9 +6,7 @@ interface UserContextType {
   dispatch: Dispatch<UserAction>;
 }
 
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined,
-);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);

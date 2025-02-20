@@ -48,8 +48,7 @@ export const MenuModal: React.FC = () => {
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
 
-  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
-    useToolTip();
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } = useToolTip();
 
   useEffect(() => {
     const handleRemoveClass = () => {
@@ -57,10 +56,9 @@ export const MenuModal: React.FC = () => {
 
       if (reactModalContent && window.innerWidth > 1280) {
         reactModalContent.classList.remove('animate-slide-left');
-        console.assert(
-          !reactModalContent.classList.contains('animate-slide-left'),
-          { message: 'token has been removed' },
-        );
+        console.assert(!reactModalContent.classList.contains('animate-slide-left'), {
+          message: 'token has been removed',
+        });
       }
     };
     handleRemoveClass();
@@ -99,14 +97,8 @@ export const MenuModal: React.FC = () => {
             title="Youtube Home"
             className="flex justify-center items-center cursor-pointer"
           >
-            <img
-              src={youtubeIconPath}
-              alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
-              className="h-8 w-8  min-w-8"
-            />
-            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">
-              YouTube
-            </h3>
+            <img src={youtubeIconPath} alt={youtubeIconPath.split('/').pop()?.split('.')[0]} className="h-8 w-8  min-w-8" />
+            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">YouTube</h3>
           </div>
         </div>
         <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
@@ -138,9 +130,7 @@ export const MenuModal: React.FC = () => {
         {isLoggedIn ? (
           <>
             {/* row-2*/}
-            <section
-              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-            >
+            <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
               <div>
                 <MenuComponent
                   customIconSrc={chevronRight}
@@ -194,9 +184,7 @@ export const MenuModal: React.FC = () => {
               />
             </section>
             {/* row-3*/}
-            <section
-              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-            >
+            <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
               <h1 className="capitalize mx-4 ">subscriptions</h1>
               <MenuComponent
                 customIconSrc={allSubscriptionIconPath}
@@ -211,9 +199,7 @@ export const MenuModal: React.FC = () => {
         ) : (
           <>
             {/* login component */}
-            <section
-              className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}
-            >
+            <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
               <div className="mx-4 space-y-3">
                 <h3 className="flex flex-initial w-[80%]   text-sm text-start">
                   Sign in to like videos, comment, and subscribe.
@@ -373,11 +359,7 @@ export const MenuModal: React.FC = () => {
           </div>
         </section>
       </div>
-      <ToolTip
-        visible={showTooltip}
-        text={toolTipText}
-        position={tooltipPosition}
-      />
+      <ToolTip visible={showTooltip} text={toolTipText} position={tooltipPosition} />
     </ReactModal>
   );
 };

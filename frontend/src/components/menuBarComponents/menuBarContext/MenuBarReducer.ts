@@ -16,10 +16,7 @@ export const initialMenuState: MenuState = {
   userInteracted: false,
 };
 
-export const MenuBarReducer = (
-  state: MenuState,
-  action: ActionType,
-): MenuState => {
+export const MenuBarReducer = (state: MenuState, action: ActionType): MenuState => {
   switch (action.type) {
     case 'HANDLE_MENU':
       return {

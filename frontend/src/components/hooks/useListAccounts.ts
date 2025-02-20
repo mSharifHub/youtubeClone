@@ -12,9 +12,7 @@ export interface GoogleUserProfile {
 
 export const useGoogleAuthList = () => {
   // state to set the list of users
-  const [usersAuthList, setUsersAuthList] = React.useState<GoogleUserProfile[]>(
-    [],
-  );
+  const [usersAuthList, setUsersAuthList] = React.useState<GoogleUserProfile[]>([]);
   // state to use with front end while is loading the user data
   const [loading, setLoading] = React.useState<boolean>(true);
 
@@ -24,9 +22,7 @@ export const useGoogleAuthList = () => {
   // to handle the list and filter prev logged profiles
   const onUpdateUserList = (userProfile: GoogleUserProfile) => {
     setUsersAuthList((prevList) => {
-      const userExist = prevList.some(
-        (user) => user.email === userProfile.email,
-      );
+      const userExist = prevList.some((user) => user.email === userProfile.email);
 
       // If user does not exist then update the list
       if (!userExist) {

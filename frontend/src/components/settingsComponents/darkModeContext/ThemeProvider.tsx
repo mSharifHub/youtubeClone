@@ -26,9 +26,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'system') {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)',
-      ).matches;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.classList.toggle('dark', prefersDark);
       setDarkMode(prefersDark);
       setDarkModeText(prefersDark ? 'dark' : 'light');
@@ -40,11 +38,5 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  return (
-    <ThemeContext.Provider
-      value={{ theme, setTheme, isDarkMode, darkModeText }}
-    >
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, setTheme, isDarkMode, darkModeText }}>{children}</ThemeContext.Provider>;
 };

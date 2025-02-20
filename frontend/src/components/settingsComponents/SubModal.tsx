@@ -8,11 +8,7 @@ interface SubModalProps {
   children: React.ReactNode;
 }
 
-export const SubModal: React.FC<SubModalProps> = ({
-  isOpen,
-  onClickOutside,
-  children,
-}): JSX.Element => {
+export const SubModal: React.FC<SubModalProps> = ({ isOpen, onClickOutside, children }): JSX.Element => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   const onCLickInside = (event: React.MouseEvent<HTMLDivElement>) => {

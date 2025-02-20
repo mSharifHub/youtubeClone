@@ -11,8 +11,7 @@ export default function Suggestions() {
   const [isStart, setIsStart] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
-  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
-    useToolTip();
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } = useToolTip();
 
   const dummyData = [
     { title: 'dummyData', link: '#' },
@@ -51,11 +50,7 @@ export default function Suggestions() {
 
   return (
     <>
-      <ToolTip
-        text={toolTipText}
-        visible={showTooltip}
-        position={tooltipPosition}
-      />
+      <ToolTip text={toolTipText} visible={showTooltip} position={tooltipPosition} />
 
       <section className="h-12 min-w-full px-4  flex justify-start items-center ">
         {/* all block */}
@@ -79,11 +74,7 @@ export default function Suggestions() {
             className="h-full  flex justify-start items-center space-x-4 overflow-x-auto scroll-smooth whitespace-nowrap no-scrollbar "
           >
             {dummyData.map((item) => (
-              <div
-                onMouseEnter={(e) => mouseEnter(e, item.title)}
-                onMouseLeave={mouseLeave}
-                key={item.index}
-              >
+              <div onMouseEnter={(e) => mouseEnter(e, item.title)} onMouseLeave={mouseLeave} key={item.index}>
                 <RecommendationsFilter title={item.title} link={item.link} />
               </div>
             ))}

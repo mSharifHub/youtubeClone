@@ -1,5 +1,1 @@
-
-
-export default function useInfiniteScrollVideos(){
-
-}
+export default function useInfiniteScrollVideos() {}

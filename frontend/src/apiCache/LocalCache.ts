@@ -26,9 +26,7 @@ class LocalCache {
     const sizeInKb = this.getSizeInKb(valueString);
 
     if (sizeInKb > this.MAX_KB_SIZE) {
-      console.error(
-        `[Cache] data exceeds max size (${this.MAX_KB_SIZE}). Key: ${key}: ${valueString}, Size: ${sizeInKb} Kb`,
-      );
+      console.error(`[Cache] data exceeds max size (${this.MAX_KB_SIZE}). Key: ${key}: ${valueString}, Size: ${sizeInKb} Kb`);
 
       return;
     }
@@ -55,9 +53,7 @@ class LocalCache {
     const sizeInKb = this.getSizeInKb(valueString);
 
     if (sizeInKb > this.MAX_KB_SIZE) {
-      console.error(
-        `[cache] data exceeds max size (${this.MAX_KB_SIZE}, key:${key}, Size: ${sizeInKb} Kb`,
-      );
+      console.error(`[cache] data exceeds max size (${this.MAX_KB_SIZE}, key:${key}, Size: ${sizeInKb} Kb`);
       return;
     }
     console.log(`[Cache] appending key: ${key}`);

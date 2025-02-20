@@ -7,11 +7,7 @@ interface ToolTipProps {
   position: { top: number; left: number };
 }
 
-export const ToolTip: React.FC<ToolTipProps> = ({
-  text,
-  visible,
-  position,
-}) => {
+export const ToolTip: React.FC<ToolTipProps> = ({ text, visible, position }) => {
   if (!visible) return null;
 
   const { top, left } = position;

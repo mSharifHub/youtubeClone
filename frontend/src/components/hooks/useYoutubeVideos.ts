@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
-import dummmyData from "../../../dummyData.json"
 
 export interface VideoSnippet {
   title?: string;
@@ -39,19 +38,12 @@ export interface Video {
   statistics?: VideoStatistics;
 }
 
-// interface UseYoutubeVideosResult {
-//   videos: Video[];
-//   loading: boolean | null;
-//   error: string | null;
-//   playVideo: (videoId: string) => void;
-//   loadMoreVideos: () => void;
-// }
-
 interface UseYoutubeVideosResult {
-  dummyVideos: Video[];
-  dummyDataLoading: boolean | null;
-  dummyDataError: string | null;
-  dummyLoadMoreVideos: () => void;
+  videos: Video[];
+  loading: boolean | null;
+  error: string | null;
+  playVideo: (videoId: string) => void;
+  loadMoreVideos: () => void;
 }
 
 export default function useYoutubeVideos(
@@ -60,185 +52,154 @@ export default function useYoutubeVideos(
   section: string,
   isInfiniteScroll: boolean = false,
 ): UseYoutubeVideosResult {
-  // const [videos, setVideos] = useState<Video[]>([]);
-  // const [loading, setLoading] = useState<boolean>(false);
-  // const [error, setError] = useState<string | null>(null);
-  // const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
-  // const [nextPageToken, setNextPageToken] = useState<string | null>(null);
-  //
-  // const cachedVideos = LocalCache.getInstance();
-  // const cacheVideosKey = `youtube_videos_${section}`;
-  // const cacheNextPageTokenKey = `next_page_${section}`;
-  //
-  // function playVideo(videoId: string): void {
-  //   setSelectedVideoId(videoId);
-  // }
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+
+  const cachedVideos = LocalCache.getInstance();
+  const cacheVideosKey = `youtube_videos_${section}`;
+  const cacheNextPageTokenKey = `next_page_${section}`;
+
+  function playVideo(videoId: string): void {
+    setSelectedVideoId(videoId);
+  }
 
   /*
     to fetch video statistics
    */
-  // const fetchVideoStatistics = async (videoIds: string[]) => {
-  //   try {
-  //     const idsString = videoIds.join(',');
-  //
-  //     const response = await axios.get(
-  //       `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
-  //     );
-  //
-  //     if (!response.data.items || response.data.items.length === 0) {
-  //       console.warn('No video statistics found for the given video ids');
-  //       return {};
-  //     }
-  //
-  //     return response.data.items.reduce(
-  //       (map: Record<string, VideoStatistics>, item) => {
-  //         map[item.id] = {
-  //           viewCount: item.statistics?.viewCount || '0',
-  //           likeCount: item.statistics?.likeCount || '0',
-  //           duration: item.contentDetails?.duration || '0',
-  //         };
-  //         return map;
-  //       },
-  //       {},
-  //     );
-  //   } catch (e) {
-  //     throw new Error(
-  //       e instanceof Error ? e.message : 'Failed to fetch video statistics.',
-  //     );
-  //   }
-  // };
+  const fetchVideoStatistics = async (videoIds: string[]) => {
+    try {
+      const idsString = videoIds.join(',');
+
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
+      );
+
+      if (!response.data.items || response.data.items.length === 0) {
+        console.warn('No video statistics found for the given video ids');
+        return {};
+      }
+
+      return response.data.items.reduce((map: Record<string, VideoStatistics>, item) => {
+        map[item.id] = {
+          viewCount: item.statistics?.viewCount || '0',
+          likeCount: item.statistics?.likeCount || '0',
+          duration: item.contentDetails?.duration || '0',
+        };
+        return map;
+      }, {});
+    } catch (e) {
+      throw new Error(e instanceof Error ? e.message : 'Failed to fetch video statistics.');
+    }
+  };
 
   // /*
   //  *Fetch additional video details
   //  */
-  // const fetchChannelDetails = async (channelIds: string[]) => {
-  //   try {
-  //     const idsString = channelIds.join(',');
-  //     const response = await axios.get(
-  //       `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
-  //     );
-  //
-  //     if (!response.data.items || response.data.items.length === 0) {
-  //       console.warn('No video details found for the given video ids');
-  //       return {};
-  //     }
-  //
-  //     return response.data.items.reduce(
-  //       (
-  //         map: Record<
-  //           string,
-  //           { channelId: string; title?: string; logo?: string }
-  //         >,
-  //         item,
-  //       ) => {
-  //         map[item.id] = {
-  //           channelId: item.id,
-  //           title: item.snippet?.title,
-  //           logo: item.snippet.thumbnails?.default?.url,
-  //         };
-  //         return map;
-  //       },
-  //       {},
-  //     );
-  //   } catch (e) {
-  //     throw new Error(
-  //       e instanceof Error ? e.message : 'Failed to fetch video Details.',
-  //     );
-  //   }
-  // };
+  const fetchChannelDetails = async (channelIds: string[]) => {
+    try {
+      const idsString = channelIds.join(',');
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
+      );
+
+      if (!response.data.items || response.data.items.length === 0) {
+        console.warn('No video details found for the given video ids');
+        return {};
+      }
+
+      return response.data.items.reduce((map: Record<string, { channelId: string; title?: string; logo?: string }>, item) => {
+        map[item.id] = {
+          channelId: item.id,
+          title: item.snippet?.title,
+          logo: item.snippet.thumbnails?.default?.url,
+        };
+        return map;
+      }, {});
+    } catch (e) {
+      throw new Error(e instanceof Error ? e.message : 'Failed to fetch video Details.');
+    }
+  };
 
   /*
   To debug re-renders and fetchFirst needed while strict mode is being used
   */
-  // const fetchFirst = useRef(true);
-  // /**
-  //  @param{string} [pageToken]- (Optional) Token for the infinite scroll
-  //   *
-  //   *Behavior:
-  //   * - If loading is True prevents in calling a duplicate fetch
-  //  **/
-  // const fetchVideos = useCallback(
-  //   async (pageToken?: string) => {
-  //
-  //     if (loading) {
-  //       return;
-  //     }
-  //
-  //     setLoading(true);
-  //     setError(null);
-  //
-  //     try {
-  //       const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
-  //
-  //       const response = await axios.get(url);
-  //
-  //       if (response.status === 200) {
-  //         if (!response.data.items || response.data.items.length === 0) {
-  //           return;
-  //         }
-  //
-  //         if (isInfiniteScroll && response.data.nextPageToken.length > 0) {
-  //           const newPageToken = response.data.nextPageToken;
-  //           setNextPageToken(newPageToken);
-  //           cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
-  //         }
-  //
-  //         const videoItems: Video[] = response.data.items;
-  //         const videoIds: string[] = videoItems.map(
-  //           (video: Video) => video.id.videoId,
-  //         );
-  //
-  //         const channelIds: string[] = [
-  //           ...new Set(
-  //             videoItems.map((video: Video) => video.snippet.channelId),
-  //           ),
-  //         ];
-  //
-  //         const statisticsMap = await fetchVideoStatistics(videoIds);
-  //
-  //         const channelMap = await fetchChannelDetails(channelIds);
-  //
-  //         const newVideos = videoItems.map((video: Video) => ({
-  //           ...video,
-  //           statistics: statisticsMap[video.id.videoId],
-  //           snippet: {
-  //             ...video.snippet,
-  //             channelTitle: channelMap[video.snippet.channelId]?.title,
-  //             channelLogo: channelMap[video.snippet.channelId]?.logo,
-  //             publishedAt: video.snippet.publishedAt,
-  //           },
-  //         }));
-  //
-  //         setVideos((previousVideos) =>
-  //           nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos],
-  //         );
-  //
-  //         if (isInfiniteScroll) {
-  //           cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
-  //         } else {
-  //           cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
-  //         }
-  //       }
-  //     } catch (err) {
-  //       setError(err instanceof Error ? err.message : 'An error occurred');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   },
-  //   [loading, nextPageToken],
-  // );
+  const fetchFirst = useRef(true);
+  /**
+   @param{string} [pageToken]- (Optional) Token for the infinite scroll
+    *
+    *Behavior:
+    * - If loading is True prevents in calling a duplicate fetch
+   **/
+  const fetchVideos = async (pageToken?: string) => {
+    if (loading) {
+      return;
+    }
 
-  // const getNextPageToken = (): string | null => {
-  //   return nextPageToken || cachedVideos.get<string>(cacheNextPageTokenKey);
-  // };
+    setLoading(true);
+    setError(null);
 
-  // const loadMoreVideos = useCallback(() => {
-  //   if (loading) return;
-  //
-  //   const token = getNextPageToken();
-  //
-  //   if (token) fetchVideos(token);
-  // }, [loading, nextPageToken]);
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
+
+      const response = await axios.get(url);
+
+      if (response.status === 200) {
+        if (!response.data.items || response.data.items.length === 0) {
+          return;
+        }
+
+        if (isInfiniteScroll && response.data.nextPageToken.length > 0) {
+          const newPageToken = response.data.nextPageToken;
+          setNextPageToken(newPageToken);
+          cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
+        }
+
+        const videoItems: Video[] = response.data.items;
+        const videoIds: string[] = videoItems.map((video: Video) => video.id.videoId);
+
+        const channelIds: string[] = [...new Set(videoItems.map((video: Video) => video.snippet.channelId))];
+
+        const statisticsMap = await fetchVideoStatistics(videoIds);
+
+        const channelMap = await fetchChannelDetails(channelIds);
+
+        const newVideos = videoItems.map((video: Video) => ({
+          ...video,
+          statistics: statisticsMap[video.id.videoId],
+          snippet: {
+            ...video.snippet,
+            channelTitle: channelMap[video.snippet.channelId]?.title,
+            channelLogo: channelMap[video.snippet.channelId]?.logo,
+            publishedAt: video.snippet.publishedAt,
+          },
+        }));
+
+        setVideos((previousVideos) => (nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos]));
+
+        if (isInfiniteScroll) {
+          cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
+        } else {
+          cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreVideos = useCallback(() => {
+    if (loading || videos.length > 50) return;
+
+    const token = nextPageToken ? nextPageToken : cachedVideos.get<string>(cacheNextPageTokenKey);
+    if (!token) return;
+    fetchVideos(token);
+  }, [loading, videos.length, nextPageToken]);
 
   /*
    * Behavior:
@@ -246,113 +207,29 @@ export default function useYoutubeVideos(
    * cached videos set the videos state to the data in cache
    * else make one fetch request
    */
-  // useEffect(() => {
-  //   if (fetchFirst.current) {
-  //     fetchFirst.current = false;
-  //     const cached = cachedVideos.get<Video[]>(cacheVideosKey);
-  //     if (cached && cached.length > 0) {
-  //       setVideos(cached);
-  //     } else {
-  //       fetchVideos();
-  //     }
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (nextPageToken) {
-  //     cachedVideos.set<string>(cacheNextPageTokenKey, nextPageToken);
-  //   }
-  // }, [nextPageToken]);
-
-
-  const dummyFetchFirst = useRef(true);
-  const [dummyDataLoading, setDummyDataLoading] = useState<boolean>(false)
-  const [dummyDataError, setDummyDataError] = useState<string | null>(null)
-  const dummycachedVideos = LocalCache.getInstance();
-  const dummycacheVideosKey = `youtube_videos_${section}`;
-  const dummycacheNextPageTokenKey = `next_page_${section}`;
-  const [dummyPageToken, setDummyPageToken] = useState<string | null>(null)
-  const[dummyVideos, setDummyVideos] = useState<Video[]>([])
-
-
-
-const fetchRec = useRef(0)
-  const  fetchDummyData = async (pageToken?: string) => {
-    fetchRec.current++
-    console.log("fetching function called",fetchRec.current)
-    if (dummyDataLoading) return
-    setDummyDataLoading(true)
-    setDummyDataError(null)
-    try {
-      const startIndex = pageToken ? parseInt(pageToken,10) : 0
-      const pageSize = maxResult
-
-      if (startIndex >= dummmyData.videos.length) {
-        setDummyPageToken(null)
-        setDummyDataLoading(false)
-        return
-      }
-
-
-      const newData = dummmyData.videos.slice(startIndex, startIndex + pageSize)
-      const nextPageToken = startIndex + pageSize < dummmyData.videos.length ? (startIndex + pageSize).toString() : null
-
-      if (isInfiniteScroll && nextPageToken && nextPageToken.length > 0) {
-        setDummyPageToken(nextPageToken)
-        dummycachedVideos.set<string>(dummycacheNextPageTokenKey, nextPageToken);
-
-      }
-
-      setDummyVideos((previousVideos) => (pageToken ? [...previousVideos, ...newData] : [...newData]));
-
-      if (isInfiniteScroll) {
-        dummycachedVideos.append<Video[]>(dummycacheVideosKey, newData);
-      } else {
-        dummycachedVideos.set<Video[]>(dummycacheVideosKey, newData);
-      }
-
-    }catch (err) {
-      setDummyDataError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setTimeout(()=>{
-        setDummyDataLoading(false);
-      },1000)
-
-    }
-  }
-
-
-  const dummyLoadMoreVideos = useCallback(()=>{
-    if (dummyDataLoading || dummyVideos.length > 50) return;
-    const token = dummyPageToken ? dummyPageToken : dummycachedVideos.get<string>(dummycacheNextPageTokenKey)
-    const parsedToken = parseInt(token!,10)
-    if (!token || parsedToken>= dummmyData.videos.length) return
-    fetchDummyData(token)
-  },[dummyDataLoading, dummyVideos.length, dummyPageToken])
-
-
   useEffect(() => {
-    if (dummyFetchFirst.current) {
-      dummyFetchFirst.current = false;
-      const cached = dummycachedVideos.get<Video[]>(dummycacheVideosKey);
+    if (fetchFirst.current) {
+      fetchFirst.current = false;
+      const cached = cachedVideos.get<Video[]>(cacheVideosKey);
       if (cached && cached.length > 0) {
-        setDummyVideos(cached);
+        setVideos(cached);
       } else {
-        fetchDummyData()
+        fetchVideos();
       }
     }
   }, []);
 
   useEffect(() => {
-    if (dummyPageToken) {
-      dummycachedVideos.set<string>(dummycacheNextPageTokenKey, dummyPageToken);
+    if (nextPageToken) {
+      cachedVideos.set<string>(cacheNextPageTokenKey, nextPageToken);
     }
-  }, [dummyPageToken]);
+  }, [nextPageToken]);
 
   return {
-    dummyVideos,
-    dummyDataLoading,
-    dummyDataError,
-    dummyLoadMoreVideos,
+    videos,
+    loading,
+    error,
+    loadMoreVideos,
+    playVideo,
   };
 }

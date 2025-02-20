@@ -10,9 +10,7 @@ export default function SearchInput() {
   const { showTooltip, tooltipPosition, toolTipText } = useToolTip();
   const [userInput, setUserInput] = useState<string>('');
 
-  const handleUserInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleUserInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setUserInput(value);
   };
@@ -36,16 +34,8 @@ export default function SearchInput() {
           className="h-full w-full p-2 pl-8 pr-10 rounded-full placeholder:font-thin placeholder:text-lg placeholder:text-slate-300 focus:outline-none dark:dark-modal "
         />
         {userInput.length > 0 && (
-          <div
-            className="absolute top-1/2 -translate-y-1/2 right-24 cursor-pointer"
-            onClick={clearUserInput}
-            title="Clear input"
-          >
-            <FontAwesomeIcon
-              icon={faX}
-              size="lg"
-              className="text-neutral-300"
-            />
+          <div className="absolute top-1/2 -translate-y-1/2 right-24 cursor-pointer" onClick={clearUserInput} title="Clear input">
+            <FontAwesomeIcon icon={faX} size="lg" className="text-neutral-300" />
           </div>
         )}
 
@@ -63,11 +53,7 @@ export default function SearchInput() {
         <Microphone />
       </div>
 
-      <ToolTip
-        visible={showTooltip}
-        text={toolTipText}
-        position={tooltipPosition}
-      />
+      <ToolTip visible={showTooltip} text={toolTipText} position={tooltipPosition} />
     </div>
   );
 }

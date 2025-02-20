@@ -44,8 +44,7 @@ export default function MenuBar() {
     state: { toggler },
   } = useMenuBar();
 
-  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } =
-    useToolTip();
+  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } = useToolTip();
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
 
@@ -55,16 +54,8 @@ export default function MenuBar() {
     >
       {/* row-1*/}
 
-      <section
-        className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}
-      >
-        <MenuComponent
-          customIconSrc={homeIconPath}
-          title="Home"
-          link="/"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+      <section className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}>
+        <MenuComponent customIconSrc={homeIconPath} title="Home" link="/" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent
           title="Shorts"
           customIconSrc={shortsIconPath}
@@ -83,9 +74,7 @@ export default function MenuBar() {
       {isLoggedIn ? (
         <>
           {/* row-2*/}
-          <section
-            className={` flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}
-          >
+          <section className={` flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}>
             {/* you should stay visible on toggle */}
 
             <MenuComponent
@@ -158,9 +147,7 @@ export default function MenuBar() {
           <section
             className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]' : 'w-16'}`}
           >
-            <h3 className=" flex flex-initial w-[80%]   text-sm text-start">
-              Sign in to like videos, comment, and subscribe.
-            </h3>
+            <h3 className=" flex flex-initial w-[80%]   text-sm text-start">Sign in to like videos, comment, and subscribe.</h3>
             <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />
           </section>
         </>
@@ -185,13 +172,7 @@ export default function MenuBar() {
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent
-          customIconSrc={musicIconPath}
-          title="Music"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={musicIconPath} title="Music" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent
           customIconSrc={moviesIconPath}
           title="Movies"
@@ -199,13 +180,7 @@ export default function MenuBar() {
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent
-          customIconSrc={liveIconPath}
-          title="Live"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={liveIconPath} title="Live" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent
           customIconSrc={gamingIconPath}
           title="Gaming"
@@ -213,13 +188,7 @@ export default function MenuBar() {
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent
-          customIconSrc={newsIconPath}
-          title="News"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={newsIconPath} title="News" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent
           customIconSrc={sportsIconPath}
           title="Sports"
@@ -274,13 +243,7 @@ export default function MenuBar() {
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent
-          customIconSrc={helpIconPatch}
-          title="Help"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={helpIconPatch} title="Help" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent
           customIconSrc={sendFeedBackPath}
           title="Feedback"
@@ -290,9 +253,7 @@ export default function MenuBar() {
         />
       </section>
       {/* row-6 */}
-      <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'flex-initial w-[12rem] ' : 'w-16'}`}
-      >
+      <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'flex-initial w-[12rem] ' : 'w-16'}`}>
         <div className="capitalize mx-4 text-nowrap space-y-2">
           <h1 className="text-md">developer information</h1>
           <ul className="space-y-2">
@@ -304,11 +265,7 @@ export default function MenuBar() {
           </ul>
         </div>
       </section>
-      <ToolTip
-        visible={showTooltip}
-        text={toolTipText}
-        position={tooltipPosition}
-      />
+      <ToolTip visible={showTooltip} text={toolTipText} position={tooltipPosition} />
     </div>
   );
 }

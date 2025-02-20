@@ -8,10 +8,7 @@ interface MenuComponentProps {
   reverse?: boolean;
   isOffCanvas?: boolean;
   hidden?: boolean;
-  onMouseEnter?: (
-    event: React.MouseEvent<HTMLDivElement>,
-    text: string,
-  ) => void;
+  onMouseEnter?: (event: React.MouseEvent<HTMLDivElement>, text: string) => void;
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -34,15 +31,9 @@ export default function MenuComponent({
         onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, title)}
         onMouseLeave={onMouseLeave}
       >
-        <div
-          className={` flex justify-center items-center ${reverse ? 'order-2' : null} dark:invert  `}
-        >
+        <div className={` flex justify-center items-center ${reverse ? 'order-2' : null} dark:invert  `}>
           {customIconSrc && (
-            <img
-              src={customIconSrc}
-              alt={`${title}-icon`}
-              className=" min-h-[24px] min-w-[24px] h-[24px] w-[24px]"
-            />
+            <img src={customIconSrc} alt={`${title}-icon`} className=" min-h-[24px] min-w-[24px] h-[24px] w-[24px]" />
           )}
         </div>
         <div

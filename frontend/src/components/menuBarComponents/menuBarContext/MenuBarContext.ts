@@ -6,9 +6,7 @@ export interface MenuBarContextProp {
   dispatch: Dispatch<ActionType>;
 }
 
-export const MenuBarContext = createContext<MenuBarContextProp | undefined>(
-  undefined,
-);
+export const MenuBarContext = createContext<MenuBarContextProp | undefined>(undefined);
 
 export const useMenuBar = () => {
   const context = useContext(MenuBarContext);

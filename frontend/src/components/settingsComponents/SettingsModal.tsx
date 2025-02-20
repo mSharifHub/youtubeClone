@@ -20,18 +20,12 @@ interface LoginModalProps {
   onClickOutside: () => void;
 }
 
-export const SettingsModal: React.FC<LoginModalProps> = ({
-  isOpen,
-  onClickOutside,
-}) => {
+export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutside }) => {
   const { theme } = useTheme();
 
   const { dispatch: settingsModalDispatch } = useSettingsModal();
 
-  const handleShowSubModel = (
-    event: React.MouseEvent<HTMLDivElement>,
-    content: string,
-  ) => {
+  const handleShowSubModel = (event: React.MouseEvent<HTMLDivElement>, content: string) => {
     settingsModalDispatch({ type: 'SET_SUB_MODAL_CONTENT', payload: content });
     settingsModalDispatch({ type: 'OPEN_SUB_SETTINGS_MODAL' });
     settingsModalDispatch({ type: 'CLOSE_SETTINGS_MODAL' });
@@ -41,7 +35,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
   const {
     state: { user, isLoggedIn },
   } = useUser();
-
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -57,9 +50,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
       >
         <div className="grid grid-rows m-2 ">
           {/*row-1 [ user profile picture , youtube handler, view channel] */}
-          <section
-            className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-1 border-b'} `}
-          >
+          <section className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-1 border-b'} `}>
             <div className="grid grid-cols-[0.25fr_1fr] space-x-5 px-4 py-4">
               {/*picture */}
               <div className="col-span-1 col-start-1 flex justify-start items-center">
@@ -77,9 +68,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                   <span>{user?.firstName}</span>
                   <span>{user?.lastName}</span>
                 </div>
-                <div className="flex justify-start items-center ">
-                  @{user?.youtubeHandler}
-                </div>
+                <div className="flex justify-start items-center ">@{user?.youtubeHandler}</div>
 
                 <Link
                   to="#"
@@ -91,21 +80,14 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
             </div>
           </section>
           {/*row-2*/}
-          <section
-            className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-2 border-b '}  text-sm`}
-          >
+          <section className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-2 border-b '}  text-sm`}>
             <div className=" flex flex-col justify-center items-start space-y-4 px-4 py-4">
               {/*google account*/}
               <button
-                onClick={() =>
-                  (window.location.href = 'https://myaccount.google.com/')
-                }
+                onClick={() => (window.location.href = 'https://myaccount.google.com/')}
                 className="flex w-full h-10 px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <FontAwesomeIcon
-                  icon={faGoogle}
-                  className="min-h-6 min-w-6 w-6 h-6"
-                />
+                <FontAwesomeIcon icon={faGoogle} className="min-h-6 min-w-6 w-6 h-6" />
                 <span className="capitalize text-sm">google account</span>
               </button>
               {/*switch account*/}
@@ -114,11 +96,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                 title="Switch Accounts"
                 className="relative flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <img
-                  src={switchAccount}
-                  alt="switchAccount"
-                  className=" min-h-6 min-w-6 w-6 h-6 dark:invert"
-                />
+                <img src={switchAccount} alt="switchAccount" className=" min-h-6 min-w-6 w-6 h-6 dark:invert" />
                 <span className="capitalize text-sm">switch accounts</span>
                 <FontAwesomeIcon icon={faChevronRight} className="text-lg" />
               </div>
@@ -128,43 +106,27 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                 title="Log out"
                 className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <img
-                  src={signOut}
-                  alt="signOut"
-                  className=" min-h-6 min-w-6 w-6 h-6 dark:invert"
-                />
+                <img src={signOut} alt="signOut" className=" min-h-6 min-w-6 w-6 h-6 dark:invert" />
                 <h3 className="capitalize">sign out</h3>
               </div>
             </div>
           </section>
           {/* row 3 [ youtubeStudio, purchase and membership ]*/}
-          <section
-            className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-3 border-b '} text-sm`}
-          >
+          <section className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-3 border-b '} text-sm`}>
             <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
               <button
                 title="YouTube Studio"
                 className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <img
-                  src={youtubeStudioIcon}
-                  alt="youtube-studio"
-                  className=" min-h-6 min-w-6 w-6 h-6 dark:invert"
-                />
+                <img src={youtubeStudioIcon} alt="youtube-studio" className=" min-h-6 min-w-6 w-6 h-6 dark:invert" />
                 <span className="capitalize text-sm">youtube studio</span>
               </button>
               <button
                 title="Purchase And Membership"
                 className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <img
-                  src={coin}
-                  alt="purchase-and-memberships"
-                  className="min-h-6 min-w-6 w-6 h-6 dark:invert"
-                />
-                <h3 className="capitalize whitespace-nowrap">
-                  purchases and membership
-                </h3>
+                <img src={coin} alt="purchase-and-memberships" className="min-h-6 min-w-6 w-6 h-6 dark:invert" />
+                <h3 className="capitalize whitespace-nowrap">purchases and membership</h3>
               </button>
             </div>
           </section>
@@ -185,11 +147,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({
                 title="Settings"
                 className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                <img
-                  src={settings}
-                  alt="settings"
-                  className="min-h-6 min-w-6 w-6 h-6 dark:invert"
-                />
+                <img src={settings} alt="settings" className="min-h-6 min-w-6 w-6 h-6 dark:invert" />
                 <h3 className="capitalize">settings</h3>
               </button>
             </div>

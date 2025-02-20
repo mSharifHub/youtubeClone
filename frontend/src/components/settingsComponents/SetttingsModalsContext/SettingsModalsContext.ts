@@ -6,9 +6,7 @@ export interface SettingsModalsContextProp {
   dispatch: Dispatch<ActionType>;
 }
 
-export const SettingModalsContext = createContext<
-  SettingsModalsContextProp | undefined
->(undefined);
+export const SettingModalsContext = createContext<SettingsModalsContextProp | undefined>(undefined);
 
 export const useSettingsModal = () => {
   const context = useContext(SettingModalsContext);

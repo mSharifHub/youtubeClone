@@ -11,10 +11,9 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
+  [_ in K]?: never;
+};
 export type Incremental<T> =
   | T
   | {
@@ -254,42 +253,19 @@ export const ViewerDocument = gql`
  *   },
  * });
  */
-export function useViewerQuery(
-  baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>,
-) {
+export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(
-    ViewerDocument,
-    options,
-  );
+  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
 }
-export function useViewerLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>,
-) {
+export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(
-    ViewerDocument,
-    options,
-  );
+  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
 }
-export function useViewerSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    ViewerQuery,
-    ViewerQueryVariables
-  >,
-) {
+export function useViewerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(
-    ViewerDocument,
-    options,
-  );
+  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
 }
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
-export type ViewerSuspenseQueryHookResult = ReturnType<
-  typeof useViewerSuspenseQuery
->;
-export type ViewerQueryResult = Apollo.QueryResult<
-  ViewerQuery,
-  ViewerQueryVariables
->;
+export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
+export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;

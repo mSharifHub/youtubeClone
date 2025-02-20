@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '../../userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import {
-  firstShortsRowsDisplayValues,
-  firstVideoRowsDisplayValues,
-} from '../helpers/homeVideoDisplayOptions.ts';
+import { firstShortsRowsDisplayValues, firstVideoRowsDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
 import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoCard.tsx';
 import { VideoCardLoading } from '../VideoCardLoading.tsx';
@@ -49,8 +46,7 @@ export const Home: React.FC = () => {
   /**
    *@constant defines number of videos to fetch from api based on the number of videos per row
    */
-  const [videosToRender, setVideosToRender] =
-    useState<number>(totalVideosFirstRow);
+  const [videosToRender, setVideosToRender] = useState<number>(totalVideosFirstRow);
 
   /**
    * The `apiKey` variable holds the YouTube Data API v3 key,
@@ -74,30 +70,28 @@ export const Home: React.FC = () => {
    * This row is typically used to hold data or metadata associated with the
    * first entry in a collection.
    */
-  const { dummyVideos: firstRow, dummyDataLoading: firstRowLoading } =
-    useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
+  const { videos: firstRow, loading: firstRowLoading } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
 
   /**
    * Represents a row of data or information related to shorts.
    */
-  const { dummyVideos: shortsRow, dummyDataLoading: shortsLoading } =
-    useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
+  const { videos: shortsRow, loading: shortsLoading } = useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
 
   /**
    * A variable that represents a collection or stream of video data
    * designed to provide an infinite or continuously loading video experience.
    */
   const {
-    dummyVideos: infScrollVideos,
-    dummyDataLoading: isInfScrollLoading,
-    dummyDataError: infScrollError,
-    dummyLoadMoreVideos,
+    videos: infScrollVideos,
+    loading: isInfScrollLoading,
+    error: infScrollError,
+    loadMoreVideos,
   } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
 
   const handleInfiniteScroll = useCallback(() => {
-    if (isInfScrollLoading || infScrollError) return
-    dummyLoadMoreVideos();
-  }, [isInfScrollLoading, infScrollError, dummyLoadMoreVideos]);
+    if (isInfScrollLoading || infScrollError) return;
+    loadMoreVideos();
+  }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
 
   /**
    *Updates the videos to render when the number of videos or rows changes
@@ -107,8 +101,7 @@ export const Home: React.FC = () => {
    */
   useEffect(() => {
     if (videosPerRow) {
-      const fullRows =
-        Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
+      const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
       setVideosToRender(fullRows);
     }
   }, [infScrollVideos.length, videosPerRow]);
@@ -142,10 +135,7 @@ export const Home: React.FC = () => {
 
   /***************End of API Call To Fetch Videos **********************************/
   return (
-    <div
-      className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto"
-      ref={containerLazyLoadRef}
-    >
+    <div className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto" ref={containerLazyLoadRef}>
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
@@ -161,10 +151,7 @@ export const Home: React.FC = () => {
               .slice(0, totalVideosFirstRow)
               .map((video) =>
                 !firstRowLoading ? (
-                  <VideoCard
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                    video={video}
-                  />
+                  <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
                 ) : (
                   <VideoCardLoading
                     style="flex justify-center items-center h-[200px] rounded-lg  bg-neutral-200 dark:dark-modal"
@@ -196,11 +183,7 @@ export const Home: React.FC = () => {
                 .slice(0, shortsVideosPerRow)
                 .map((video) =>
                   !shortsLoading ? (
-                    <VideoCard
-                      key={`${video.id.videoId}-${video.snippet.title}`}
-                      video={video}
-                      shorts={true}
-                    />
+                    <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} shorts={true} />
                   ) : (
                     <VideoCardLoading
                       style="flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
@@ -220,10 +203,7 @@ export const Home: React.FC = () => {
             }}
           >
             {infScrollVideos.slice(0, videosToRender).map((video) => (
-              <VideoCard
-                key={`${video.id.videoId}-${video.snippet.title}`}
-                video={video}
-              />
+              <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
             ))}
           </div>
 
@@ -239,14 +219,12 @@ export const Home: React.FC = () => {
                 {Array.from({
                   length: totalVideosFirstRow,
                 }).map((_, index) => (
-                  <VideoCardLoading
-                    key={`loading-${index}`}
-                    style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal"
-                  />
+                  <VideoCardLoading key={`loading-${index}`} style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal" />
                 ))}
               </div>
 
               <div className="flex w-full justify-center items-center ">
+                {/* eslint-disable-next-line max-len */}
                 <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
               </div>
             </>

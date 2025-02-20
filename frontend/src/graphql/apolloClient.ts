@@ -1,9 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  InMemoryCache,
-  createHttpLink,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, createHttpLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
@@ -36,9 +31,7 @@ const authLink = setContext((_, { headers }) => {
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-      );
+      console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
     });
   }
 });

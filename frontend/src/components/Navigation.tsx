@@ -12,46 +12,43 @@ import IconSearch from './forms/IconSearch.tsx';
 import { useUser } from '../userContext/UserContext.tsx';
 import { SettingsModal } from './settingsComponents/SettingsModal.tsx';
 import { useMenuBar } from './menuBarComponents/menuBarContext/MenuBarContext.ts';
-import {useSettingsModal} from './settingsComponents/SetttingsModalsContext/SettingsModalsContext.ts';
+import { useSettingsModal } from './settingsComponents/SetttingsModalsContext/SettingsModalsContext.ts';
 import { SubModal } from './settingsComponents/SubModal.tsx';
 import { SwitchAccount } from './settingsComponents/SwitchAccount.tsx';
 import { SwitchTheme } from './settingsComponents/SwitchTheme.tsx';
 
-
 export default function NavigationBar() {
-
   // user state context to display the user data on the navigation component
   const {
     state: { isLoggedIn, user },
   } = useUser();
 
-
   const {
-    state:{settingModalToggler, subSettingModalToggler, subModalContent},
-    dispatch : settingModalDispatch,
-  } = useSettingsModal()
+    state: { settingModalToggler, subSettingModalToggler, subModalContent },
+    dispatch: settingModalDispatch,
+  } = useSettingsModal();
 
   // dispatch for menu bar
-  const { dispatch: menuBarDispatch} = useMenuBar();
+  const { dispatch: menuBarDispatch } = useMenuBar();
 
   // function to be passed as prop to settings modal component
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    settingModalDispatch({type:"OPEN_SETTINGS_MODAL"})
+    settingModalDispatch({ type: 'OPEN_SETTINGS_MODAL' });
   };
 
-/*
-*
-* This functions handles the settings state. The Settings modal
-* needs to be used as a children of the html tag
- */
+  /*
+   *
+   * This functions handles the settings state. The Settings modal
+   * needs to be used as a children of the html tag
+   */
   const handleCloseSettingModal = () => {
-    settingModalDispatch({type:"CLOSE_SETTINGS_MODAL"})
+    settingModalDispatch({ type: 'CLOSE_SETTINGS_MODAL' });
   };
 
-  const handleCloseSubModel =()=>{
-    settingModalDispatch({type:"CLOSE_SUB_SETTINGS_MODAL"})
-  }
+  const handleCloseSubModel = () => {
+    settingModalDispatch({ type: 'CLOSE_SUB_SETTINGS_MODAL' });
+  };
 
   // function to change context state based on the screen size
   const handleMenu = () => {
@@ -88,14 +85,8 @@ export default function NavigationBar() {
             title="Youtube Home"
             className="flex justify-center items-center cursor-pointer"
           >
-            <img
-              src={youtubeIconPath}
-              alt={youtubeIconPath.split('/').pop()?.split('.')[0]}
-              className="h-8 w-8  min-w-8"
-            />
-            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">
-              YouTube
-            </h3>
+            <img src={youtubeIconPath} alt={youtubeIconPath.split('/').pop()?.split('.')[0]} className="h-8 w-8  min-w-8" />
+            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">YouTube</h3>
           </div>
         </div>
         {/*middle of the navigation bar e*/}
@@ -143,28 +134,15 @@ export default function NavigationBar() {
           ) : (
             <>
               {/* settings  if icon when not logged in  */}
-              <div
-                className="cursor-pointer"
-                title="settings"
-                onClick={(e) => handleShowSettingModal(e)}
-              >
+              <div className="cursor-pointer" title="settings" onClick={(e) => handleShowSettingModal(e)}>
                 <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
                 {/* Use component settings within the  html tag */}
-                {settingModalToggler && (
-                  <SettingsModal
-                    isOpen={settingModalToggler}
-                    onClickOutside={handleCloseSettingModal}
-                  />
-                )}
+                {settingModalToggler && <SettingsModal isOpen={settingModalToggler} onClickOutside={handleCloseSettingModal} />}
                 {/* subModal component */}
-                {subSettingModalToggler && subModalContent &&(
-                  <SubModal
-                    isOpen={subSettingModalToggler}
-                    onClickOutside={handleCloseSubModel}
-                  >
-                    {subModalContent === "SWITCH_ACCOUNTS" && <SwitchAccount/>}
-                    {subModalContent === "THEME_MODE" && <SwitchTheme/>}
-
+                {subSettingModalToggler && subModalContent && (
+                  <SubModal isOpen={subSettingModalToggler} onClickOutside={handleCloseSubModel}>
+                    {subModalContent === 'SWITCH_ACCOUNTS' && <SwitchAccount />}
+                    {subModalContent === 'THEME_MODE' && <SwitchTheme />}
                   </SubModal>
                 )}
               </div>
@@ -174,32 +152,19 @@ export default function NavigationBar() {
           {/* profile component content */}
           <div onClick={() => (!isLoggedIn ? redirectGoogleAuth() : null)}>
             {user && user.profilePicture ? (
-              <div
-                onClick={(e) => handleShowSettingModal(e)}
-                className="cursor-pointer relative"
-                title="User Account"
-              >
+              <div onClick={(e) => handleShowSettingModal(e)} className="cursor-pointer relative" title="User Account">
                 <img
                   src={user.profilePicture}
                   alt={`${user.username}-profilePicture`}
                   className="rounded-full min-h-8 min-w-8 w-8 h-8"
                 />
                 {/* Use component settings within the  html tag */}
-                {settingModalToggler && (
-                  <SettingsModal
-                    isOpen={settingModalToggler}
-                    onClickOutside={handleCloseSettingModal}
-                  />
-                )}
+                {settingModalToggler && <SettingsModal isOpen={settingModalToggler} onClickOutside={handleCloseSettingModal} />}
                 {/* subModal component */}
-                {subSettingModalToggler && subModalContent &&(
-                  <SubModal
-                    isOpen={subSettingModalToggler}
-                    onClickOutside={handleCloseSubModel}
-                  >
-                    {subModalContent === "SWITCH_ACCOUNTS" && <SwitchAccount/>}
-                    {subModalContent === "THEME_MODE" && <SwitchTheme/>}
-
+                {subSettingModalToggler && subModalContent && (
+                  <SubModal isOpen={subSettingModalToggler} onClickOutside={handleCloseSubModel}>
+                    {subModalContent === 'SWITCH_ACCOUNTS' && <SwitchAccount />}
+                    {subModalContent === 'THEME_MODE' && <SwitchTheme />}
                   </SubModal>
                 )}
               </div>
@@ -209,22 +174,14 @@ export default function NavigationBar() {
                 title="Sign in with Google"
               >
                 <div className="flex justify-center items-center border border-blue-400 rounded-full ">
-                  <img
-                    src={userIconPath}
-                    alt="user-icon"
-                    className=" h-5 w-5  "
-                  />
+                  <img src={userIconPath} alt="user-icon" className=" h-5 w-5  " />
                 </div>
-                <span className="text-sm  font-semibold text-blue-400 ">
-                  Sign in
-                </span>
+                <span className="text-sm  font-semibold text-blue-400 ">Sign in</span>
               </div>
             )}
           </div>
         </div>
-
       </nav>
-
     </>
   );
 }
