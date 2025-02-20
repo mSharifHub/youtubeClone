@@ -10,9 +10,7 @@ interface ThemeContextProps {
   darkModeText: Theme;
 }
 
-export const ThemeContext = createContext<ThemeContextProps | undefined>(
-  undefined,
-);
+export const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);

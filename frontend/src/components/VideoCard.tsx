@@ -16,8 +16,8 @@ import decrementTime from './helpers/decrementTime.ts';
  */
 interface VideoCardProps {
   video: Video;
-  style?:string| undefined
-  shorts?:boolean| undefined
+  style?: string | undefined;
+  shorts?: boolean | undefined;
 }
 
 /**
@@ -39,20 +39,15 @@ interface VideoCardProps {
  * - This component uses `useState`, `useRef`, and `useEffect` hooks for state management and
  *   handling side effects related to hover and timer logic.
  */
-export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
-  video,
-  shorts,
-}) => {
+export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shorts }) => {
   /**
    * it will exchange between the thumbnails and the video video preview
    */
   const [hover, setHover] = useState<boolean>(false);
 
-
-
   /**
-  *  object time used along with the decrement time function
-  *@see decrementTime {function} ./helpers/decrementTime.ts
+   *  object time used along with the decrement time function
+   *@see decrementTime {function} ./helpers/decrementTime.ts
    */
   const [remainingTime, setRemainingTime] = useState<{
     hours: number;
@@ -64,11 +59,10 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
    * state to reset to its original time when user is no longer hovering over the video div
    */
   const [originalTime, setOriginalTime] = useState<{
-    hours:number;
-    minutes:number;
-    seconds:number;
-  }| null>(null)
-
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } | null>(null);
 
   const timerRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
@@ -93,11 +87,9 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
    * the timeout later.
    */
   const handleMouseEnter = () => {
-
-    timeoutRef.current = window.setTimeout(()=>{
+    timeoutRef.current = window.setTimeout(() => {
       setHover(true);
-    },500)
-
+    }, 500);
   };
 
   /**
@@ -105,27 +97,26 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
    * resets the timeout reference to null, and updates the hover state to false.
    */
   const handleMouseLeave = () => {
-    if (timeoutRef.current){
+    if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
       setHover(false);
     }
-
   };
 
   // Initializing remaining time
   useEffect(() => {
     if (video.statistics?.duration) {
       const { hours, minutes, seconds } = convertISO(video.statistics.duration);
-      const timeObj = {hours, minutes, seconds};
+      const timeObj = { hours, minutes, seconds };
       setRemainingTime(timeObj);
       setOriginalTime(timeObj);
     }
   }, [video.statistics?.duration]);
 
- /*
- * Use effect to handle  time state
-  */
+  /*
+   * Use effect to handle  time state
+   */
   useEffect(() => {
     /**
      * Initializes and starts a timer that executes a decrement function
@@ -140,109 +131,106 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({
      * function and `timerRef`.
      */
     const starterTime = () => {
-      if (!timerRef.current){
+      if (!timerRef.current) {
         timerRef.current = window.setInterval(() => {
           decrementTime(setRemainingTime, timerRef);
         }, 500);
       }
-    }
+    };
     /**
      * Stops the active timer by clearing the interval associated with `timerRef.current`.
      * If a timer is running (i.e., `timerRef.current` is not null or undefined), it clears the interval
      * using `clearInterval` and sets `timerRef.current` to null to signify that the timer has stopped.
      */
-    const stopTime = () =>{
-      if (timerRef.current){
+    const stopTime = () => {
+      if (timerRef.current) {
         clearInterval(timerRef.current as number);
         timerRef.current = null;
       }
-    }
-    if (hover){
-      starterTime()
-    }
-    else{
-      stopTime()
+    };
+    if (hover) {
+      starterTime();
+    } else {
+      stopTime();
     }
     setRemainingTime(originalTime);
 
     return () => {
       clearInterval(timerRef.current as number);
     };
-  }, [hover,originalTime]);
+  }, [hover, originalTime]);
 
   return (
     <>
-    {/* main div container for video cards */}
-    <div className="cursor-pointer">
-      {/* video thumbnails*/}
+      {/* main div container for video cards */}
+      <div className="cursor-pointer">
+        {/* video thumbnails*/}
 
-      <div className="h-full w-full flex flex-col space-y-4">
-        <div
-          className={`relative  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  w-full  `}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {!hover && (
-            <img
-              src={video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url}
-              alt={video.snippet.title}
-              className={` absolute inset-0  grow  h-full w-full rounded-xl object-cover  ease-linear brightness-100  `}
-            />
-          )}
+        <div className="h-full w-full flex flex-col space-y-4">
+          <div
+            className={`relative  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  w-full  `}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {!hover && (
+              <img
+                src={video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url}
+                alt={video.snippet.title}
+                className={` absolute inset-0  grow  h-full w-full rounded-xl object-cover  ease-linear brightness-100  `}
+              />
+            )}
 
-          {hover && (
-            <iframe
-              className="absolute inset-0 grow  h-full w-full rounded-xl "
-              src={videoURL}
-              allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-            />
-          )}
-          <div className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
-               style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}>
-
-            {remainingTime
-              ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}`
-              : '0:00:00'}
+            {hover && (
+              <iframe
+                className="absolute inset-0 grow  h-full w-full rounded-xl "
+                src={videoURL}
+                allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+              />
+            )}
+            <div
+              className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}
+            >
+              {remainingTime ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}` : '0:00:00'}
+            </div>
           </div>
-        </div>
 
-        {/* video and channel information*/}
-        <div className="flex  justify-start items-top grow">
-          {/*channel logo*/}
-          <div className="flex  flex-grow min-w-20 min-h-fit justify-center items-top">
-            {/*channel logo image*/}
-            <img
-              src={video.snippet.channelLogo || "../src/assets/thumbnails/icons8-video-100.png"}
-              alt={video.snippet.channelLogo ? video.snippet.channelTitle: ''}
-              className="h-12 w-12 rounded-full "
-            />
-          </div>
-          {/*video title*/}
-          <div className="flex flex-col justify-center items-start w-full ">
-            {sliceText(video.snippet.title ? video.snippet.title : '')}
-            {/*channel title and views*/}
-            <div className="flex flex-col w-full text-sm dark:text-neutral-400">
-              <div>{video.snippet.channelTitle}</div>
-              {/*video views */}
-              <div className="flex flex-row gap-x-2">
-                {video.statistics?.viewCount}
-                {video.statistics?.viewCount &&
-                parseInt(video.statistics.viewCount, 10) > 1 ? (
-                  <span> views</span>
-                ) : (
-                  <span>view</span>
-                )}
-                {/*published at */}
-                <span className="space-x-2">
-                  <span className="font-bold">&#8226;</span>
-                  <span>{timeSince(video.snippet.publishedAt)}</span>
-                </span>
+          {/* video and channel information*/}
+          <div className="flex  justify-start items-top grow  space-x-4">
+            {/*channel logo*/}
+            <div className="flex  flex-grow min-w-20 min-h-12 justify-center items-start">
+              {/*channel logo image*/}
+              <img
+                src={video.snippet.channelLogo || '../src/assets/thumbnails/icons8-video-100.png'}
+                alt={video.snippet.channelLogo ? video.snippet.channelTitle : ''}
+                className="h-12 w-12 rounded-full "
+              />
+            </div>
+            {/*video title*/}
+            <div className="flex flex-col justify-center items-start w-full ">
+              {sliceText(video.snippet.title ? video.snippet.title : '')}
+              {/*channel title and views*/}
+              <div className="flex flex-col w-full text-sm dark:text-neutral-400">
+                <div>{video.snippet.channelTitle}</div>
+                {/*video views */}
+                <div className="flex flex-row gap-x-2">
+                  {video.statistics?.viewCount}
+                  {video.statistics?.viewCount && parseInt(video.statistics.viewCount, 10) > 1 ? (
+                    <span> views</span>
+                  ) : (
+                    <span>view</span>
+                  )}
+                  {/*published at */}
+                  <span className="space-x-2">
+                    <span className="font-bold">&#8226;</span>
+                    <span>{timeSince(video.snippet.publishedAt)}</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

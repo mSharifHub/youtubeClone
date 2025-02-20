@@ -1,9 +1,6 @@
 import { useRef } from 'react';
 
-export const useThrottle = <T extends (...args: any[]) => void>(
-  callBack: T,
-  interval: number,
-) => {
+export const useThrottle = <T extends (...args: any[]) => void>(callBack: T, interval: number) => {
   const lastExecuted = useRef<number>(0);
 
   return (...args: Parameters<T>) => {

@@ -5,10 +5,7 @@ interface RecommendationsFilterProps {
   link: string;
 }
 
-export default function RecommendationsFilter({
-  title,
-  link,
-}: RecommendationsFilterProps) {
+export default function RecommendationsFilter({ title, link }: RecommendationsFilterProps) {
   if (title.length > 20) {
     throw new Error("Title can't be more than 20 characters long");
   }

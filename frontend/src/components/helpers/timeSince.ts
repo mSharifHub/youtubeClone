@@ -27,9 +27,7 @@ export default function timeSince(published: string): string {
 
   interval = Math.floor(seconds / 60); // Seconds in a minute
   if (interval >= 1) {
-    return interval === 1
-      ? `${interval} minute ago`
-      : `${interval} minutes ago`;
+    return interval === 1 ? `${interval} minute ago` : `${interval} minutes ago`;
   }
 
   return `${Math.floor(seconds)} seconds ago`;

@@ -14,37 +14,32 @@ export const useToolTip = () => {
   const timerRef = useRef<number | null>(null);
 
   // when entering  an element
-  const toolTipMouseEnterCustomComponent = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
-      const target = event.currentTarget as HTMLDivElement;
-      //gets the title of element
-      const toolTipText: string | null = text
-        ? text
-        : target.getAttribute('title');
+  const toolTipMouseEnterCustomComponent = useCallback((event: React.MouseEvent<HTMLDivElement>, text: string | null = null) => {
+    const target = event.currentTarget as HTMLDivElement;
+    //gets the title of element
+    const toolTipText: string | null = text ? text : target.getAttribute('title');
 
-      // const to get position of the element
-      const rect = target.getBoundingClientRect();
+    // const to get position of the element
+    const rect = target.getBoundingClientRect();
 
-      // if there is no text or not a position then show state should be false
-      if (!toolTipText || !rect) {
-        setShowTooltip(false);
-        return;
-      }
-      // clear time
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+    // if there is no text or not a position then show state should be false
+    if (!toolTipText || !rect) {
+      setShowTooltip(false);
+      return;
+    }
+    // clear time
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
 
-      setTooltipPosition({ top: rect.top + 40, left: rect.left + 50 });
-      setToolTipText(toolTipText);
+    setTooltipPosition({ top: rect.top + 40, left: rect.left + 50 });
+    setToolTipText(toolTipText);
 
-      // set timer to one second to show tool tip
-      timerRef.current = window.setTimeout(() => {
-        setShowTooltip(true);
-      }, 1000);
-    },
-    [],
-  );
+    // set timer to one second to show tool tip
+    timerRef.current = window.setTimeout(() => {
+      setShowTooltip(true);
+    }, 1000);
+  }, []);
 
   // when leaving an element
   const toolTipMouseLeaveCustomComponent = useCallback(() => {

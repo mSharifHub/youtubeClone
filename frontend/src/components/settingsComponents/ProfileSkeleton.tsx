@@ -26,9 +26,7 @@ export const ProfileSkeleton: React.FC<ProfileSkeletonProps> = ({
       className={`relative grid grid-cols-[0.25fr_1fr] h-20 min-w-full space-x-2 p-2  transition-colors duration-75 ease-out ${!skeleton && `hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer`} `}
     >
       {/* col-1 */}
-      <div
-        className={`col-start-1  col-span-1 flex  justify-center items-center ${skeleton && 'animate-pulse'} `}
-      >
+      <div className={`col-start-1  col-span-1 flex  justify-center items-center ${skeleton && 'animate-pulse'} `}>
         {!skeleton ? (
           <img
             src={userProfile}
@@ -44,9 +42,7 @@ export const ProfileSkeleton: React.FC<ProfileSkeletonProps> = ({
       </div>
 
       {/* col-2 */}
-      <div
-        className={`col-start-2 py-2 flex flex-col space-y-2  ${skeleton && 'animate-pulse'}`}
-      >
+      <div className={`col-start-2 py-2 flex flex-col space-y-2  ${skeleton && 'animate-pulse'}`}>
         <div
           className={`h-4 flex justify-start items-center space-x-2  text-md ${skeleton && 'bg-neutral-100 dark:bg-neutral-700'} `}
         >
@@ -77,9 +73,7 @@ export const ProfileSkeleton: React.FC<ProfileSkeletonProps> = ({
           )}
         </div>
       </div>
-      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-        {children}
-      </div>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2">{children}</div>
     </div>
   );
 };

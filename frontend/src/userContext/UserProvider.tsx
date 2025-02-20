@@ -3,10 +3,7 @@ import { UserContext } from './UserContext';
 import { userReducer } from './userReducer.ts';
 import Cookies from 'js-cookie';
 import { ViewerQuery } from '../graphql/types.ts';
-import {
-  decryptData,
-  encryptData,
-} from '../components/helpers/CookieEncryption.ts';
+import { decryptData, encryptData } from '../components/helpers/CookieEncryption.ts';
 import { useQuery } from '@apollo/client';
 import { VIEWER_QUERY } from '../graphql/queries/queries.ts';
 
@@ -19,8 +16,7 @@ const getUserState = () => {
 
   if (authenticatedUser) {
     try {
-      const decryptedData: ViewerQuery['viewer'] =
-        decryptData(authenticatedUser);
+      const decryptedData: ViewerQuery['viewer'] = decryptData(authenticatedUser);
 
       return {
         user: decryptedData,
@@ -43,8 +39,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     pollInterval: 3600000,
     onCompleted: (data) => {
       if (data && data.viewer) {
-        const currentData: ViewerQuery['viewer'] =
-          decryptData(authenticatedUser);
+        const currentData: ViewerQuery['viewer'] = decryptData(authenticatedUser);
         const fetchedData = data.viewer;
 
         if (JSON.stringify(fetchedData) !== JSON.stringify(currentData)) {
@@ -63,9 +58,5 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     throw new Error(`failed to fetch user data ${error}`);
   }
 
-  return (
-    <UserContext.Provider value={{ state, dispatch }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={{ state, dispatch }}>{children}</UserContext.Provider>;
 };

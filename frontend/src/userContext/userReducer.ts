@@ -5,14 +5,9 @@ export interface UserState {
   isLoggedIn: boolean;
 }
 
-export type UserAction =
-  | { type: 'SET_USER'; payload: ViewerQuery['viewer'] }
-  | { type: 'CLEAR_USER' };
+export type UserAction = { type: 'SET_USER'; payload: ViewerQuery['viewer'] } | { type: 'CLEAR_USER' };
 
-export const userReducer = (
-  state: UserState,
-  action: UserAction,
-): UserState => {
+export const userReducer = (state: UserState, action: UserAction): UserState => {
   switch (action.type) {
     case 'SET_USER':
       return {

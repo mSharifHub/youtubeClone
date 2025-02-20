@@ -1,5 +1,4 @@
-
-export   const firstVideoRowsDisplayValues = {
+export const firstVideoRowsDisplayValues = {
   display_less_480: 1,
   display_481_699: 1,
   display_700_899: 2,
@@ -9,7 +8,6 @@ export   const firstVideoRowsDisplayValues = {
   display_1740_1920: 5,
   display_full: 5,
 };
-
 
 export const firstShortsRowsDisplayValues = {
   display_less_480: 1,

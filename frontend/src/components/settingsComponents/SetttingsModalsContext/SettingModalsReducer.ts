@@ -17,10 +17,7 @@ export const initialSettingsModalState: SettingModalsState = {
   subModalContent: null,
 };
 
-export const SettingModalsReducer = (
-  state: SettingModalsState,
-  action: ActionType,
-): SettingModalsState => {
+export const SettingModalsReducer = (state: SettingModalsState, action: ActionType): SettingModalsState => {
   switch (action.type) {
     case 'OPEN_SETTINGS_MODAL':
       return {

@@ -28,9 +28,7 @@ export const useVideoGrid = ({
   display_1740_1920,
   display_full,
 }: VideoGridProps): number | undefined => {
-  const [videosPerRow, setVideosPerRow] = useState<number | undefined>(
-    display_full,
-  );
+  const [videosPerRow, setVideosPerRow] = useState<number | undefined>(display_full);
 
   const determineVideosToShow = () => {
     const screenWidth = window.innerWidth;
