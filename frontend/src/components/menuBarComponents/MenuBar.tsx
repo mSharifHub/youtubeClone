@@ -33,6 +33,7 @@ import { LoginComponent } from '../LoginComponent.tsx';
 import { useMenuBar } from './menuBarContext/MenuBarContext.ts';
 import { useToolTip } from '../hooks/useToolTip.ts';
 import { ToolTip } from '../helpers/ToolTip.tsx';
+import { visited } from '../helpers/visited.ts';
 
 export default function MenuBar() {
   const {
@@ -55,9 +56,17 @@ export default function MenuBar() {
       {/* row-1*/}
 
       <section className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}>
-        <MenuComponent customIconSrc={homeIconPath} title="Home" link="/" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={homeIconPath}
+          isPath={visited}
+          title="Home"
+          link="/"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           title="Shorts"
+          isPath={visited}
           customIconSrc={shortsIconPath}
           link="#"
           onMouseEnter={mouseEnter}
@@ -65,6 +74,7 @@ export default function MenuBar() {
         />
         <MenuComponent
           title="Subscriptions"
+          isPath={visited}
           customIconSrc={subscriptionIconPath}
           link="#"
           onMouseEnter={mouseEnter}
@@ -80,6 +90,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={toggler ? youIcon : chevronRight}
               title="You"
+              isPath={visited}
               reverse={true}
               link="#"
               onMouseEnter={mouseEnter}
@@ -89,6 +100,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={yourChannelPath}
               title="Your channel"
+              isPath={visited}
               link="#"
               hidden={toggler}
               onMouseEnter={mouseEnter}
@@ -97,6 +109,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={historyIconPath}
               title="History"
+              isPath={visited}
               link="#"
               hidden={toggler}
               onMouseEnter={mouseEnter}
@@ -105,6 +118,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={playListPath}
               title="Playlist"
+              isPath={visited}
               link="#"
               hidden={toggler}
               onMouseEnter={mouseEnter}
@@ -113,6 +127,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={watchLaterPath}
               title="Watch later"
+              isPath={visited}
               link="#"
               hidden={toggler}
               onMouseEnter={mouseEnter}
@@ -121,6 +136,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={thumbsUpIconPath}
               title="Liked videos"
+              isPath={visited}
               link="#"
               hidden={toggler}
               onMouseEnter={mouseEnter}
@@ -135,6 +151,7 @@ export default function MenuBar() {
             <MenuComponent
               customIconSrc={allSubscriptionIconPath}
               title="Subscriptions"
+              isPath={visited}
               link="#"
               onMouseEnter={mouseEnter}
               onMouseLeave={mouseLeave}
@@ -161,6 +178,7 @@ export default function MenuBar() {
         <MenuComponent
           customIconSrc={trendingIconPath}
           title="Trending"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
@@ -168,36 +186,62 @@ export default function MenuBar() {
         <MenuComponent
           customIconSrc={shoppingIconPath}
           title="Shopping"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={musicIconPath} title="Music" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={musicIconPath}
+          isPath={visited}
+          title="Music"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={moviesIconPath}
           title="Movies"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={liveIconPath} title="Live" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={liveIconPath}
+          title="Live"
+          isPath={visited}
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={gamingIconPath}
+          isPath={visited}
           title="Gaming"
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={newsIconPath} title="News" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={newsIconPath}
+          title="News"
+          link="#"
+          isPath={visited}
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={sportsIconPath}
           title="Sports"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
         <MenuComponent
           customIconSrc={coursesIconPath}
+          isPath={visited}
           title="Courses"
           link="#"
           onMouseEnter={mouseEnter}
@@ -205,6 +249,7 @@ export default function MenuBar() {
         />
         <MenuComponent
           customIconSrc={fashionBeautyIconPath}
+          isPath={visited}
           title="Fashion"
           link="#"
           onMouseEnter={mouseEnter}
@@ -212,6 +257,7 @@ export default function MenuBar() {
         />
         <MenuComponent
           customIconSrc={podcastIconPath}
+          isPath={visited}
           title="Podcast"
           link="#"
           onMouseEnter={mouseEnter}
@@ -219,6 +265,7 @@ export default function MenuBar() {
         />
         <MenuComponent
           customIconSrc={playableIconPath}
+          isPath={visited}
           title="Playables"
           link="#"
           onMouseEnter={mouseEnter}
@@ -232,6 +279,7 @@ export default function MenuBar() {
         <MenuComponent
           customIconSrc={settingsIconPath}
           title="Settings"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
@@ -239,14 +287,23 @@ export default function MenuBar() {
         <MenuComponent
           customIconSrc={reportIconPath}
           title="Report"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
         />
-        <MenuComponent customIconSrc={helpIconPatch} title="Help" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={helpIconPatch}
+          isPath={visited}
+          title="Help"
+          link="#"
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+        />
         <MenuComponent
           customIconSrc={sendFeedBackPath}
           title="Feedback"
+          isPath={visited}
           link="#"
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}

@@ -178,14 +178,26 @@ export default function useYoutubeVideos(
           },
         }));
 
-        setVideos((previousVideos) => (nextPageToken ? [...previousVideos, ...newVideos] : [...newVideos]));
 
-        if (isInfiniteScroll) {
-          cachedVideos.append<Video[]>(cacheVideosKey, newVideos);
-        } else {
-          cachedVideos.set<Video[]>(cacheVideosKey, newVideos);
+          setVideos(
+            (prevVideos) => {
+              const uniqueVideos = newVideos.filter(
+              (newVideo)=> !prevVideos.some((existing)=>existing.id.videoId === newVideo.id.videoId))
+
+            return nextPageToken ? [...prevVideos, ...uniqueVideos] : [...uniqueVideos];
+          })
+
+
+          const cachedUniqueVideos = cachedVideos.get<Video[]>(cacheVideosKey) || []
+
+           const uniqueCachedVideos = [
+             ...cachedUniqueVideos,
+             ...newVideos.filter((newVideo)=> !cachedUniqueVideos.some((cachedVideos) => cachedVideos.id.videoId === newVideo.id.videoId))
+           ]
+
+         cachedVideos.set<Video[]>(cacheVideosKey, uniqueCachedVideos)
         }
-      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

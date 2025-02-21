@@ -44,11 +44,6 @@ export const Home: React.FC = () => {
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
 
   /**
-   *@constant defines number of videos to fetch from api based on the number of videos per row
-   */
-  const [videosToRender, setVideosToRender] = useState<number>(totalVideosFirstRow);
-
-  /**
    * The `apiKey` variable holds the YouTube Data API v3 key,
    * which is required for authenticating requests to the YouTube API.
    *
@@ -77,6 +72,8 @@ export const Home: React.FC = () => {
    */
   const { videos: shortsRow, loading: shortsLoading } = useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
 
+  const totalVideosToFetch = videosPerRow ? videosPerRow * 2 : 10;
+
   /**
    * A variable that represents a collection or stream of video data
    * designed to provide an infinite or continuously loading video experience.
@@ -86,32 +83,18 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
-  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
+  } = useYoutubeVideos(apiKey, totalVideosToFetch, 'infinite_scroll', true);
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollError) return;
     loadMoreVideos();
   }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
 
-  /**
-   *Updates the videos to render when the number of videos or rows changes
-   *Behavior:
-   * - When the screen width changes either more or less videos per row is to display.  Only fetch number of videos
-   * that are to fill each row to prevent  unnecessary fetching  of incomplete rows
-   */
-  useEffect(() => {
-    if (videosPerRow) {
-      const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
-      setVideosToRender(fullRows);
-    }
-  }, [infScrollVideos.length, videosPerRow]);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && isLoggedIn) {
-          console.log('Observer Triggered...');
           handleInfiniteScroll();
         }
       },
@@ -132,6 +115,9 @@ export const Home: React.FC = () => {
       }
     };
   }, [handleInfiniteScroll, isLoggedIn]);
+
+  // value to slice videos to show to prevent incomplete rows from being rendered
+  const videosToShow = infScrollVideos.slice(0, Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow);
 
   /***************End of API Call To Fetch Videos **********************************/
   return (
@@ -202,7 +188,7 @@ export const Home: React.FC = () => {
               gridAutoRows: '300px',
             }}
           >
-            {infScrollVideos.slice(0, videosToRender).map((video) => (
+            {infScrollVideos.slice(0, videosToShow).map((video) => (
               <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
             ))}
           </div>
