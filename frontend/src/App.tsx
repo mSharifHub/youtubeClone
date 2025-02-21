@@ -4,7 +4,6 @@ import { Home } from './components/pages/Home.tsx';
 import NotFound from './components/pages/NotFound.tsx';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import React from 'react';
 config.autoAddCss = false;
 
 function App() {

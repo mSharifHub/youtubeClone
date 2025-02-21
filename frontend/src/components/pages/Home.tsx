@@ -43,10 +43,7 @@ export const Home: React.FC = () => {
    */
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
 
-  /**
-   *@constant defines number of videos to fetch from api based on the number of videos per row
-   */
-  const [videosToRender, setVideosToRender] = useState<number>(totalVideosFirstRow);
+
 
   /**
    * The `apiKey` variable holds the YouTube Data API v3 key,
@@ -86,7 +83,7 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
-  } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'infinite_scroll', true);
+  } = useYoutubeVideos(apiKey, , 'infinite_scroll', true);
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollError) return;
@@ -104,14 +101,13 @@ export const Home: React.FC = () => {
       const fullRows = Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow;
       setVideosToRender(fullRows);
     }
-  }, [infScrollVideos.length, videosPerRow]);
+  }, [infScrollVideos.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && isLoggedIn) {
-          console.log('Observer Triggered...');
           handleInfiniteScroll();
         }
       },
@@ -132,6 +128,10 @@ export const Home: React.FC = () => {
       }
     };
   }, [handleInfiniteScroll, isLoggedIn]);
+
+  useEffect(() => {
+    console.log(`[Debugging] videos to render: ${videosToRender}`);
+  }, [videosToRender]);
 
   /***************End of API Call To Fetch Videos **********************************/
   return (

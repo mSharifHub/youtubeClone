@@ -61,7 +61,7 @@ export default {
 
       const darkModelUtilities = {
         '.dark-modal': {
-          'background-color': theme('colors.neutral.800'),
+          'background-color': theme('colors.neutral.600'),
           color: theme('colors.white'),
         },
       };

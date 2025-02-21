@@ -36,6 +36,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import youtubeIconPath from '../../assets/navigation_icons/youtube-logo.png';
 import { useToolTip } from '../hooks/useToolTip.ts';
 import { ToolTip } from '../helpers/ToolTip.tsx';
+import { visited } from '../helpers/visited.ts';
 
 export const MenuModal: React.FC = () => {
   const { state, dispatch } = useMenuBar();
@@ -104,6 +105,7 @@ export const MenuModal: React.FC = () => {
         <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
           <MenuComponent
             customIconSrc={homeIconPath}
+            isPath={visited}
             title="Home"
             link="/"
             isOffCanvas={true}
@@ -113,6 +115,7 @@ export const MenuModal: React.FC = () => {
           <MenuComponent
             title="Shorts"
             customIconSrc={shortsIconPath}
+            isPath={visited}
             link="#"
             isOffCanvas={true}
             onMouseEnter={mouseEnter}
@@ -120,6 +123,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             title="Subscriptions"
+            isPath={visited}
             customIconSrc={subscriptionIconPath}
             link="#"
             isOffCanvas={true}
@@ -134,6 +138,7 @@ export const MenuModal: React.FC = () => {
               <div>
                 <MenuComponent
                   customIconSrc={chevronRight}
+                  isPath={visited}
                   title="You"
                   reverse={true}
                   link="#"
@@ -144,6 +149,7 @@ export const MenuModal: React.FC = () => {
               </div>
               <MenuComponent
                 customIconSrc={yourChannelPath}
+                isPath={visited}
                 title="Your Channel"
                 link="#"
                 isOffCanvas={true}
@@ -152,6 +158,7 @@ export const MenuModal: React.FC = () => {
               />
               <MenuComponent
                 customIconSrc={historyIconPath}
+                isPath={visited}
                 title="History"
                 link="#"
                 isOffCanvas={true}
@@ -160,6 +167,7 @@ export const MenuModal: React.FC = () => {
               />
               <MenuComponent
                 customIconSrc={playListPath}
+                isPath={visited}
                 title="Playlist"
                 link="#"
                 isOffCanvas={true}
@@ -168,6 +176,7 @@ export const MenuModal: React.FC = () => {
               />
               <MenuComponent
                 customIconSrc={watchLaterPath}
+                isPath={visited}
                 title="Watch Later"
                 link="#"
                 isOffCanvas={true}
@@ -176,6 +185,7 @@ export const MenuModal: React.FC = () => {
               />
               <MenuComponent
                 customIconSrc={thumbsUpIconPath}
+                isPath={visited}
                 title="liked Videos"
                 link="#"
                 isOffCanvas={true}
@@ -188,6 +198,7 @@ export const MenuModal: React.FC = () => {
               <h1 className="capitalize mx-4 ">subscriptions</h1>
               <MenuComponent
                 customIconSrc={allSubscriptionIconPath}
+                isPath={visited}
                 title="Subscriptions"
                 link="#"
                 isOffCanvas={true}
@@ -215,6 +226,7 @@ export const MenuModal: React.FC = () => {
           <h1 className="capitalize mx-4">explore</h1>
           <MenuComponent
             customIconSrc={trendingIconPath}
+            isPath={visited}
             title="Trending"
             link="#"
             isOffCanvas={true}
@@ -223,6 +235,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={shoppingIconPath}
+            isPath={visited}
             title="Shopping"
             link="#"
             isOffCanvas={true}
@@ -231,6 +244,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={musicIconPath}
+            isPath={visited}
             title="Music"
             link="#"
             isOffCanvas={true}
@@ -239,6 +253,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={moviesIconPath}
+            isPath={visited}
             title="Movies"
             link="#"
             isOffCanvas={true}
@@ -247,6 +262,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={liveIconPath}
+            isPath={visited}
             title="Live"
             link="#"
             isOffCanvas={true}
@@ -255,6 +271,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={gamingIconPath}
+            isPath={visited}
             title="Gaming"
             link="#"
             isOffCanvas={true}
@@ -263,6 +280,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={newsIconPath}
+            isPath={visited}
             title="News"
             link="#"
             isOffCanvas={true}
@@ -271,6 +289,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={sportsIconPath}
+            isPath={visited}
             title="Sports"
             link="#"
             isOffCanvas={true}
@@ -279,6 +298,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={coursesIconPath}
+            isPath={visited}
             title="Courses"
             link="#"
             isOffCanvas={true}
@@ -287,6 +307,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={fashionBeautyIconPath}
+            isPath={visited}
             title="Fashion"
             link="#"
             isOffCanvas={true}
@@ -295,6 +316,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={podcastIconPath}
+            isPath={visited}
             title="Podcast"
             link="#"
             isOffCanvas={true}
@@ -303,6 +325,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={playableIconPath}
+            isPath={visited}
             title="Playables"
             link="#"
             isOffCanvas={true}
@@ -314,6 +337,7 @@ export const MenuModal: React.FC = () => {
         <section className={` flex flex-col space-y-3  border-b-[0.5px] pb-4`}>
           <MenuComponent
             customIconSrc={settingsIconPath}
+            isPath={visited}
             title="Settings"
             link="#"
             isOffCanvas={true}
@@ -322,6 +346,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={reportIconPath}
+            isPath={visited}
             title="Report"
             link="#"
             isOffCanvas={true}
@@ -330,6 +355,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={helpIconPatch}
+            isPath={visited}
             title="Help"
             link="#"
             isOffCanvas={true}
@@ -338,6 +364,7 @@ export const MenuModal: React.FC = () => {
           />
           <MenuComponent
             customIconSrc={sendFeedBackPath}
+            isPath={visited}
             title="Feedback"
             link="#"
             isOffCanvas={true}
