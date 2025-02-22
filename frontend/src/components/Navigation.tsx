@@ -1,7 +1,7 @@
 import React from 'react';
 import { useUserLogin } from './hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faEllipsisVertical, faPlus } from '@fortawesome/free-solid-svg-icons';
 import SearchInput from '../components/forms/SearchInput';
 import youtubeIconPath from '../assets/navigation_icons/youtube-logo.png';
 import videoIconPath from '../assets/navigation_icons/add-video.png';
@@ -83,10 +83,10 @@ export default function NavigationBar() {
           <div
             onClick={() => (window.location.href = '/')}
             title="Youtube Home"
-            className="flex justify-center items-center cursor-pointer"
+            className="flex justify-center items-center cursor-pointer space-x-1"
           >
-            <img src={youtubeIconPath} alt={youtubeIconPath.split('/').pop()?.split('.')[0]} className="h-8 w-8  min-w-8" />
-            <h3 className="flex justify-center items-center font-bold text-sm scale-y-[180%]">YouTube</h3>
+            <img src={youtubeIconPath} alt={youtubeIconPath.split('/').pop()?.split('.')[0]} className="h-9 w-19  min-w-9" />
+
           </div>
         </div>
         {/*middle of the navigation bar e*/}
@@ -113,13 +113,11 @@ export default function NavigationBar() {
           {isLoggedIn ? (
             <>
               {/* Add-video component content */}
-              <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200 dark:hover:bg-neutral-700  cursor-pointer ">
-                <img
-                  src={videoIconPath}
-                  title="Add Video"
-                  alt={videoIconPath.split('/').pop()?.split('.')[0]}
-                  className="min-w-6 min-h-6 w-6 h-6 dark:invert"
-                />
+              <div className="h-10 w-28  min-w-28  rounded-full transition-transform duration-150 ease-out  bg-neutral-100 hover:bg-neutral-200   dark:bg-neutral-800 dark:hover:bg-neutral-700  cursor-pointer ">
+                <div className=" h-full w-full flex justify-center  items-center space-x-2 transition-transform duration-75 ease-in-out  hover:scale-110 ">
+                  <FontAwesomeIcon icon={faPlus}  />
+                  <h1 className="text-sm font-semibold">Create</h1>
+                </div>
               </div>
               {/* bell component content */}
               <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer ">

@@ -4,8 +4,8 @@ export const firstVideoRowsDisplayValues = {
   display_700_899: 2,
   display_900_1124: 2,
   display_1125_1420: 3,
-  display_1421_1739: 4,
-  display_1740_1920: 5,
+  display_1421_1739: 3,
+  display_1740_1920: 4,
   display_full: 5,
 };
 
