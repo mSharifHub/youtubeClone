@@ -116,9 +116,6 @@ export const Home: React.FC = () => {
     };
   }, [handleInfiniteScroll, isLoggedIn]);
 
-  // value to slice videos to show to prevent incomplete rows from being rendered
-  const videosToShow = infScrollVideos.slice(0, Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow);
-
   /***************End of API Call To Fetch Videos **********************************/
   return (
     <div className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto" ref={containerLazyLoadRef}>
@@ -188,7 +185,7 @@ export const Home: React.FC = () => {
               gridAutoRows: '300px',
             }}
           >
-            {infScrollVideos.slice(0, videosToShow).map((video) => (
+            {infScrollVideos.slice(0, Math.floor(infScrollVideos.length/videosPerRow) * videosPerRow).map((video) => (
               <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
             ))}
           </div>
