@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
+import { useNavigate } from 'react-router-dom';
 
 export interface VideoSnippet {
   title?: string;
@@ -42,6 +43,7 @@ interface UseYoutubeVideosResult {
   videos: Video[];
   loading: boolean | null;
   error: string | null;
+  selectedVideoId: string | null;
   playVideo: (videoId: string) => void;
   loadMoreVideos: () => void;
 }
@@ -59,13 +61,17 @@ export default function useYoutubeVideos(
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   const cachedVideos = LocalCache.getInstance();
   const cacheVideosKey = `youtube_videos_${section}`;
   const cacheNextPageTokenKey = `next_page_${section}`;
 
-  function playVideo(videoId: string): void {
+
+  const playVideo = useCallback((videoId: string)=> {
     setSelectedVideoId(videoId);
-  }
+    navigate(`/watch/${videoId}`);
+  },[navigate])
 
   /*
     to fetch video statistics
@@ -242,6 +248,7 @@ export default function useYoutubeVideos(
     loading,
     error,
     loadMoreVideos,
+    selectedVideoId,
     playVideo,
   };
 }
