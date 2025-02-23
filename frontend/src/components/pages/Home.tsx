@@ -83,11 +83,12 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
+    playVideo,
   } = useYoutubeVideos(apiKey, totalVideosToFetch, 'infinite_scroll', true);
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollError) return;
-    loadMoreVideos();
+    // loadMoreVideos();
   }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
 
   useEffect(() => {
@@ -118,7 +119,7 @@ export const Home: React.FC = () => {
 
   /***************End of API Call To Fetch Videos **********************************/
   return (
-    <div className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto" ref={containerLazyLoadRef}>
+    <div className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto p-8" ref={containerLazyLoadRef}>
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
@@ -179,14 +180,16 @@ export const Home: React.FC = () => {
 
           {/* infinite video scroll */}
           <div
-            className={`min-h-fit grow w-full grid grid-flow-row gap-8  p-2  `}
+            className={`min-h-fit grow w-full grid grid-flow-row gap-8  p-2 `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
-              gridAutoRows: '300px',
+              gridAutoRows: '350px',
             }}
           >
-            {infScrollVideos.slice(0, Math.floor(infScrollVideos.length/videosPerRow) * videosPerRow).map((video) => (
-              <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
+            {infScrollVideos.slice(0, Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow).map((video) => (
+              <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => playVideo(video.id.videoId)}>
+                <VideoCard video={video} />
+              </div>
             ))}
           </div>
 

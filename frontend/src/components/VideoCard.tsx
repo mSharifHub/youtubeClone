@@ -160,15 +160,14 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
     };
   }, [hover, originalTime]);
 
+  const videoTitle =sliceText(video.snippet.title ? video.snippet.title : '')
+
   return (
     <>
-      {/* main div container for video cards */}
-      <div className="cursor-pointer">
+      <div className="h-full flex flex-col  cursor-pointer ">
         {/* video thumbnails*/}
-
-        <div className="h-full w-full flex flex-col space-y-4">
           <div
-            className={`relative  justify-center items-center  ${shorts ? 'h-[500px]' : 'h-[200px]'}  w-full  `}
+            className={`relative grow flex justify-center items-center  ${shorts ? 'h-[500px]' : 'min-h-[200px]'}  aspect-video w-full `}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
@@ -176,15 +175,15 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
               <img
                 src={video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url}
                 alt={video.snippet.title}
-                className={` absolute inset-0  grow  h-full w-full rounded-xl object-cover  ease-linear brightness-100  `}
+                className={` absolute inset-0  h-full w-full rounded-xl ${shorts ? 'object-cover' : 'object-fill'} `}
               />
             )}
 
             {hover && (
               <iframe
-                className="absolute inset-0 grow  h-full w-full rounded-xl "
-                src={videoURL}
-                allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                className="absolute inset-0  h-full w-full rounded-xl "
+                src={`${videoURL}`}
+                allow="autoplay; encrypted-media; gyroscope; picture-in-picture; "
               />
             )}
             <div
@@ -194,26 +193,25 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
               {remainingTime ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}` : '0:00:00'}
             </div>
           </div>
-
           {/* video and channel information*/}
-          <div className="flex  justify-start items-top grow  space-x-4">
+        {!shorts &&(
+          <div className="flex flex-shrink justify-start items-center  space-x-4">
             {/*channel logo*/}
-            <div className="flex  flex-grow min-w-20 min-h-12 justify-center items-start">
-              {/*channel logo image*/}
+            <div className="min-h-10 min-w-10 h-10 w-10">
               <img
                 src={video.snippet.channelLogo || '../src/assets/thumbnails/icons8-video-100.png'}
                 alt={video.snippet.channelLogo ? video.snippet.channelTitle : ''}
-                className="h-12 w-12 rounded-full "
+                className="h-full w-full rounded-full  border"
               />
             </div>
-            {/*video title*/}
-            <div className="flex flex-col justify-center items-start w-full ">
-              {sliceText(video.snippet.title ? video.snippet.title : '')}
+            {/*video info*/}
+            <div className="h-24 w-full flex flex-col p-1 flex-initial ">
+              <div className=" flex-shrink text-sm  md:text-md xl:text-lg text-wrap">{videoTitle}</div>
               {/*channel title and views*/}
-              <div className="flex flex-col w-full text-sm dark:text-neutral-400">
+              <div className="flex-grow flex-col text-sm dark:text-neutral-400">
                 <div>{video.snippet.channelTitle}</div>
                 {/*video views */}
-                <div className="flex flex-row gap-x-2">
+                <div className="">
                   {video.statistics?.viewCount}
                   {video.statistics?.viewCount && parseInt(video.statistics.viewCount, 10) > 1 ? (
                     <span> views</span>
@@ -221,7 +219,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
                     <span>view</span>
                   )}
                   {/*published at */}
-                  <span className="space-x-2">
+                  <span className="">
                     <span className="font-bold">&#8226;</span>
                     <span>{timeSince(video.snippet.publishedAt)}</span>
                   </span>
@@ -229,8 +227,10 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
               </div>
             </div>
           </div>
+
+        )}
         </div>
-      </div>
+
     </>
   );
 };
