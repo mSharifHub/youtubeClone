@@ -103,20 +103,21 @@ export const VideoPlayer: React.FC = () => {
             </div>
           </div>
 
+          {/*description container*/}
           <div
-            className={` relative ${expand ? 'h-fit' : 'h-16'} flex w-full flex-col p-4 text-wrap overflow-hidden dark:bg-neutral-800 rounded-lg`}
+            className={` relative ${expand ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg  `}
           >
-            <div className={`flex min-w-fit flex-row justify-start items-center} `}>
-              <p className="font-bold">
-                {!expand ? sliceText({ isDescription: true, s: selectedVideo?.snippet.description }) : selectedVideo?.snippet.description}
-                {expand && selectedVideo?.snippet.channelDescription}
-              </p>
+            {/* text container */}
+            <div className="h-full flex-wrap text-wrap space-y-4 ">
+              <h2>{selectedVideo?.snippet.channelDescription}</h2>
+              <p>{selectedVideo?.snippet.description}</p>
             </div>
-            <button
-              className="absolute bottom-0 right-0  text-sm text-nowrap  text-neutral-400 hover:text-neutral-300"
-              onClick={handleExpand}
-            >
-              {expand ? 'show less' : 'show more'}
+            {/*fading overlay*/}
+            {!expand && (
+              <div className="absolute inset-x-0  bottom-0   rounded-b-lg  h-12  bg-gradient-to-t from-white dark:from-darkTheme via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none " />
+            )}
+            <button className="absolute right-4 bottom-0 font-semibold hover:text-neutral-500  dark:hover:text-neutral-200 z-10" onClick={handleExpand}>
+              {expand ? 'show less' : '...more'}
             </button>
           </div>
         </div>
