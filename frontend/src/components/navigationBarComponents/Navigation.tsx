@@ -1,21 +1,21 @@
 import React from 'react';
-import { useUserLogin } from './hooks/useUserLogin.ts';
+import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEllipsisVertical, faPlus } from '@fortawesome/free-solid-svg-icons';
-import SearchInput from '../components/forms/SearchInput';
-import youtubeIconPath from '../assets/navigation_icons/youtube-logo.png';
-import videoIconPath from '../assets/navigation_icons/add-video.png';
-import bellIconPath from '../assets/navigation_icons/bell.png';
-import userIconPath from '../assets/navigation_icons/user-icon.png';
-import Microphone from './forms/Mircrophone.tsx';
-import IconSearch from './forms/IconSearch.tsx';
-import { useUser } from '../userContext/UserContext.tsx';
-import { SettingsModal } from './settingsComponents/SettingsModal.tsx';
-import { useMenuBar } from './menuBarComponents/menuBarContext/MenuBarContext.ts';
-import { useSettingsModal } from './settingsComponents/SetttingsModalsContext/SettingsModalsContext.ts';
-import { SubModal } from './settingsComponents/SubModal.tsx';
-import { SwitchAccount } from './settingsComponents/SwitchAccount.tsx';
-import { SwitchTheme } from './settingsComponents/SwitchTheme.tsx';
+import SearchInput from '../forms/SearchInput.tsx';
+import youtubeIconPath from '../../assets/navigation_icons/youtube-logo.png';
+import videoIconPath from '../../assets/navigation_icons/add-video.png';
+import bellIconPath from '../../assets/navigation_icons/bell.png';
+import userIconPath from '../../assets/navigation_icons/user-icon.png';
+import Microphone from '../forms/Mircrophone.tsx';
+import IconSearch from '../forms/IconSearch.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
+import { SettingsModal } from '../settingsComponents/SettingsModal.tsx';
+import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
+import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
+import { SubModal } from '../settingsComponents/SubModal.tsx';
+import { SwitchAccount } from '../settingsComponents/SwitchAccount.tsx';
+import { SwitchTheme } from '../settingsComponents/SwitchTheme.tsx';
 
 export default function NavigationBar() {
   // user state context to display the user data on the navigation component

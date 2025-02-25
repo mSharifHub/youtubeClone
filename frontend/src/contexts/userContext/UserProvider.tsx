@@ -1,11 +1,11 @@
 import React, { useReducer, ReactNode } from 'react';
-import { UserContext } from './UserContext';
+import { UserContext } from './UserContext.tsx';
 import { userReducer } from './userReducer.ts';
 import Cookies from 'js-cookie';
-import { ViewerQuery } from '../graphql/types.ts';
-import { decryptData, encryptData } from '../components/helpers/CookieEncryption.ts';
+import { ViewerQuery } from '../../graphql/types.ts';
+import { decryptData, encryptData } from '../../components/helpers/CookieEncryption.ts';
 import { useQuery } from '@apollo/client';
-import { VIEWER_QUERY } from '../graphql/queries/queries.ts';
+import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 
 interface UserProviderProps {
   children: ReactNode;

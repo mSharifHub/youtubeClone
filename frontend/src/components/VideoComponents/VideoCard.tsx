@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { sliceText } from './helpers/sliceText.ts';
-import timeSince from './helpers/timeSince.ts';
-import { Video } from './hooks/useYoutubeVideos.ts';
-import { convertISO } from './helpers/convertISO.ts';
-import decrementTime from './helpers/decrementTime.ts';
+import { sliceText } from '../helpers/sliceText.ts';
+import timeSince from '../helpers/timeSince.ts';
+import { Video } from '../hooks/useYoutubeVideos.ts';
+import { convertISO } from '../helpers/convertISO.ts';
+import decrementTime from '../helpers/decrementTime.ts';
 
 /**
  * Represents the properties for a VideoCard component.
@@ -160,48 +160,48 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
     };
   }, [hover, originalTime]);
 
-  const videoTitle =sliceText(video.snippet.title ? video.snippet.title : '')
+  const videoTitle = sliceText({ s: video.snippet.title });
 
   return (
     <>
-      <div className="h-full flex flex-col  cursor-pointer ">
+      <div className=" flex flex-col  cursor-pointer">
         {/* video thumbnails*/}
-          <div
-            className={`relative grow flex justify-center items-center  ${shorts ? 'h-[500px]' : 'min-h-[200px]'}  aspect-video w-full `}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {!hover && (
-              <img
-                src={video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url}
-                alt={video.snippet.title}
-                className={` absolute inset-0  h-full w-full rounded-xl ${shorts ? 'object-cover' : 'object-fill'} `}
-              />
-            )}
+        <div
+          className={`relative grow flex justify-center items-center  ${shorts ? 'h-[500px]' : 'min-h-[200px]'} aspect-video   `}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {!hover && (
+            <img
+              src={video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url}
+              alt={video.snippet.title}
+              className={` absolute inset-0  h-full w-full rounded-xl ${shorts ? 'object-cover' : 'object-fill'} `}
+            />
+          )}
 
-            {hover && (
-              <iframe
-                className="absolute inset-0  h-full w-full rounded-xl "
-                src={`${videoURL}`}
-                allow="autoplay; encrypted-media; gyroscope; picture-in-picture; "
-              />
-            )}
-            <div
-              className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}
-            >
-              {remainingTime ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}` : '0:00:00'}
-            </div>
+          {hover && (
+            <iframe
+              className="absolute inset-0  h-full w-full rounded-xl "
+              src={`${videoURL}`}
+              allow="autoplay; encrypted-media; gyroscope; picture-in-picture; "
+            />
+          )}
+          <div
+            className="absolute bottom-0 right-4 px-2 py-1 rounded-lg "
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}
+          >
+            {remainingTime ? `${remainingTime.hours}:${remainingTime.minutes}:${remainingTime.seconds}` : '0:00:00'}
           </div>
-          {/* video and channel information*/}
-        {!shorts &&(
+        </div>
+        {/* video and channel information*/}
+        {!shorts && (
           <div className="flex flex-shrink justify-start items-center  space-x-4">
             {/*channel logo*/}
             <div className="min-h-10 min-w-10 h-10 w-10">
               <img
                 src={video.snippet.channelLogo || '../src/assets/thumbnails/icons8-video-100.png'}
                 alt={video.snippet.channelLogo ? video.snippet.channelTitle : ''}
-                className="h-full w-full rounded-full  border"
+                className="h-full w-full rounded-full"
               />
             </div>
             {/*video info*/}
@@ -227,10 +227,8 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
               </div>
             </div>
           </div>
-
         )}
-        </div>
-
+      </div>
     </>
   );
 };

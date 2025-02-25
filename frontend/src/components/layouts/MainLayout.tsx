@@ -1,8 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import NavigationBar from '../Navigation.tsx';
+import NavigationBar from '../navigationBarComponents/Navigation.tsx';
 import MenuBar from '../menuBarComponents/MenuBar.tsx';
-import Suggestions from '../Suggestions.tsx';
-import { useUser } from '../../userContext/UserContext.tsx';
+import Suggestions from '../recommendationComponents/Suggestions.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { MenuModal } from '../menuBarComponents/MenuModal.tsx';
 
 export default function MainLayout() {

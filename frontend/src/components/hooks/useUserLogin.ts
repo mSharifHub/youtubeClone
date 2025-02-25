@@ -5,7 +5,7 @@ import { ViewerQuery } from '../../graphql/types.ts';
 import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 import Cookies from 'js-cookie';
 import { encryptData } from '../helpers/CookieEncryption.ts';
-import { useUser } from '../../userContext/UserContext.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 
 export const useUserLogin = () => {
   const [searchParams] = useSearchParams();

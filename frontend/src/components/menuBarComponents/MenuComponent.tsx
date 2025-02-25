@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useMenuBar } from './menuBarContext/MenuBarContext.ts';
+import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
 import React from 'react';
 interface MenuComponentProps {
   customIconSrc?: string;

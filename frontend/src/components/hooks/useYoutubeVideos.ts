@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import LocalCache from '../../apiCache/LocalCache.ts';
 import { useNavigate } from 'react-router-dom';
+import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
 export interface VideoSnippet {
   title?: string;
@@ -19,8 +20,10 @@ export interface VideoSnippet {
   };
   channelId: string;
   channelTitle: string;
+  channelDescription?: string;
   channelLogo?: string;
   publishedAt: string;
+  subscriberCount?:string
 }
 
 export interface VideoStatistics {
@@ -44,7 +47,7 @@ interface UseYoutubeVideosResult {
   loading: boolean | null;
   error: string | null;
   selectedVideoId: string | null;
-  playVideo: (videoId: string) => void;
+  handleSelectedVideo: (video:Video) => void;
   loadMoreVideos: () => void;
 }
 
@@ -57,9 +60,9 @@ export default function useYoutubeVideos(
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+
+  const{setCurrentVideo } = useSelectedVideo()
 
   const navigate = useNavigate();
 
@@ -68,10 +71,31 @@ export default function useYoutubeVideos(
   const cacheNextPageTokenKey = `next_page_${section}`;
 
 
-  const playVideo = useCallback((videoId: string)=> {
-    setSelectedVideoId(videoId);
-    navigate(`/watch/${videoId}`);
-  },[navigate])
+  /**
+   * A callback function to handle selection of a video. It sets the currently selected video
+   * and navigates to the corresponding video watch page.
+
+   * @function
+   * @param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
+   *@setCurrentVideo - Use context to set the selected video and retrirve the data to use on the play video page
+   */
+  const handleSelectedVideo = useCallback((video:Video)=> {
+    const {
+      id: { videoId }} = video
+
+    if (!videoId) return
+
+
+    try{
+      setCurrentVideo(video)
+    }
+    catch (err){
+      throw new Error(err instanceof Error ? err.message : 'An error occurred');
+    }
+    finally {
+      navigate(`/watch/${videoId}`);
+    }
+  },[navigate, setCurrentVideo])
 
   /*
     to fetch video statistics
@@ -93,7 +117,7 @@ export default function useYoutubeVideos(
         map[item.id] = {
           viewCount: item.statistics?.viewCount || '0',
           likeCount: item.statistics?.likeCount || '0',
-          duration: item.contentDetails?.duration || '0',
+          duration: item.contentDetails?.duration || 'PT0S',
         };
         return map;
       }, {});
@@ -109,7 +133,7 @@ export default function useYoutubeVideos(
     try {
       const idsString = channelIds.join(',');
       const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet`,
+        `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet,statistics`,
       );
 
       if (!response.data.items || response.data.items.length === 0) {
@@ -117,11 +141,13 @@ export default function useYoutubeVideos(
         return {};
       }
 
-      return response.data.items.reduce((map: Record<string, { channelId: string; title?: string; logo?: string }>, item) => {
+      return response.data.items.reduce((map: Record<string, { channelId: string; channelTitle?: string; logo?: string, subscriberCount?:string, channelDescription?:string }>, item) => {
         map[item.id] = {
-          channelId: item.id,
-          title: item.snippet?.title,
-          logo: item.snippet.thumbnails?.default?.url,
+          channelId: item.id || '',
+          channelTitle: item.snippet?.title || '',
+          logo: item.snippet.thumbnails?.default?.url || '',
+          subscriberCount:item.statistics?.subscriberCount || '0',
+          channelDescription: item.snippet?.description ||'',
         };
         return map;
       }, {});
@@ -175,12 +201,21 @@ export default function useYoutubeVideos(
 
         const newVideos = videoItems.map((video: Video) => ({
           ...video,
-          statistics: statisticsMap[video.id.videoId],
+          statistics:{
+            ...video.statistics,
+            viewCount: statisticsMap[video.id.videoId]?.viewCount,
+            likeCount: statisticsMap[video.id.videoId]?.likeCount,
+            duration: statisticsMap[video.id.videoId]?.duration,
+          },
           snippet: {
             ...video.snippet,
-            channelTitle: channelMap[video.snippet.channelId]?.title,
+            title: video.snippet.title,
+            channelTitle: channelMap[video.snippet.channelId]?.channelTitle,
             channelLogo: channelMap[video.snippet.channelId]?.logo,
             publishedAt: video.snippet.publishedAt,
+            subscriberCount:channelMap[video.snippet.channelId]?.subscriberCount,
+            channelDescription:channelMap[video.snippet.channelId]?.channelDescription,
+            description:video.snippet.description,
           },
         }));
 
@@ -198,6 +233,7 @@ export default function useYoutubeVideos(
 
            const uniqueCachedVideos = [
              ...cachedUniqueVideos,
+             // eslint-disable-next-line max-len
              ...newVideos.filter((newVideo)=> !cachedUniqueVideos.some((cachedVideos) => cachedVideos.id.videoId === newVideo.id.videoId))
            ]
 
@@ -248,7 +284,6 @@ export default function useYoutubeVideos(
     loading,
     error,
     loadMoreVideos,
-    selectedVideoId,
-    playVideo,
+    handleSelectedVideo,
   };
 }

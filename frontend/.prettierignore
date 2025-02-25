@@ -2,9 +2,9 @@ node_modules
 dist
 /front-end/src/components/settingsComponents/SettingsModal.tsx
 /front-end/src/components/menuBarComponents/MenuModal.tsx
-/src/components/Navigation.tsx
+/frontend/src/components/navigationBarComponents/Navigation.tsx
 /front-end/src/components/SubModal.tsx
 /src/components/settingsComponents/SwitchAccount.tsx
-/src/components/VideoCard.tsx
+/frontend/src/components/VideoComponents/VideoCard.tsx
 /src/components/hooks/useYoutubeVideos.ts
 /src/components/helpers/chunkArray.ts

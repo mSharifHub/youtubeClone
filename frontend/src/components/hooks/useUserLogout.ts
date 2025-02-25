@@ -1,4 +1,4 @@
-import { useUser } from '../../userContext/UserContext.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 

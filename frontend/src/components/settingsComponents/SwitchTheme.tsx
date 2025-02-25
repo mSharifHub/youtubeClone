@@ -1,10 +1,10 @@
 import React from 'react';
 import { JSX } from 'react/jsx-runtime';
-import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
+import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { useTheme } from './darkModeContext/ThemeContext.ts';
-import { Theme } from './darkModeContext/ThemeContext.ts';
+import { useTheme } from '../../contexts/darkModeContext/ThemeContext.ts';
+import { Theme } from '../../contexts/darkModeContext/ThemeContext.ts';
 
 export const SwitchTheme: React.FC = (): JSX.Element => {
   const { dispatch: settingsModalDispatch } = useSettingsModal();
