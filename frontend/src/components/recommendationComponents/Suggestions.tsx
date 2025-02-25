@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { ToolTip } from './helpers/ToolTip.tsx';
+import { ToolTip } from '../helpers/ToolTip.tsx';
 import RecommendationsFilter from './RecommendationsFilter.tsx';
-import { useToolTip } from './hooks/useToolTip.ts';
-import { useDebounce } from './hooks/useDebounce.ts';
+import { useToolTip } from '../hooks/useToolTip.ts';
+import { useDebounce } from '../hooks/useDebounce.ts';
 
 export default function Suggestions() {
   const scrollRef = useRef<HTMLDivElement | null>(null);

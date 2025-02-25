@@ -1,9 +1,9 @@
 import React from 'react';
 import { JSX } from 'react/jsx-runtime';
-import { useUser } from '../../userContext/UserContext.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
-import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
+import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useGoogleAuthList } from '../hooks/useListAccounts.ts';
 import { useSwitchAccounts } from '../hooks/useSwitchAccounts.ts';

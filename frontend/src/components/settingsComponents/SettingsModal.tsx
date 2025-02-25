@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useClickOutside } from '../hooks/useClickOutside.ts';
-import { useTheme } from './darkModeContext/ThemeContext.ts';
-import { useUser } from '../../userContext/UserContext.tsx';
+import { useTheme } from '../../contexts/darkModeContext/ThemeContext.ts';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { Link } from 'react-router-dom';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,7 +13,7 @@ import coin from '../../assets/menu_bar_icons/coin.png';
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 import settings from '../../assets/menu_bar_icons/settings.png';
 import switchAccount from '../../assets/menu_bar_icons/switchAccounts.png';
-import { useSettingsModal } from './SetttingsModalsContext/SettingsModalsContext.ts';
+import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
 
 interface LoginModalProps {
   isOpen: boolean;

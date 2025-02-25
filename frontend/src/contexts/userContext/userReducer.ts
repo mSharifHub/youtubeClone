@@ -1,4 +1,4 @@
-import { ViewerQuery } from '../graphql/types.ts';
+import { ViewerQuery } from '../../graphql/types.ts';
 
 export interface UserState {
   user: ViewerQuery['viewer'] | null;

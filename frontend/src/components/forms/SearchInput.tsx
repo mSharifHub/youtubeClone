@@ -4,7 +4,7 @@ import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import Microphone from './Mircrophone.tsx';
 import { ToolTip } from '../helpers/ToolTip.tsx';
 import { useToolTip } from '../hooks/useToolTip.ts';
-import { useTheme } from '../settingsComponents/darkModeContext/ThemeContext.ts';
+import { useTheme } from '../../contexts/darkModeContext/ThemeContext.ts';
 
 export default function SearchInput() {
   const { showTooltip, tooltipPosition, toolTipText } = useToolTip();

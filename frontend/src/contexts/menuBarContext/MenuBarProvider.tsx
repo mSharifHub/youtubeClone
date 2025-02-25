@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useReducer, useState } from 'react';
 import { MenuBarContext } from './MenuBarContext.ts';
 import { initialMenuState, MenuBarReducer } from './MenuBarReducer.ts';
-import { useThrottle } from '../../hooks/useThrottle.ts';
+import { useThrottle } from '../../components/hooks/useThrottle.ts';
 
 export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(MenuBarReducer, initialMenuState);

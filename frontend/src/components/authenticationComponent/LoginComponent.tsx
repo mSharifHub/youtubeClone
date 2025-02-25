@@ -1,4 +1,4 @@
-import userIconPath from '../assets/navigation_icons/user-icon.png';
+import userIconPath from '../../assets/navigation_icons/user-icon.png';
 import React from 'react';
 
 export const LoginComponent: React.FC<{ redirectGoogleAuth: () => void }> = ({ redirectGoogleAuth }) => {

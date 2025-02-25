@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useUser } from '../../userContext/UserContext.tsx';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { firstShortsRowsDisplayValues, firstVideoRowsDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
-import { NotLoggedInBanner } from '../NotLoggedInBanner.tsx';
-import { VideoCard } from '../VideoCard.tsx';
-import { VideoCardLoading } from '../VideoCardLoading.tsx';
+import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
+import { VideoCard } from '../VideoComponents/VideoCard.tsx';
+import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 
 export const Home: React.FC = () => {
@@ -83,7 +83,7 @@ export const Home: React.FC = () => {
     loading: isInfScrollLoading,
     error: infScrollError,
     loadMoreVideos,
-    playVideo,
+    handleSelectedVideo,
   } = useYoutubeVideos(apiKey, totalVideosToFetch, 'infinite_scroll', true);
 
   const handleInfiniteScroll = useCallback(() => {
@@ -119,7 +119,10 @@ export const Home: React.FC = () => {
 
   /***************End of API Call To Fetch Videos **********************************/
   return (
-    <div className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto p-8" ref={containerLazyLoadRef}>
+    <div
+      className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto p-8"
+      ref={containerLazyLoadRef}
+    >
       {!isLoggedIn && <NotLoggedInBanner />}
 
       {isLoggedIn && (
@@ -186,11 +189,16 @@ export const Home: React.FC = () => {
               gridAutoRows: '350px',
             }}
           >
-            {infScrollVideos.slice(0, Math.floor(infScrollVideos.length / videosPerRow) * videosPerRow).map((video) => (
-              <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => playVideo(video.id.videoId)}>
-                <VideoCard video={video} />
-              </div>
-            ))}
+            {infScrollVideos
+              .slice(
+                0,
+                Math.floor(infScrollVideos.length / (videosPerRow ? videosPerRow : 1)) * (videosPerRow ? videosPerRow : 1),
+              )
+              .map((video) => (
+                <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
+                  <VideoCard video={video} />
+                </div>
+              ))}
           </div>
 
           {isInfScrollLoading && (
