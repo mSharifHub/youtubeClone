@@ -88,7 +88,7 @@ export const Home: React.FC = () => {
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollError) return;
-    // loadMoreVideos();
+    loadMoreVideos();
   }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
 
   useEffect(() => {

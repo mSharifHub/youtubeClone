@@ -4,7 +4,7 @@ import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVi
 import { formatNumber } from '../helpers/formatNumber.ts';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { sliceText } from '../helpers/sliceText.ts';
+import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 
 export const VideoPlayer: React.FC = () => {
   const { selectedVideo } = useSelectedVideo();
@@ -34,7 +34,7 @@ export const VideoPlayer: React.FC = () => {
   const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
 
   return (
-    <div className="h-screen flex justify-center items-start  overflow-y-scroll scroll-smooth  p-8 space-x-12 no-scrollbar border">
+    <div className="h-screen flex justify-center items-start  overflow-y-scroll scroll-smooth  p-8 space-x-12 no-scrollbar">
       <>
         {/*video section and comments*/}
         <div className="min-h-fit h-fit max-w-[1200px] w-full flex flex-col justify-start items-start space-y-8 ">
@@ -49,7 +49,7 @@ export const VideoPlayer: React.FC = () => {
           {/* channel information */}
           <div className=" flex flex-col flex-none space-y-4 overflow-hidden mt-4 w-full">
             {/* video title */}
-            <div className=" flex text-wrap text-lg font-bold"> {selectedVideo?.snippet.title}</div>
+            <div className=" flex text-wrap text-lg font-bold"> {decodeHtmlEntities(selectedVideo?.snippet?.title)}</div>
             {/* channel logo, name, statistics and like & share row */}
             <div className="flex  flex-wrap gap-y-4 ">
               {/* first column */}
@@ -65,16 +65,16 @@ export const VideoPlayer: React.FC = () => {
                 {/* channel title and statistics columns */}
                 <div className="flex flex-col">
                   {/* channel title */}
-                  <div>{selectedVideo?.snippet.channelTitle}</div>
+                  <div>{decodeHtmlEntities(selectedVideo?.snippet.channelTitle)}</div>
                   {/* channel statistics subscriber */}
                   <div className="flex flex-row text-xs text-wrap space-x-2 dark:text-neutral-400 ">
-                    <h3>{formatNumber(Number(selectedVideo?.snippet.subscriberCount))}</h3>
+                    <h3>{formatNumber(Number(decodeHtmlEntities(selectedVideo?.snippet.subscriberCount)))}</h3>
                     <h3>subscribers</h3>
                   </div>
                 </div>
                 {/* subscriber button */}
                 <div className="flex justify-center items-center ">
-                  <button className=" flex-initial  min-h-9 h-9  min-w-fit w-24  text-nowrap  p-2  rounded-full  text-xs  dark:bg-gray-100 dark:font-semibold  hover:dark:bg-gray-200 dark:text-black capitalize">
+                  <button className=" flex-initial  min-h-9 h-9  min-w-fit w-24  text-nowrap  p-2  rounded-full  text-xs  bg-neutral-100 dark:bg-gray-100 dark:font-semibold  hover:dark:bg-gray-200  hover:bg-neutral-200 font-medium dark:text-black capitalize">
                     subscribe
                   </button>
                 </div>
@@ -84,18 +84,18 @@ export const VideoPlayer: React.FC = () => {
                 {/*like Button & unlike Button */}
                 <div className=" flex flex-initial justify-center items-center">
                   {/*Thumbs Up Button */}
-                  <button className=" min-h-9 h-9 min-w-fit w-24  p-2 flex justify-center items-center space-x-2 rounded-l-full  text-xs  font-semibold   border-r-2 border-neutral-600  dark:bg-neutral-700  hover:dark:bg-neutral-600 dark:bg-opacity-70 ">
+                  <button className=" min-h-9 h-9 min-w-fit w-24  p-2 flex justify-center items-center space-x-2 rounded-l-full  text-xs  font-semibold   border-r-2 dark:border-neutral-600  bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700  hover:dark:bg-neutral-600 dark:bg-opacity-70 ">
                     <FontAwesomeIcon icon={faThumbsUp} size="xl" />
                     <h3>{formatNumber(Number(selectedVideo?.statistics?.likeCount))}</h3>
                   </button>
                   {/*Thumbs Down Button */}
-                  <button className="min-h-9 h-9 min-w-fit w-12 p-2  flex justify-center  items-center rounded-r-full   dark:bg-neutral-700 hover:dark:bg-neutral-600   dark:bg-opacity-70">
+                  <button className="min-h-9 h-9 min-w-fit w-12 p-2  flex justify-center  items-center rounded-r-full   bg-neutral-100 hover:bg-neutral-200   dark:bg-neutral-700 hover:dark:bg-neutral-600   dark:bg-opacity-70">
                     <FontAwesomeIcon icon={faThumbsDown} size="lg" className="-scale-x-100" />
                   </button>
                 </div>
                 {/*share button */}
                 <div className="flex justify-center items-center ">
-                  <button className=" min-h-9 h-9   min-w-fit w-24 flex-initial flex  justify-center items-center  p-2  rounded-full  dark:bg-neutral-700 hover:dark:bg-neutral-600   dark:bg-opacity-70 text-sm capitalize">
+                  <button className=" min-h-9 h-9   min-w-fit w-24 flex-initial flex  justify-center items-center  p-2  rounded-full    bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 hover:dark:bg-neutral-600   dark:bg-opacity-70 text-sm capitalize">
                     share
                   </button>
                 </div>
@@ -109,14 +109,17 @@ export const VideoPlayer: React.FC = () => {
           >
             {/* text container */}
             <div className="h-full flex-wrap text-wrap space-y-4 ">
-              <h2>{selectedVideo?.snippet.channelDescription}</h2>
-              <p>{selectedVideo?.snippet.description}</p>
+              <h2>{decodeHtmlEntities(selectedVideo?.snippet.channelDescription)}</h2>
+              <p>{decodeHtmlEntities(selectedVideo?.snippet?.description)}</p>
             </div>
             {/*fading overlay*/}
             {!expand && (
               <div className="absolute inset-x-0  bottom-0   rounded-b-lg  h-12  bg-gradient-to-t from-white dark:from-darkTheme via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none " />
             )}
-            <button className="absolute right-4 bottom-0 font-semibold hover:text-neutral-500  dark:hover:text-neutral-200 z-10" onClick={handleExpand}>
+            <button
+              className="absolute right-0 bottom-0  font-thin hover:text-neutral-500  dark:text-neutral-300 dark:hover:text-neutral-400 z-10"
+              onClick={handleExpand}
+            >
               {expand ? 'show less' : '...more'}
             </button>
           </div>
