@@ -45,17 +45,13 @@ export interface Video {
 }
 
 
-
-
 interface UseYoutubeVideosResult {
   videos: Video[];
   loading: boolean | null;
   error: string | null;
-  selectedVideoId: string | null;
   handleSelectedVideo: (video:Video) => void;
   loadMoreVideos: () => void;
 }
-
 
 
 export default function useYoutubeVideos(
@@ -80,15 +76,13 @@ export default function useYoutubeVideos(
   const cacheNextPageTokenKey = `next_page_${section}`;
 
 
-
-
   /**
    * A callback function to handle selection of a video. It sets the currently selected video
    * and navigates to the corresponding video watch page.
 
    * @function
    * @param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
-   *@setCurrentVideo - Use context to set the selected video and retrirve the data to use on the play video page
+   *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
    */
   const handleSelectedVideo = useCallback((video:Video)=> {
     const {
