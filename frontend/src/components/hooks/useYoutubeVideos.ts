@@ -258,7 +258,7 @@ export default function useYoutubeVideos(
   };
 
   const loadMoreVideos = useCallback(() => {
-    if (loading || videos.length >=80) return;
+    if (loading || videos.length >= 20) return;
 
     const token = nextPageToken ? nextPageToken : cachedVideos.get<string>(cacheNextPageTokenKey);
     if (!token) return;

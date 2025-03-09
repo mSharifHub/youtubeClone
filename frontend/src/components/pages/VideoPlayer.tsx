@@ -1,21 +1,25 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { formatNumber } from '../helpers/formatNumber.ts';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
+import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 export const VideoPlayer: React.FC = () => {
   const { selectedVideo } = useSelectedVideo();
 
   const playerRef = useRef<YouTubePlayer | null>(null);
 
-  const [expand, setExpand] = useState<boolean>(false);
+  const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
+  const [expandTopComment, setExpandTopComment] = useState<boolean>(false);
+  const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
-      autoplay: 0,
+      autoplay: 1,
       controls: 1,
       fs: 1,
       rel: 0,
@@ -23,8 +27,16 @@ export const VideoPlayer: React.FC = () => {
     },
   };
 
-  const handleExpand = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setExpand((prev) => !prev);
+  const handleExpandVideoDescription = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setExpandVideoDescription((prev) => !prev);
+  };
+
+  const handleExpandTopLevelComment = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setExpandTopComment((prev) => !prev);
+  };
+
+  const handleShowTopLevelReplies = (): void => {
+    setShowTopLevelReplies((prev) => !prev);
   };
 
   const onReady: YouTubeProps['onReady'] = (event) => {
@@ -32,6 +44,17 @@ export const VideoPlayer: React.FC = () => {
   };
 
   const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
+
+  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
+
+  const { comments, commentsLoading, commentsError, fetchComments, hasMore } = useYoutubeComments(apiKey, 10);
+
+  /*********** Debugging **************/
+  useEffect(() => {
+    if (selectedVideo?.id.videoId) {
+      fetchComments(selectedVideo.id.videoId);
+    }
+  }, []);
 
   return (
     <div className="h-screen flex justify-center items-start  overflow-y-scroll scroll-smooth  p-8 space-x-12 no-scrollbar">
@@ -105,7 +128,7 @@ export const VideoPlayer: React.FC = () => {
 
           {/*description container*/}
           <div
-            className={` relative ${expand ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg  `}
+            className={` relative ${expandVideoDescription ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg `}
           >
             {/* text container */}
             <div className="h-full flex-wrap text-wrap space-y-4 ">
@@ -113,20 +136,107 @@ export const VideoPlayer: React.FC = () => {
               <p>{decodeHtmlEntities(selectedVideo?.snippet?.description)}</p>
             </div>
             {/*fading overlay*/}
-            {!expand && (
+            {!expandVideoDescription && (
               <div className="absolute inset-x-0  bottom-0   rounded-b-lg  h-12  bg-gradient-to-t from-white dark:from-darkTheme via-[rgba(255,255,255,0.5)] to-transparent pointer-events-none " />
             )}
             <button
               className="absolute right-0 bottom-0  font-thin hover:text-neutral-500  dark:text-neutral-300 dark:hover:text-neutral-400 z-10"
-              onClick={handleExpand}
+              onClick={handleExpandVideoDescription}
             >
-              {expand ? 'show less' : '...more'}
+              {expandVideoDescription ? 'show less' : '...more'}
             </button>
           </div>
+          <div className="flex flex-row space-x-4 text-xl font-bold">
+            <h1>{selectedVideo?.statistics?.commentCount}</h1>
+            <h1>Comments</h1>
+          </div>
+
+          <ul className="space-y-8 ">
+            {comments.map((thread) => (
+              <li key={thread.id}>
+                {/* top level comment */}
+                <div className="flex flex-row space-x-4 ">
+                  {/*Logo*/}
+                  <div className="flex justify-start p-2  ">
+                    <div className="flex flex-row space-x-2">
+                      <img
+                        src={thread.snippet.topLevelComment.snippet.authorProfileImageUrl}
+                        alt=""
+                        className=" min-h-12 h-12 w-12 min-w-12 rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <div className=" w-full flex flex-col  space-y-2  ">
+                    {/* Author */}
+                    <strong>{thread.snippet.topLevelComment.snippet.authorDisplayName}</strong>
+                    {/* Message Content */}
+                    <div>
+                      <p>{decodeHtmlEntities(thread.snippet.topLevelComment.snippet.textDisplay)}</p>
+                    </div>
+                    <div className="flex flex-row justify-start space-x-4">
+                      <div className="flex flex-row justify-start space-x-2">
+                        <FontAwesomeIcon icon={faThumbsUp} size="lg" />
+                        <p>
+                          {thread.snippet.topLevelComment.snippet.likeCount > 0
+                            ? thread.snippet.topLevelComment.snippet.likeCount
+                            : null}
+                        </p>
+                      </div>
+                      <div className="flex flex-row justify-start space-x-2 -scale-x-100">
+                        <FontAwesomeIcon icon={faThumbsDown} size="lg" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {thread.snippet.totalReplyCount > 0 && (
+                  <div className=" flex flex-col mx-20 mt-4 ">
+                    <button
+                      onClick={handleShowTopLevelReplies}
+                      className=" flex flex-row min-h-12 h-12 min-w-24 w-32 justify-center items-center space-x-4 rounded-full hover:bg-blue-900"
+                    >
+                      <div className="min-w-fit flex flex-row space-x-2  justify-center items-center font-bold">
+                        <FontAwesomeIcon icon={faAngleDown} />
+                        <div className="flex flex-row space-x-2">
+                          <p> {thread.snippet.totalReplyCount}</p>
+                          <p>replies</p>
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* replies */}
+                    {showTopLevelReplies && (
+                      <ul className="space-y-4 p-2 ">
+                        {thread.replies?.comments.map((reply, index) => (
+                          <li key={index} className="flex flex-row space-x-4">
+                            <div className="flex justify-start p-2">
+                              <img src={reply.authorProfileImageUrl} className=" min-h-8 min-w-8 h-8 w-8 rounded-full" alt="" />
+                            </div>
+                            <div className="flex flex-col">
+                              <strong>{reply.authorDisplayName}</strong>
+                              <p>{decodeHtmlEntities(reply.textDisplay)}</p>
+                              <div className="flex flex-row justify-start space-x-4">
+                                <div className="flex flex-row justify-start space-x-2">
+                                  <FontAwesomeIcon icon={faThumbsUp} size="sm" />
+                                  <p>{reply.likeCount > 0 ? reply.likeCount : null}</p>
+                                </div>
+                                <div className="flex flex-row justify-start space-x-2 -scale-x-100">
+                                  <FontAwesomeIcon icon={faThumbsDown} size="sm" />
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="hidden  min-h-fit h-fit lg:flex flex-col justify-start items-center  w-[600px] flex-shrink border border-amber-400">
-          related video column
+          related videos
         </div>
       </>
     </div>
