@@ -29,6 +29,8 @@ export interface VideoSnippet {
 export interface VideoStatistics {
   viewCount: string;
   likeCount?: string;
+  dislikeCount?: string;
+  commentCount?: string;
   duration?: string;
 }
 
@@ -42,14 +44,15 @@ export interface Video {
   statistics?: VideoStatistics;
 }
 
+
 interface UseYoutubeVideosResult {
   videos: Video[];
   loading: boolean | null;
   error: string | null;
-  selectedVideoId: string | null;
   handleSelectedVideo: (video:Video) => void;
   loadMoreVideos: () => void;
 }
+
 
 export default function useYoutubeVideos(
   apiKey: string,
@@ -61,6 +64,8 @@ export default function useYoutubeVideos(
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+
+
 
   const{setCurrentVideo } = useSelectedVideo()
 
@@ -77,7 +82,7 @@ export default function useYoutubeVideos(
 
    * @function
    * @param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
-   *@setCurrentVideo - Use context to set the selected video and retrirve the data to use on the play video page
+   *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
    */
   const handleSelectedVideo = useCallback((video:Video)=> {
     const {
@@ -117,6 +122,8 @@ export default function useYoutubeVideos(
         map[item.id] = {
           viewCount: item.statistics?.viewCount || '0',
           likeCount: item.statistics?.likeCount || '0',
+          dislikeCount: item.statistics?.dislikeCount || '0',
+          commentCount: item.statistics?.commentCount || '0',
           duration: item.contentDetails?.duration || 'PT0S',
         };
         return map;
@@ -155,6 +162,7 @@ export default function useYoutubeVideos(
       throw new Error(e instanceof Error ? e.message : 'Failed to fetch video Details.');
     }
   };
+
 
   /*
   To debug re-renders and fetchFirst needed while strict mode is being used
@@ -205,6 +213,8 @@ export default function useYoutubeVideos(
             ...video.statistics,
             viewCount: statisticsMap[video.id.videoId]?.viewCount,
             likeCount: statisticsMap[video.id.videoId]?.likeCount,
+            dislikeCount: statisticsMap[video.id.videoId]?.dislikeCount,
+            commentCount: statisticsMap[video.id.videoId]?.commentCount,
             duration: statisticsMap[video.id.videoId]?.duration,
           },
           snippet: {
@@ -248,7 +258,7 @@ export default function useYoutubeVideos(
   };
 
   const loadMoreVideos = useCallback(() => {
-    if (loading || videos.length >=80) return;
+    if (loading || videos.length >= 20) return;
 
     const token = nextPageToken ? nextPageToken : cachedVideos.get<string>(cacheNextPageTokenKey);
     if (!token) return;
