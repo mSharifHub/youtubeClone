@@ -48,7 +48,9 @@ interface CommentThread {
 interface UseYouTubeCommentsResult {
   comments: CommentThread[];
   commentsLoading: boolean;
-  fetchComments: (apiKey: string, pageToken?: string) => Promise<void>;
+  commentsPageToken: string | null;
+  topLevelCount: number;
+  fetchComments: (videoId: string, pageToken?: string | null) => Promise<void>;
   hasMore: boolean;
   commentsError: string | null;
 }
@@ -68,6 +70,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
    * It is used to display or process user-generated feedback or remarks.
    */
   const [comments, setComments] = useState<CommentThread[]>([]);
+  const [topLevelCount, setTopLevelCount] = useState<number>(0);
   /**
    * A boolean variable indicating the loading state of comments.
    * If true, the application is currently loading comments.
@@ -115,7 +118,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
    * - Fetched comment threads (`setComments`).
    * - The pagination token for subsequent requests (`setCommentsPageToken`).
    */
-  const fetchComments = async (videoId: string, pageToken?: string): Promise<void> => {
+  const fetchComments = async (videoId: string, pageToken?: string | null): Promise<void> => {
     if (commentsLoading) return;
 
     setCommentsLoading(true);
@@ -181,6 +184,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
                 parentId: reply.snippet.parentId,
                 canRate: reply.snippet.canRate,
                 viewerRating: reply.snippet.viewerRating,
+                likeCount: reply.snippet.likeCount,
               })),
             }
           : undefined,
@@ -190,7 +194,9 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
         const newThreads = fetchedCommentThreads.filter(
           (newThread) => !prevComments.some((thread) => thread.id === newThread.id),
         );
-        return [...prevComments, ...newThreads];
+        const updatedTopLevelComments = [...prevComments, ...newThreads];
+        setTopLevelCount(updatedTopLevelComments.length);
+        return updatedTopLevelComments;
       });
       setCommentsPageToken(data.nextPageToken || null);
     } catch (err) {
@@ -200,13 +206,13 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
     }
   };
 
-
-
   return {
     comments,
     commentsLoading,
     commentsError,
+    topLevelCount,
     fetchComments,
     hasMore: commentsPageToken !== null,
+    commentsPageToken,
   };
 }
