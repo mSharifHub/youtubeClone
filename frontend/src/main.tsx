@@ -15,21 +15,19 @@ import { SelectedVideoProvider } from './contexts/selectedVideoContext/SelectedV
 Modal.setAppElement('#root');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <ApolloProvider client={client}>
-        <UserProvider>
-          <SelectedVideoProvider>
-            <ThemeProvider>
-              <MenuBarProvider>
-                <SettingModalsProvider>
-                  <App />
-                </SettingModalsProvider>
-              </MenuBarProvider>
-            </ThemeProvider>
-          </SelectedVideoProvider>
-        </UserProvider>
-      </ApolloProvider>
-    </GoogleOAuthProvider>
-  </React.StrictMode>,
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <ApolloProvider client={client}>
+      <UserProvider>
+        <SelectedVideoProvider>
+          <ThemeProvider>
+            <MenuBarProvider>
+              <SettingModalsProvider>
+                <App />
+              </SettingModalsProvider>
+            </MenuBarProvider>
+          </ThemeProvider>
+        </SelectedVideoProvider>
+      </UserProvider>
+    </ApolloProvider>
+  </GoogleOAuthProvider>,
 );

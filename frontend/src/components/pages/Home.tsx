@@ -23,6 +23,7 @@ export const Home: React.FC = () => {
   @see hooks/useVideoGrid.ts - The custom hook implementation for detecting grid setting
    */
   const videosPerRow = useVideoGrid(firstVideoRowsDisplayValues);
+
   /**
    *
 @constant shortsVideosPerRow{number}
@@ -43,53 +44,45 @@ export const Home: React.FC = () => {
    */
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
 
-  /**
-   * The `apiKey` variable holds the YouTube Data API v3 key,
-   * which is required for authenticating requests to the YouTube API.
-   *
-   * The key is retrieved from the environment variable `VITE_YOUTUBE_API_3`.
-   * It is typically used for server-side or client-side interactions with YouTube services.
-   * Ensure this key is kept secure and not exposed publicly to prevent unauthorized access.
-   */
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
 
   /**
-   * A mutable reference object used with the `useRef`  to  use the custom infinite scroll implementation to
-   * load more videos
+   * A mutable reference object used with the `useRef`  to  use the custom infinite scroll implementation to load more videos
    */
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef(null);
 
-  /**
-   * Represents the first row of a dataset, grid, table, or any similar structure.
-   * This row is typically used to hold data or metadata associated with the
-   * first entry in a collection.
-   */
-  const { videos: firstRow, loading: firstRowLoading } = useYoutubeVideos(apiKey, totalVideosFirstRow, 'first_row_videos');
+  const {
+    videos: firstRow,
+    loading: firstRowLoading,
+    fetchVideos: fetchFirstRow,
+  } = useYoutubeVideos(apiKey, totalVideosFirstRow);
 
   /**
    * Represents a row of data or information related to shorts.
    */
-  const { videos: shortsRow, loading: shortsLoading } = useYoutubeVideos(apiKey, totalShortsRow, 'shorts_videos');
+  const { videos: shortsRow, loading: shortsLoading, fetchVideos: fetchShortsRow } = useYoutubeVideos(apiKey, totalShortsRow);
 
   const totalVideosToFetch = videosPerRow ? videosPerRow * 2 : 10;
 
-  /**
-   * A variable that represents a collection or stream of video data
-   * designed to provide an infinite or continuously loading video experience.
-   */
   const {
     videos: infScrollVideos,
     loading: isInfScrollLoading,
-    error: infScrollError,
-    loadMoreVideos,
+    error: isInfScrollError,
+    fetchVideos: infFetchVideos,
+    nextPageToken,
     handleSelectedVideo,
-  } = useYoutubeVideos(apiKey, totalVideosToFetch, 'infinite_scroll', true);
+  } = useYoutubeVideos(apiKey, totalVideosToFetch);
 
   const handleInfiniteScroll = useCallback(() => {
-    if (isInfScrollLoading || infScrollError) return;
-    loadMoreVideos();
-  }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
+    if (isInfScrollLoading || infScrollVideos.length >= 20 || isInfScrollError) {
+      return;
+    } else {
+      if (nextPageToken) {
+        infFetchVideos(nextPageToken);
+      }
+    }
+  }, [isInfScrollLoading, infScrollVideos.length, isInfScrollError, nextPageToken]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -116,6 +109,14 @@ export const Home: React.FC = () => {
       }
     };
   }, [handleInfiniteScroll, isLoggedIn]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchFirstRow();
+      fetchShortsRow();
+      infFetchVideos();
+    }
+  }, []);
 
   /***************End of API Call To Fetch Videos **********************************/
   return (

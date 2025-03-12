@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback,useState } from 'react';
 import axios from 'axios';
-import LocalCache from '../../apiCache/LocalCache.ts';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
@@ -44,37 +43,29 @@ export interface Video {
   statistics?: VideoStatistics;
 }
 
-
 interface UseYoutubeVideosResult {
   videos: Video[];
   loading: boolean | null;
   error: string | null;
   handleSelectedVideo: (video:Video) => void;
-  loadMoreVideos: () => void;
+  fetchVideos: (nextPageToken?: string) => void;
+  nextPageToken: string | null
 }
 
 
 export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
-  section: string,
-  isInfiniteScroll: boolean = false,
+
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
-
-
   const{setCurrentVideo } = useSelectedVideo()
 
   const navigate = useNavigate();
-
-  const cachedVideos = LocalCache.getInstance();
-  const cacheVideosKey = `youtube_videos_${section}`;
-  const cacheNextPageTokenKey = `next_page_${section}`;
-
 
   /**
    * A callback function to handle selection of a video. It sets the currently selected video
@@ -102,9 +93,7 @@ export default function useYoutubeVideos(
     }
   },[navigate, setCurrentVideo])
 
-  /*
-    to fetch video statistics
-   */
+
   const fetchVideoStatistics = async (videoIds: string[]) => {
     try {
       const idsString = videoIds.join(',');
@@ -133,9 +122,7 @@ export default function useYoutubeVideos(
     }
   };
 
-  // /*
-  //  *Fetch additional video details
-  //  */
+
   const fetchChannelDetails = async (channelIds: string[]) => {
     try {
       const idsString = channelIds.join(',');
@@ -163,10 +150,6 @@ export default function useYoutubeVideos(
     }
   };
 
-
-
-  const fetchFirst = useRef(true);
-
   const fetchVideos = async (pageToken?: string) => {
     if (loading) {
       return;
@@ -185,10 +168,9 @@ export default function useYoutubeVideos(
           return;
         }
 
-        if (isInfiniteScroll && response.data.nextPageToken.length > 0) {
+        if (response.data.nextPageToken.length > 0) {
           const newPageToken = response.data.nextPageToken;
           setNextPageToken(newPageToken);
-          cachedVideos.set<string>(cacheNextPageTokenKey, newPageToken);
         }
 
         const videoItems: Video[] = response.data.items;
@@ -222,26 +204,14 @@ export default function useYoutubeVideos(
           },
         }));
 
-
-          setVideos(
-            (prevVideos) => {
-              const uniqueVideos = newVideos.filter(
-              (newVideo)=> !prevVideos.some((existing)=>existing.id.videoId === newVideo.id.videoId))
-
-            return nextPageToken ? [...prevVideos, ...uniqueVideos] : [...uniqueVideos];
-          })
-
-
-          const cachedUniqueVideos = cachedVideos.get<Video[]>(cacheVideosKey) || []
-
-           const uniqueCachedVideos = [
-             ...cachedUniqueVideos,
-             // eslint-disable-next-line max-len
-             ...newVideos.filter((newVideo)=> !cachedUniqueVideos.some((cachedVideos) => cachedVideos.id.videoId === newVideo.id.videoId))
-           ]
-
-         cachedVideos.set<Video[]>(cacheVideosKey, uniqueCachedVideos)
-        }
+        setVideos((prevVideos)=>{
+          const uniqueVideos =
+            newVideos.filter((newVideo)=>
+              !prevVideos.find((existing)=>
+                existing.id.videoId === newVideo.id.videoId))
+          return [...prevVideos,...uniqueVideos];
+        })
+      }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -250,38 +220,13 @@ export default function useYoutubeVideos(
     }
   };
 
-  const loadMoreVideos = useCallback(() => {
-    if (loading || videos.length >= 20) return;
-
-    const token = nextPageToken ? nextPageToken : cachedVideos.get<string>(cacheNextPageTokenKey);
-    if (!token) return;
-    fetchVideos(token);
-  }, [loading, videos.length, nextPageToken]);
-
-  /*
-   * Behavior:
-   * - Is called once in the application for all video sections in home page. If  theres
-   * cached videos set the videos state to the data in cache
-   * else make one fetch request
-   */
-  useEffect(() => {
-    if (fetchFirst.current) {
-      fetchFirst.current = false;
-      const cached = cachedVideos.get<Video[]>(cacheVideosKey);
-      if (cached && cached.length > 0) {
-        setVideos(cached);
-      } else {
-        fetchVideos();
-      }
-    }
-  }, []);
-
-
   return {
     videos,
     loading,
     error,
-    loadMoreVideos,
+    fetchVideos,
+    nextPageToken,
     handleSelectedVideo,
   };
+
 }

@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-/**
- * Represents a snippet of information about a comment.
- */
 
 export interface CommentSnippet {
   authorDisplayName: string;
