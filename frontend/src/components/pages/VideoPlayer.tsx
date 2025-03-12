@@ -7,8 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
-import { removeTransformationParameters } from '../helpers/removeTransformationParameters.ts';
 
 export const VideoPlayer: React.FC = () => {
   const { selectedVideo } = useSelectedVideo();
@@ -52,9 +50,7 @@ export const VideoPlayer: React.FC = () => {
   const handlePagination = useCallback(() => {
     if (commentsLoading || commentsError || !hasMore || !selectedVideo || topLevelCount >= 50) return;
     fetchComments(selectedVideo.id.videoId, commentsPageToken);
-  }, [commentsLoading, commentsError, hasMore, commentsPageToken]);
-
-  console.log(comments);
+  }, [commentsLoading, commentsError, hasMore, selectedVideo, topLevelCount]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -83,6 +79,9 @@ export const VideoPlayer: React.FC = () => {
     };
   }, [handlePagination]);
 
+  /*
+   first load of comments
+   */
   useEffect(() => {
     if (selectedVideo?.id.videoId) {
       fetchComments(selectedVideo.id.videoId);
@@ -196,9 +195,9 @@ export const VideoPlayer: React.FC = () => {
                       <div className="flex justify-start p-2  ">
                         <div className="flex flex-row space-x-2">
                           <img
-                            src={removeTransformationParameters(thread.snippet.topLevelComment.snippet.authorProfileImageUrl)}
-                            alt={''}
-                            className="  min-h-14 min-w-14 h-14 w-14 rounded-full"
+                            src={thread.snippet.topLevelComment.snippet.authorProfileImageUrl}
+                            alt=""
+                            className=" min-h-12 min-w-12 h-12 w-12 flex justify-center items-center object-cover rounded-full"
                           />
                         </div>
                       </div>
@@ -245,7 +244,7 @@ export const VideoPlayer: React.FC = () => {
                               <li key={index} className="flex flex-row space-x-4">
                                 <div className="flex justify-start p-2">
                                   <img
-                                    src={removeTransformationParameters(reply.authorProfileImageUrl)}
+                                    src={reply.authorProfileImageUrl}
                                     className=" min-h-8 min-w-8 h-8 w-8 rounded-full"
                                     alt=""
                                   />

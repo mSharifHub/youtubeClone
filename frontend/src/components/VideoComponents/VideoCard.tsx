@@ -4,7 +4,6 @@ import timeSince from '../helpers/timeSince.ts';
 import { Video } from '../hooks/useYoutubeVideos.ts';
 import { convertISO } from '../helpers/convertISO.ts';
 import decrementTime from '../helpers/decrementTime.ts';
-import { removeTransformationParameters } from '../helpers/removeTransformationParameters.ts';
 
 /**
  * Represents the properties for a VideoCard component.
@@ -42,7 +41,7 @@ interface VideoCardProps {
  */
 export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shorts }) => {
   /**
-   * it will exchange between the thumbnails and the video video preview
+   * it will exchange between the thumbnails and the video preview
    */
   const [hover, setHover] = useState<boolean>(false);
 
@@ -165,20 +164,18 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
 
   return (
     <>
-      <div className=" flex flex-col  cursor-pointer">
+      <div className=" flex flex-col  cursor-pointer ">
         {/* video thumbnails*/}
         <div
-          className={`relative grow flex justify-center items-center  ${shorts ? 'h-[500px]' : 'min-h-[150px]'} aspect-video   `}
+          className={`relative grow flex justify-center items-center   aspect-video`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           {!hover && (
             <img
-              src={removeTransformationParameters(
-                video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url,
-              )}
-              alt={video.snippet.title}
-              className={` absolute inset-0  h-full w-full rounded-xl ${shorts ? 'object-cover' : 'object-fill'} `}
+              src={video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.default?.url}
+              alt={`thumbnail-${video.snippet.title}`}
+              className={` absolute inset-0  rounded-xl h-full w-full  ${shorts ? 'object-cover  object-center ' : '  object-fill '}  `}
             />
           )}
 
@@ -202,7 +199,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
             {/*channel logo*/}
             <div className="min-h-10 min-w-10 h-10 w-10">
               <img
-                src={removeTransformationParameters(video.snippet.channelLogo) || '../src/assets/thumbnails/icons8-video-100.png'}
+                src={video.snippet.channelLogo || '../src/assets/thumbnails/icons8-video-100.png'}
                 alt={video.snippet.channelLogo ? video.snippet.channelTitle : ''}
                 className="h-full w-full rounded-full"
               />
