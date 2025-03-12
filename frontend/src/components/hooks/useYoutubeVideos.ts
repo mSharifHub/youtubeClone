@@ -164,16 +164,9 @@ export default function useYoutubeVideos(
   };
 
 
-  /*
-  To debug re-renders and fetchFirst needed while strict mode is being used
-  */
+
   const fetchFirst = useRef(true);
-  /**
-   @param{string} [pageToken]- (Optional) Token for the infinite scroll
-    *
-    *Behavior:
-    * - If loading is True prevents in calling a duplicate fetch
-   **/
+
   const fetchVideos = async (pageToken?: string) => {
     if (loading) {
       return;
@@ -283,11 +276,6 @@ export default function useYoutubeVideos(
     }
   }, []);
 
-  useEffect(() => {
-    if (nextPageToken) {
-      cachedVideos.set<string>(cacheNextPageTokenKey, nextPageToken);
-    }
-  }, [nextPageToken]);
 
   return {
     videos,

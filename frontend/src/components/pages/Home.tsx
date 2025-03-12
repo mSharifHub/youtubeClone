@@ -88,7 +88,7 @@ export const Home: React.FC = () => {
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollError) return;
-    // loadMoreVideos();
+    loadMoreVideos();
   }, [isInfScrollLoading, infScrollError, loadMoreVideos]);
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export const Home: React.FC = () => {
   /***************End of API Call To Fetch Videos **********************************/
   return (
     <div
-      className="h-screen flex flex-col justify-between items-start scroll-smooth overflow-y-auto p-8"
+      className="h-screen flex flex-col justify-between  items-start scroll-smooth  gap-y-[80px] overflow-y-auto p-8 "
       ref={containerLazyLoadRef}
     >
       {!isLoggedIn && <NotLoggedInBanner />}
@@ -129,7 +129,7 @@ export const Home: React.FC = () => {
         <>
           {/* first row of videos */}
           <div
-            className={`min-h-fit grow w-full grid grid-flow-row auto-rows-auto  mb-8 gap-8 p-2  `}
+            className={`min-h-fit grow w-full grid grid-flow-row auto-rows-auto gap-12  `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
@@ -141,7 +141,7 @@ export const Home: React.FC = () => {
                   <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
                 ) : (
                   <VideoCardLoading
-                    style="flex justify-center items-center h-[200px] rounded-lg  bg-neutral-200 dark:dark-modal"
+                    style="flex justify-center items-center aspect-video rounded-lg  bg-neutral-200 dark:dark-modal"
                     key={`${video.id.videoId}-${video.snippet.title}`}
                   />
                 ),
@@ -149,9 +149,9 @@ export const Home: React.FC = () => {
           </div>
 
           {/*YouTube Shorts row */}
-          <div className="min-h-fit grow w-full flex flex-col mb-8 ">
+          <div className="min-h-fit w-full flex flex-col justify-start items-start ">
             {/*YouTube Shorts logo */}
-            <div className="flex flex-row  justify-start items-center mb-4 ">
+            <div className="flex flex-row  justify-start items-center  mb-4 ">
               <img
                 src="https://img.icons8.com/?size=100&id=ot8QhAKun4rZ&format=png&color=000000"
                 className="min-h-10 min-w-10 h-10 w-10"
@@ -160,12 +160,7 @@ export const Home: React.FC = () => {
               <h1 className="font-bold text-lg">Shorts</h1>
             </div>
 
-            <div
-              className=" grid grid-flow-row gap-8 "
-              style={{
-                gridTemplateColumns: `repeat(${shortsVideosPerRow},minmax(0,1fr))`,
-              }}
-            >
+            <div className=" h-[600px] w-full grid  grid-flow-col  gap-12 ">
               {shortsRow
                 .slice(0, shortsVideosPerRow)
                 .map((video) =>
@@ -186,7 +181,6 @@ export const Home: React.FC = () => {
             className={`min-h-fit grow w-full grid grid-flow-row gap-8  p-2 `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
-              gridAutoRows: '350px',
             }}
           >
             {infScrollVideos
@@ -207,13 +201,12 @@ export const Home: React.FC = () => {
                 className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10 "
                 style={{
                   gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-                  gridAutoRows: '300px',
                 }}
               >
                 {Array.from({
                   length: totalVideosFirstRow,
                 }).map((_, index) => (
-                  <VideoCardLoading key={`loading-${index}`} style="h-[200px] rounded-lg bg-neutral-200 dark:dark-modal" />
+                  <VideoCardLoading key={`loading-${index}`} style=" aspect-video rounded-lg bg-neutral-200 dark:dark-modal" />
                 ))}
               </div>
 

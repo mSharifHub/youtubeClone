@@ -17,5 +17,5 @@ export const firstShortsRowsDisplayValues = {
   display_1125_1420: 3,
   display_1421_1739: 4,
   display_1740_1920: 5,
-  display_full: 6,
+  display_full: 7,
 };

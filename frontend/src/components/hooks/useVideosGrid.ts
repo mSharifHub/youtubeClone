@@ -52,7 +52,7 @@ export const useVideoGrid = ({
     }
   };
 
-  // Adding the throttle function here with 150 seconds time out
+  // Adding the throttle function here with 90 ms time out
   const throttleVideosToShowPerRow = useThrottle(determineVideosToShow, 100);
 
   // use effect to change the state whenever
