@@ -5,7 +5,7 @@ import { firstShortsRowsDisplayValues, firstVideoRowsDisplayValues } from '../he
 import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
-import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
+import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
 
 export const Home: React.FC = () => {
   /**
@@ -79,7 +79,8 @@ export const Home: React.FC = () => {
       return;
     } else {
       if (nextPageToken) {
-        infFetchVideos(nextPageToken);
+        // infFetchVideos(nextPageToken);
+        console.log('bottom of the page');
       }
     }
   }, [isInfScrollLoading, infScrollVideos.length, isInfScrollError, nextPageToken]);
@@ -114,7 +115,6 @@ export const Home: React.FC = () => {
     if (isLoggedIn) {
       fetchFirstRow();
       fetchShortsRow();
-      infFetchVideos();
     }
   }, []);
 
