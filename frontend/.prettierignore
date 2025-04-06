@@ -8,3 +8,4 @@ dist
 /frontend/src/components/VideoComponents/VideoCard.tsx
 /src/components/hooks/useYoutubeVideos.ts
 /src/components/helpers/chunkArray.ts
+/src/components/pages/Home.tsx
