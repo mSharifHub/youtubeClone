@@ -6,6 +6,7 @@ import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
+import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 
 export const Home: React.FC = () => {
   /**
@@ -37,7 +38,6 @@ export const Home: React.FC = () => {
    * @returns total videos for the first video section
    */
   const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
-
   /**
    * @constant  it uses shorts Videos
    * @returns total videos for the first video section
@@ -45,7 +45,6 @@ export const Home: React.FC = () => {
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
-
   /**
    * A mutable reference object used with the `useRef`  to  use the custom infinite scroll implementation to load more videos
    */
@@ -73,6 +72,12 @@ export const Home: React.FC = () => {
     nextPageToken,
     handleSelectedVideo,
   } = useYoutubeVideos(apiKey, totalVideosToFetch);
+
+  const [firstRowVideos, setFirstRowVideos] = React.useState<Video[]>([]);
+  const [shortsRowVideos, setShortsRowVideos] = React.useState<Video[]>([]);
+  const [infiniteScrollVideos, setInfiniteScrollVideos] = React.useState<Video[]>([]);
+
+
 
   const handleInfiniteScroll = useCallback(() => {
     if (isInfScrollLoading || infScrollVideos.length >= 20 || isInfScrollError) {
@@ -111,11 +116,47 @@ export const Home: React.FC = () => {
     };
   }, [handleInfiniteScroll, isLoggedIn]);
 
+
+
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchFirstRow();
-      fetchShortsRow();
+    if (!isLoggedIn)  return;
+
+    const handleFirstRowCache = async ()=>{
+      try{
+        const cachedVideos = await loadFromDB('firstRow');
+
+        if (cachedVideos.length > 0){
+          setFirstRowVideos(cachedVideos)
+        }else{
+          fetchFirstRow();
+          if (firstRow.length > 0){
+            await saveToDB('firstRow', firstRow);
+          }
+        }
+      }catch(error){
+        console.error("failed to load or fetch first row videos")
+      }
     }
+
+    const handleShortsRowCache = async ()=>{
+      try{
+        const cachedVideos = await loadFromDB('shortsRow');
+
+        if (cachedVideos.length > 0){
+          setShortsRowVideos(cachedVideos)
+        }else{
+          fetchShortsRow()
+          if (shortsRow.length > 0){
+            await saveToDB('shortsRow', shortsRow);
+          }
+        }
+      }catch(error){
+        console.error("failed to load or fetch shorts rows videos")
+      }
+    }
+    handleFirstRowCache()
+    handleShortsRowCache()
+
   }, []);
 
   /***************End of API Call To Fetch Videos **********************************/
@@ -135,7 +176,7 @@ export const Home: React.FC = () => {
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {firstRow
+            {firstRowVideos
               .slice(0, totalVideosFirstRow)
               .map((video) =>
                 !firstRowLoading ? (
@@ -162,7 +203,7 @@ export const Home: React.FC = () => {
             </div>
 
             <div className=" h-[600px] w-full grid  grid-flow-col  gap-12 ">
-              {shortsRow
+              {shortsRowVideos
                 .slice(0, shortsVideosPerRow)
                 .map((video) =>
                   !shortsLoading ? (

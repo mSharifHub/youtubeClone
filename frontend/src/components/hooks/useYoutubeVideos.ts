@@ -1,4 +1,4 @@
-import { useCallback,useState } from 'react';
+import { useCallback ,useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
@@ -56,7 +56,6 @@ interface UseYoutubeVideosResult {
 export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
-
 ): UseYoutubeVideosResult {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -67,12 +66,13 @@ export default function useYoutubeVideos(
 
   const navigate = useNavigate();
 
+
   /**
    * A callback function to handle selection of a video. It sets the currently selected video
    * and navigates to the corresponding video watch page.
 
-   * @function
-   * @param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
+   *@function
+   *@param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
    *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
    */
   const handleSelectedVideo = useCallback((video:Video)=> {
@@ -80,7 +80,6 @@ export default function useYoutubeVideos(
       id: { videoId }} = video
 
     if (!videoId) return
-
 
     try{
       setCurrentVideo(video)
@@ -121,7 +120,6 @@ export default function useYoutubeVideos(
       throw new Error(e instanceof Error ? e.message : 'Failed to fetch video statistics.');
     }
   };
-
 
   const fetchChannelDetails = async (channelIds: string[]) => {
     try {
