@@ -51,50 +51,54 @@ export const Home: React.FC = () => {
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef(null);
 
-  const {
-    videos: firstRow,
-    loading: firstRowLoading,
-    fetchVideos: fetchFirstRow,
-  } = useYoutubeVideos(apiKey, totalVideosFirstRow);
+  const { loading: firstRowLoading, fetchVideos: fetchFirstRow, } = useYoutubeVideos(apiKey, totalVideosFirstRow);
 
   /**
    * Represents a row of data or information related to shorts.
    */
-  const { videos: shortsRow, loading: shortsLoading, fetchVideos: fetchShortsRow } = useYoutubeVideos(apiKey, totalShortsRow);
+  const { loading: shortsLoading, fetchVideos: fetchShortsRow } = useYoutubeVideos(apiKey, totalShortsRow);
 
   const totalVideosToFetch = videosPerRow ? videosPerRow * 2 : 10;
 
-  const {
-    videos: infScrollVideos,
-    loading: isInfScrollLoading,
-    error: isInfScrollError,
-    fetchVideos: infFetchVideos,
-    nextPageToken,
-    handleSelectedVideo,
-  } = useYoutubeVideos(apiKey, totalVideosToFetch);
+  const { loading: isInfScrollLoading, error: isInfScrollError, fetchVideos: infFetchVideos, nextPageToken, handleSelectedVideo, } = useYoutubeVideos(apiKey, totalVideosToFetch);
 
   const [firstRowVideos, setFirstRowVideos] = React.useState<Video[]>([]);
   const [shortsRowVideos, setShortsRowVideos] = React.useState<Video[]>([]);
-  const [infiniteScrollVideos, setInfiniteScrollVideos] = React.useState<Video[]>([]);
+  const [infScrollVideos, setInfScrollVideos] = React.useState<Video[]>([]);
 
+  const handleInfiniteScroll = useCallback(async () => {
+    if (isInfScrollLoading || infScrollVideos.length >= 50 || isInfScrollError) return;
 
-
-  const handleInfiniteScroll = useCallback(() => {
-    if (isInfScrollLoading || infScrollVideos.length >= 20 || isInfScrollError) {
-      return;
-    } else {
+    try {
       if (nextPageToken) {
-        // infFetchVideos(nextPageToken);
-        console.log('bottom of the page');
+        const newVideos = await infFetchVideos(nextPageToken);
+
+        if (!newVideos?.length) return;
+
+        setInfScrollVideos((prev)=>{
+          const unique = newVideos.filter(
+            (newVideo)=> !prev.some(
+              (existing)=> existing.id.videoId === newVideo.id.videoId
+            )
+          )
+          const updated = [...prev,...unique]
+          saveToDB('infiniteScroll', updated)
+          return updated
+        })
+
       }
+    } catch (error) {
+      console.error('Error fetching more videos on scroll', error);
     }
-  }, [isInfScrollLoading, infScrollVideos.length, isInfScrollError, nextPageToken]);
+  }, [isInfScrollLoading, isInfScrollError, nextPageToken]);
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && isLoggedIn) {
+          console.log('bottom of the page');
           handleInfiniteScroll();
         }
       },
@@ -117,46 +121,78 @@ export const Home: React.FC = () => {
   }, [handleInfiniteScroll, isLoggedIn]);
 
 
+  const handleFirstRowCache = async ()=>{
+    try{
+      const cachedVideos = await loadFromDB('firstRow');
+
+      if (cachedVideos.length > 0){
+        // Debug fetch and caching
+        console.log("loaded from cache first row")
+        setFirstRowVideos(cachedVideos)
+      }else{
+        const videos = await fetchFirstRow();
+        // Debug fetch and caching
+        console.log("fetched first row")
+        if (videos && videos.length > 0){
+          await saveToDB('firstRow', videos);
+          setFirstRowVideos(videos);
+        }
+      }
+    }catch(error){
+      console.error("failed to load or fetch first row videos")
+    }
+  }
+
+  const handleShortsRowCache = async ()=>{
+    try{
+      const cachedVideos = await loadFromDB('shortsRow');
+
+      if (cachedVideos.length > 0){
+        // Debug fetch and caching
+        console.log("loaded from cache shorts row")
+        setShortsRowVideos(cachedVideos)
+      }else{
+        const videos = await fetchShortsRow()
+        // Debug fetch and caching
+        console.log("fetched shorts row")
+        if (videos && videos.length > 0){
+          await saveToDB('shortsRow', videos);
+          setShortsRowVideos(videos);
+        }
+      }
+    }catch(error){
+      console.error("failed to load or fetch shorts rows videos")
+    }
+  }
+
+  const loadInitialFirstRowInfiniteScroll = async ()=>{
+    try{
+      const cachedVideos = await loadFromDB('infiniteScroll');
+      if (cachedVideos.length > 0){
+        // Debug fetch and caching
+        console.log("loaded from cache shorts row")
+        setInfScrollVideos(cachedVideos)
+      }
+      else{
+        const videos = await infFetchVideos();
+        console.log("fetched inf row")
+        if (videos && videos.length > 0){
+          await saveToDB('infiniteScroll', videos);
+          setInfScrollVideos(videos);
+        }
+      }
+
+    }catch(err){
+      console.error("failed to load or fetch shorts rows videos")
+    }
+  }
+
 
   useEffect(() => {
     if (!isLoggedIn)  return;
-
-    const handleFirstRowCache = async ()=>{
-      try{
-        const cachedVideos = await loadFromDB('firstRow');
-
-        if (cachedVideos.length > 0){
-          setFirstRowVideos(cachedVideos)
-        }else{
-          fetchFirstRow();
-          if (firstRow.length > 0){
-            await saveToDB('firstRow', firstRow);
-          }
-        }
-      }catch(error){
-        console.error("failed to load or fetch first row videos")
-      }
-    }
-
-    const handleShortsRowCache = async ()=>{
-      try{
-        const cachedVideos = await loadFromDB('shortsRow');
-
-        if (cachedVideos.length > 0){
-          setShortsRowVideos(cachedVideos)
-        }else{
-          fetchShortsRow()
-          if (shortsRow.length > 0){
-            await saveToDB('shortsRow', shortsRow);
-          }
-        }
-      }catch(error){
-        console.error("failed to load or fetch shorts rows videos")
-      }
-    }
     handleFirstRowCache()
     handleShortsRowCache()
-
+    loadInitialFirstRowInfiniteScroll() // preload for scrolling first row of videos
   }, []);
 
   /***************End of API Call To Fetch Videos **********************************/
@@ -260,7 +296,6 @@ export const Home: React.FC = () => {
           )}
         </>
       )}
-
       {/* SentinelRef*/}
       <div ref={sentinelRef} className="h-2 w-full" />
     </div>

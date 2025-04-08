@@ -44,11 +44,10 @@ export interface Video {
 }
 
 interface UseYoutubeVideosResult {
-  videos: Video[];
   loading: boolean | null;
   error: string | null;
   handleSelectedVideo: (video:Video) => void;
-  fetchVideos: (nextPageToken?: string) => void;
+  fetchVideos: (nextPageToken?: string) => Promise<Video[] | undefined>;
   nextPageToken: string | null
 }
 
@@ -57,7 +56,6 @@ export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
 ): UseYoutubeVideosResult {
-  const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
@@ -66,11 +64,9 @@ export default function useYoutubeVideos(
 
   const navigate = useNavigate();
 
-
   /**
    * A callback function to handle selection of a video. It sets the currently selected video
    * and navigates to the corresponding video watch page.
-
    *@function
    *@param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
    *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
@@ -133,7 +129,10 @@ export default function useYoutubeVideos(
         return {};
       }
 
-      return response.data.items.reduce((map: Record<string, { channelId: string; channelTitle?: string; logo?: string, subscriberCount?:string, channelDescription?:string }>, item) => {
+      return response.data.items.reduce(
+        (map: Record<string,
+          { channelId: string; channelTitle?: string; logo?: string, subscriberCount?:string, channelDescription?:string }>
+         , item) => {
         map[item.id] = {
           channelId: item.id || '',
           channelTitle: item.snippet?.title || '',
@@ -202,13 +201,7 @@ export default function useYoutubeVideos(
           },
         }));
 
-        setVideos((prevVideos)=>{
-          const uniqueVideos =
-            newVideos.filter((newVideo)=>
-              !prevVideos.find((existing)=>
-                existing.id.videoId === newVideo.id.videoId))
-          return [...prevVideos,...uniqueVideos];
-        })
+        return newVideos
       }
 
     } catch (err) {
@@ -219,7 +212,6 @@ export default function useYoutubeVideos(
   };
 
   return {
-    videos,
     loading,
     error,
     fetchVideos,
