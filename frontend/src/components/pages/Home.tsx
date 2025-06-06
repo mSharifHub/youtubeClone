@@ -34,12 +34,12 @@ export const Home: React.FC = () => {
   const shortsVideosPerRow = useVideoGrid(firstShortsRowsDisplayValues);
 
   /**
-   * @constant it uses videosPerRow
+   * @constant  uses videosPerRow
    * @returns total videos for the first video section
    */
   const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
   /**
-   * @constant  it uses shorts Videos
+   * @constant  uses shorts Videos
    * @returns total videos for the first video section
    */
   const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
@@ -73,19 +73,17 @@ export const Home: React.FC = () => {
       if (nextPageToken) {
         const newVideos = await infFetchVideos(nextPageToken);
 
-        if (!newVideos?.length) return;
-
-        setInfScrollVideos((prev)=>{
-          const unique = newVideos.filter(
-            (newVideo)=> !prev.some(
-              (existing)=> existing.id.videoId === newVideo.id.videoId
-            )
-          )
-          const updated = [...prev,...unique]
-          saveToDB('infiniteScroll', updated)
-          return updated
-        })
-
+        if (!newVideos){
+          return
+        }
+        else{
+          setInfScrollVideos((prev)=>{
+            const unique = newVideos.filter((newVideo)=> !prev.some((existing)=> existing.id.videoId === newVideo.id.videoId))
+            const updated = [...prev,...unique]
+            saveToDB('infiniteScroll', updated)
+            return updated
+          })
+        }
       }
     } catch (error) {
       console.error('Error fetching more videos on scroll', error);
@@ -98,7 +96,6 @@ export const Home: React.FC = () => {
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && isLoggedIn) {
-          console.log('bottom of the page');
           handleInfiniteScroll();
         }
       },
@@ -161,7 +158,7 @@ export const Home: React.FC = () => {
         }
       }
     }catch(error){
-      console.error("failed to load or fetch shorts rows videos")
+      throw new Error(error instanceof Error ? error.message : 'an error occurred fetching videos');
     }
   }
 
@@ -169,13 +166,10 @@ export const Home: React.FC = () => {
     try{
       const cachedVideos = await loadFromDB('infiniteScroll');
       if (cachedVideos.length > 0){
-        // Debug fetch and caching
-        console.log("loaded from cache shorts row")
         setInfScrollVideos(cachedVideos)
       }
       else{
         const videos = await infFetchVideos();
-        console.log("fetched inf row")
         if (videos && videos.length > 0){
           await saveToDB('infiniteScroll', videos);
           setInfScrollVideos(videos);
@@ -183,17 +177,21 @@ export const Home: React.FC = () => {
       }
 
     }catch(err){
-      console.error("failed to load or fetch shorts rows videos")
+      throw new Error(err instanceof Error ? err.message : 'an error occurred fetching videos');
     }
   }
 
 
   useEffect(() => {
-    if (!isLoggedIn)  return;
-    handleFirstRowCache()
-    handleShortsRowCache()
-    loadInitialFirstRowInfiniteScroll() // preload for scrolling first row of videos
-  }, []);
+    if (!isLoggedIn) return;
+
+    const load = async  ()=>{
+      await handleFirstRowCache()
+      await handleShortsRowCache()
+      await loadInitialFirstRowInfiniteScroll()
+    }
+    load()
+  }, [isLoggedIn]);
 
   /***************End of API Call To Fetch Videos **********************************/
   return (
@@ -225,7 +223,6 @@ export const Home: React.FC = () => {
                 ),
               )}
           </div>
-
           {/*YouTube Shorts row */}
           <div className="min-h-fit w-full flex flex-col justify-start items-start ">
             {/*YouTube Shorts logo */}

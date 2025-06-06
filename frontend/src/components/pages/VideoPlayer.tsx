@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
+import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
+import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const { selectedVideo } = useSelectedVideo();
@@ -15,6 +18,12 @@ export const VideoPlayer: React.FC = () => {
 
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
+  const [infScrollRelatedVideos, setInfScrollRelatedVideos] = useState<Video[]>([]);
+  const [firstLoadRelatedVideos, setFirstLoadRelatedVideos] = useState<Video[]>([]);
+
+  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
+  const pagePaginationRef = useRef<HTMLDivElement | null>(null);
+  const pageScrollSentinelRef = useRef(null);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -40,12 +49,51 @@ export const VideoPlayer: React.FC = () => {
 
   const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
 
-  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
-
   const { comments, commentsLoading, commentsError, fetchComments, hasMore, topLevelCount, commentsPageToken } =
     useYoutubeComments(apiKey, 10);
-  const pagePaginationRef = useRef<HTMLDivElement | null>(null);
-  const pageScrollSentinelRef = useRef(null);
+
+  const { relatedVideos: fetchRelatedVideos, loading, error, nextPageToken, handleSelectedVideo } = useYoutubeVideos(apiKey, 10);
+
+  const handleFirstLoadRelatedVideos = useCallback(async () => {
+    try {
+      const cachedVideos = await loadFromDB('relatedVideosFirstLoad');
+      if (cachedVideos.length > 0) {
+        setFirstLoadRelatedVideos(cachedVideos);
+      } else {
+        if (selectedVideo && selectedVideo.snippet.categoryId) {
+          const videos = await fetchRelatedVideos(selectedVideo.snippet.categoryId);
+          if (videos && videos.length > 0) {
+            await saveToDB('relatedVideosFirstLoad', videos);
+            setFirstLoadRelatedVideos(videos);
+          }
+        }
+      }
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'an error occurred fetching related videos');
+    }
+  }, [selectedVideo]);
+
+  const handleRelatedVideosScroll = useCallback(async () => {
+    if (loading || infScrollRelatedVideos.length >= 20 || error) return;
+    try {
+      if (nextPageToken && selectedVideo && selectedVideo.snippet.categoryId) {
+        const newVideos = await fetchRelatedVideos(selectedVideo.snippet.categoryId, nextPageToken);
+
+        if (!newVideos || newVideos.length === 0) {
+          return;
+        } else {
+          setInfScrollRelatedVideos((prev) => {
+            const unique = newVideos.filter((newVideo) => !prev.some((existing) => existing.id.videoId === newVideo.id.videoId));
+            const updated = [...prev, ...unique];
+            saveToDB('relatedVideos', updated);
+            return updated;
+          });
+        }
+      }
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : ' an error occurred');
+    }
+  }, [loading, error, nextPageToken]);
 
   const handlePagination = useCallback(() => {
     if (commentsLoading || commentsError || !hasMore || !selectedVideo || topLevelCount >= 50) return;
@@ -59,6 +107,7 @@ export const VideoPlayer: React.FC = () => {
 
         if (entry.isIntersecting) {
           handlePagination();
+          // handleRelatedVideosScroll();
         }
       },
       {
@@ -77,16 +126,29 @@ export const VideoPlayer: React.FC = () => {
         observer.unobserve(pageScrollSentinelRef.current);
       }
     };
-  }, [handlePagination]);
+  }, [handlePagination, handleRelatedVideosScroll]);
 
   /*
-   first load of comments
-   */
+ Handles first load of messages
+  */
   useEffect(() => {
     if (selectedVideo?.id.videoId) {
       fetchComments(selectedVideo.id.videoId);
     }
   }, []);
+
+  /*
+  Handles First Load of Related Videos
+   */
+  useEffect(() => {
+    const checkLoad = async () => {
+      const videos = await loadFromDB('relatedVideosFirstLoad');
+      if (!videos) {
+        await handleFirstLoadRelatedVideos();
+      }
+    };
+    checkLoad();
+  }, [handleFirstLoadRelatedVideos]);
 
   return (
     <div ref={pagePaginationRef} className="h-screen flex flex-col overflow-y-scroll scroll-smooth no-scrollbar ">
@@ -281,7 +343,11 @@ export const VideoPlayer: React.FC = () => {
             )}
           </div>
           <div className="hidden  min-h-fit h-fit lg:flex flex-col justify-start items-center  w-[600px] flex-shrink border border-amber-400">
-            related videos
+            {firstLoadRelatedVideos.map((video) => (
+              <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
+                <VideoCard video={video} />
+              </div>
+            ))}
           </div>
         </>
       </div>

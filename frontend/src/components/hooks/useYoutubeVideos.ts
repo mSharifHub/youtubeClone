@@ -1,4 +1,4 @@
-import { useCallback ,useState } from 'react';
+import { useCallback, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
@@ -23,6 +23,7 @@ export interface VideoSnippet {
   channelLogo?: string;
   publishedAt: string;
   subscriberCount?:string
+  categoryId?: string;
 }
 
 export interface VideoStatistics {
@@ -31,6 +32,7 @@ export interface VideoStatistics {
   dislikeCount?: string;
   commentCount?: string;
   duration?: string;
+  categoryId?:string
 }
 
 export interface VideoId {
@@ -48,6 +50,7 @@ interface UseYoutubeVideosResult {
   error: string | null;
   handleSelectedVideo: (video:Video) => void;
   fetchVideos: (nextPageToken?: string) => Promise<Video[] | undefined>;
+  relatedVideos:(categoryId:string, nextPageToken?:string) => Promise<Video[] | undefined>;
   nextPageToken: string | null
 }
 
@@ -94,7 +97,7 @@ export default function useYoutubeVideos(
       const idsString = videoIds.join(',');
 
       const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=statistics,contentDetails`,
+        `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idsString}&part=snippet,statistics,contentDetails`,
       );
 
       if (!response.data.items || response.data.items.length === 0) {
@@ -109,6 +112,7 @@ export default function useYoutubeVideos(
           dislikeCount: item.statistics?.dislikeCount || '0',
           commentCount: item.statistics?.commentCount || '0',
           duration: item.contentDetails?.duration || 'PT0S',
+          categoryId: item.snippet?.categoryId || ''
         };
         return map;
       }, {});
@@ -130,9 +134,15 @@ export default function useYoutubeVideos(
       }
 
       return response.data.items.reduce(
-        (map: Record<string,
-          { channelId: string; channelTitle?: string; logo?: string, subscriberCount?:string, channelDescription?:string }>
-         , item) => {
+        (map: Record<string, {
+           channelId: string;
+           channelTitle?: string;
+           logo?: string,
+           subscriberCount?:string,
+           channelDescription?:string,
+          }>
+         , item
+        ) => {
         map[item.id] = {
           channelId: item.id || '',
           channelTitle: item.snippet?.title || '',
@@ -146,6 +156,72 @@ export default function useYoutubeVideos(
       throw new Error(e instanceof Error ? e.message : 'Failed to fetch video Details.');
     }
   };
+
+  const relatedVideos = async (categoryId: string, pageToken?: string ) =>{
+
+    if (loading) return
+
+    setLoading(true);
+    setError(null);
+
+    try{
+      let url = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=snippet,statistics,contentDetails&categoryId=${categoryId}&maxResult=${maxResult}`;
+
+      if (pageToken) url += `&pageToken=${pageToken}`;
+
+      const response = await axios.get(url)
+
+      if (response.status === 200) {
+        if (!response.data.items || response.data.items.length === 0) {
+          return
+        }
+
+        if (response.data.nextPageToken) {
+          const newPageToken = response.data.nextPageToken;
+          setNextPageToken(newPageToken);
+        }
+
+        const videoItems: Video[] = response.data.items;
+        const videoIds : string[] = videoItems.map((video:Video)=>video.id.videoId)
+        const channelIds: string[] = [...new Set(videoItems.map((video:Video)=>video.snippet.channelId))]
+        const statisticsMap = await fetchVideoStatistics(videoIds);
+        const channelMap = await fetchChannelDetails(channelIds);
+
+        return videoItems.map((video: Video) => ({
+          ...video,
+          // id: { videoId: video.id  },
+          statistics: {
+            viewCount: statisticsMap[video.id.videoId]?.viewCount,
+            likeCount: statisticsMap[video.id.videoId]?.likeCount,
+            dislikeCount: statisticsMap[video.id.videoId]?.dislikeCount,
+            commentCount: statisticsMap[video.id.videoId]?.commentCount,
+            duration: statisticsMap[video.id.videoId]?.duration,
+          },
+          snippet: {
+            title: video.snippet.title,
+            description: video.snippet.description,
+            thumbnails: video.snippet.thumbnails,
+            channelId: video.snippet.channelId,
+            channelTitle: channelMap[video.snippet.channelId]?.channelTitle,
+            channelLogo: channelMap[video.snippet.channelId]?.logo,
+            publishedAt: video.snippet.publishedAt,
+            subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
+            channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
+            categoryId: statisticsMap[video.id.videoId]?.categoryId,
+          },
+        }))
+      }
+
+    }
+    catch(err){
+
+      setError( err instanceof Error ? err.message : 'Failed to fetch related videos details.');
+    }
+    finally {
+      setLoading(false);
+    }
+
+  }
 
   const fetchVideos = async (pageToken?: string) => {
     if (loading) {
@@ -179,9 +255,9 @@ export default function useYoutubeVideos(
 
         const channelMap = await fetchChannelDetails(channelIds);
 
-        const newVideos = videoItems.map((video: Video) => ({
+        return videoItems.map((video: Video) => ({
           ...video,
-          statistics:{
+          statistics: {
             ...video.statistics,
             viewCount: statisticsMap[video.id.videoId]?.viewCount,
             likeCount: statisticsMap[video.id.videoId]?.likeCount,
@@ -195,13 +271,12 @@ export default function useYoutubeVideos(
             channelTitle: channelMap[video.snippet.channelId]?.channelTitle,
             channelLogo: channelMap[video.snippet.channelId]?.logo,
             publishedAt: video.snippet.publishedAt,
-            subscriberCount:channelMap[video.snippet.channelId]?.subscriberCount,
-            channelDescription:channelMap[video.snippet.channelId]?.channelDescription,
-            description:video.snippet.description,
+            subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
+            channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
+            description: video.snippet.description,
+            categoryId: statisticsMap[video.id.videoId]?.categoryId,
           },
-        }));
-
-        return newVideos
+        }))
       }
 
     } catch (err) {
@@ -215,6 +290,7 @@ export default function useYoutubeVideos(
     loading,
     error,
     fetchVideos,
+    relatedVideos,
     nextPageToken,
     handleSelectedVideo,
   };
