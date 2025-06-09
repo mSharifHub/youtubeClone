@@ -50,7 +50,7 @@ interface UseYoutubeVideosResult {
   error: string | null;
   handleSelectedVideo: (video:Video) => void;
   fetchVideos: (nextPageToken?: string) => Promise<Video[] | undefined>;
-  relatedVideos:(categoryId:string, nextPageToken?:string) => Promise<Video[] | undefined>;
+  fetchRelatedVideos:(categoryId:string, nextPageToken?:string) => Promise<Video[] | undefined>;
   nextPageToken: string | null
 }
 
@@ -157,7 +157,7 @@ export default function useYoutubeVideos(
     }
   };
 
-  const relatedVideos = async (categoryId: string, pageToken?: string ) =>{
+  const fetchRelatedVideos = async (categoryId: string, pageToken?: string ) =>{
 
     if (loading) return
 
@@ -165,8 +165,8 @@ export default function useYoutubeVideos(
     setError(null);
 
     try{
-      let url = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=snippet,statistics,contentDetails&categoryId=${categoryId}&maxResult=${maxResult}`;
 
+      let url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&maxResults=${maxResult}&type=video&videoCategoryId=${categoryId}`
       if (pageToken) url += `&pageToken=${pageToken}`;
 
       const response = await axios.get(url)
@@ -290,7 +290,7 @@ export default function useYoutubeVideos(
     loading,
     error,
     fetchVideos,
-    relatedVideos,
+    fetchRelatedVideos,
     nextPageToken,
     handleSelectedVideo,
   };

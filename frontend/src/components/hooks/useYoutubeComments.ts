@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-
 export interface CommentSnippet {
   authorDisplayName: string;
   authorProfileImageUrl?: string;
@@ -21,7 +20,7 @@ export interface CommentSnippet {
   updatedAt: string;
 }
 
-interface CommentThread {
+export interface CommentThread {
   id: string;
   snippet: {
     videoId: string;
@@ -48,6 +47,7 @@ interface UseYouTubeCommentsResult {
   commentsPageToken: string | null;
   topLevelCount: number;
   fetchComments: (videoId: string, pageToken?: string | null) => Promise<void>;
+  resetComments: () => void;
   hasMore: boolean;
   commentsError: string | null;
 }
@@ -203,6 +203,13 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
     }
   };
 
+  const resetComments = () => {
+    setComments([]);
+    setTopLevelCount(0);
+    setCommentsPageToken(null);
+    setCommentsError(null);
+  };
+
   return {
     comments,
     commentsLoading,
@@ -211,5 +218,6 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
     fetchComments,
     hasMore: commentsPageToken !== null,
     commentsPageToken,
+    resetComments,
   };
 }

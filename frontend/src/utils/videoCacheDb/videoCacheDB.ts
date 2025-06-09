@@ -4,7 +4,6 @@ import { Video } from '../../components/hooks/useYoutubeVideos.ts';
 const DB_NAME = 'videoCacheDB';
 const STORE_NAME = 'videos';
 
-
 export const initVideoDB = async () => {
   return openDB(DB_NAME, 1, {
     upgrade(db) {
@@ -26,3 +25,13 @@ export const loadFromDB = async (key: string): Promise<Video[]> => {
   return record?.value || [];
 };
 
+export const deleteFromDB = async (key: string): Promise<boolean> => {
+  const db = await initVideoDB();
+  const existing = await db.get(STORE_NAME, key);
+  if (existing) {
+    await db.delete(STORE_NAME, key);
+    return true;
+  } else {
+    return false;
+  }
+};

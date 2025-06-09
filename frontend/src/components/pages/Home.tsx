@@ -181,10 +181,8 @@ export const Home: React.FC = () => {
     }
   }
 
-
   useEffect(() => {
     if (!isLoggedIn) return;
-
     const load = async  ()=>{
       await handleFirstRowCache()
       await handleShortsRowCache()

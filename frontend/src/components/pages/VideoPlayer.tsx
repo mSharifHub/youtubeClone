@@ -8,17 +8,18 @@ import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
-import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
+import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const { selectedVideo } = useSelectedVideo();
+
+  const videoId = selectedVideo?.id.videoId;
 
   const playerRef = useRef<YouTubePlayer | null>(null);
 
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
-  const [infScrollRelatedVideos, setInfScrollRelatedVideos] = useState<Video[]>([]);
   const [firstLoadRelatedVideos, setFirstLoadRelatedVideos] = useState<Video[]>([]);
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -49,56 +50,41 @@ export const VideoPlayer: React.FC = () => {
 
   const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
 
-  const { comments, commentsLoading, commentsError, fetchComments, hasMore, topLevelCount, commentsPageToken } =
+  const { comments, commentsLoading, commentsError, fetchComments, hasMore, topLevelCount, commentsPageToken, resetComments } =
     useYoutubeComments(apiKey, 10);
 
-  const { relatedVideos: fetchRelatedVideos, loading, error, nextPageToken, handleSelectedVideo } = useYoutubeVideos(apiKey, 10);
+  const { fetchRelatedVideos, loading, handleSelectedVideo } = useYoutubeVideos(apiKey, 10);
 
-  const handleFirstLoadRelatedVideos = useCallback(async () => {
+  const handleFetchRelatedVideos = async (video: Video) => {
     try {
-      const cachedVideos = await loadFromDB('relatedVideosFirstLoad');
-      if (cachedVideos.length > 0) {
-        setFirstLoadRelatedVideos(cachedVideos);
-      } else {
-        if (selectedVideo && selectedVideo.snippet.categoryId) {
-          const videos = await fetchRelatedVideos(selectedVideo.snippet.categoryId);
-          if (videos && videos.length > 0) {
-            await saveToDB('relatedVideosFirstLoad', videos);
-            setFirstLoadRelatedVideos(videos);
-          }
+      if (video && video.snippet.categoryId) {
+        const videos = await fetchRelatedVideos(video.snippet.categoryId);
+        if (videos && videos.length > 0) {
+          setFirstLoadRelatedVideos(videos);
         }
       }
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'an error occurred fetching related videos');
+    } catch (err) {
+      throw new Error(err instanceof Error ? err.message : 'an error occurred fetching related videos');
     }
-  }, [selectedVideo]);
+  };
 
-  const handleRelatedVideosScroll = useCallback(async () => {
-    if (loading || infScrollRelatedVideos.length >= 20 || error) return;
+  const refreshRelatedVideosOnVideoChange = async (video: Video) => {
     try {
-      if (nextPageToken && selectedVideo && selectedVideo.snippet.categoryId) {
-        const newVideos = await fetchRelatedVideos(selectedVideo.snippet.categoryId, nextPageToken);
-
-        if (!newVideos || newVideos.length === 0) {
-          return;
-        } else {
-          setInfScrollRelatedVideos((prev) => {
-            const unique = newVideos.filter((newVideo) => !prev.some((existing) => existing.id.videoId === newVideo.id.videoId));
-            const updated = [...prev, ...unique];
-            saveToDB('relatedVideos', updated);
-            return updated;
-          });
-        }
+      if (video) {
+        handleSelectedVideo(video);
+        resetComments();
+        await fetchRelatedVideos(video.id.videoId);
+        await fetchComments(video.id.videoId);
       }
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : ' an error occurred');
+    } catch (err) {
+      throw new Error(err instanceof Error ? err.message : 'an error occurred fetching related videos');
     }
-  }, [loading, error, nextPageToken]);
+  };
 
-  const handlePagination = useCallback(() => {
-    if (commentsLoading || commentsError || !hasMore || !selectedVideo || topLevelCount >= 50) return;
-    fetchComments(selectedVideo.id.videoId, commentsPageToken);
-  }, [commentsLoading, commentsError, hasMore, selectedVideo, topLevelCount]);
+  const handlePagination = useCallback(async () => {
+    if (commentsLoading || commentsError || !hasMore || !videoId || topLevelCount >= 50) return;
+    await fetchComments(videoId, commentsPageToken);
+  }, [commentsLoading, commentsError, hasMore, videoId, topLevelCount, fetchComments, commentsPageToken]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -107,7 +93,6 @@ export const VideoPlayer: React.FC = () => {
 
         if (entry.isIntersecting) {
           handlePagination();
-          // handleRelatedVideosScroll();
         }
       },
       {
@@ -126,37 +111,30 @@ export const VideoPlayer: React.FC = () => {
         observer.unobserve(pageScrollSentinelRef.current);
       }
     };
-  }, [handlePagination, handleRelatedVideosScroll]);
+  }, [handlePagination]);
 
   /*
  Handles first load of messages
   */
   useEffect(() => {
-    if (selectedVideo?.id.videoId) {
+    if (selectedVideo) {
       fetchComments(selectedVideo.id.videoId);
+    }
+  }, [selectedVideo]);
+
+  useEffect(() => {
+    if (selectedVideo) {
+      handleFetchRelatedVideos(selectedVideo);
     }
   }, []);
 
-  /*
-  Handles First Load of Related Videos
-   */
-  useEffect(() => {
-    const checkLoad = async () => {
-      const videos = await loadFromDB('relatedVideosFirstLoad');
-      if (!videos) {
-        await handleFirstLoadRelatedVideos();
-      }
-    };
-    checkLoad();
-  }, [handleFirstLoadRelatedVideos]);
-
   return (
     <div ref={pagePaginationRef} className="h-screen flex flex-col overflow-y-scroll scroll-smooth no-scrollbar ">
-      <div className="flex justify-center items-start  p-8 space-x-14 ">
+      <div className="flex justify-around items-start  p-8 space-x-14 ">
         <>
           {/*video section and comments*/}
-          <div className="min-h-fit h-fit max-w-[1200px] w-full flex flex-col justify-start items-start space-y-8  ">
-            <div className="relative flex  flex-none w-full  min-h-[200px] max-h-[700px] aspect-video ">
+          <div className="min-h-fit h-fit w-full flex flex-col justify-start items-start space-y-8 ">
+            <div className="relative flex  flex-none w-full  min-h-[250px]   aspect-video ">
               <YoutubeComponent
                 videoId={selectedVideo?.id.videoId}
                 opts={opts}
@@ -178,6 +156,7 @@ export const VideoPlayer: React.FC = () => {
                       src={selectedVideo?.snippet.channelLogo}
                       alt={selectedVideo?.snippet.channelTitle}
                       className={`h-14 w-14  min-h-10 min-w-10 rounded-full `}
+                      loading="lazy"
                     />
                   </div>
                   {/* channel title and statistics columns */}
@@ -260,6 +239,7 @@ export const VideoPlayer: React.FC = () => {
                             src={thread.snippet.topLevelComment.snippet.authorProfileImageUrl}
                             alt=""
                             className=" min-h-12 min-w-12 h-12 w-12 flex justify-center items-center object-cover rounded-full"
+                            loading="lazy"
                           />
                         </div>
                       </div>
@@ -308,7 +288,7 @@ export const VideoPlayer: React.FC = () => {
                                   <img
                                     src={reply.authorProfileImageUrl}
                                     className=" min-h-8 min-w-8 h-8 w-8 rounded-full"
-                                    alt=""
+                                    loading="lazy"
                                   />
                                 </div>
                                 <div className="flex flex-col">
@@ -342,12 +322,22 @@ export const VideoPlayer: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="hidden  min-h-fit h-fit lg:flex flex-col justify-start items-center  w-[600px] flex-shrink border border-amber-400">
-            {firstLoadRelatedVideos.map((video) => (
-              <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
-                <VideoCard video={video} />
+          <div className="hidden  min-h-fit h-fit lg:flex flex-col justify-start items-center  w-[600px] flex-shrink">
+            {loading ? (
+              <div className="w-full space-y-10">
+                {Array.from({
+                  length: firstLoadRelatedVideos.length,
+                }).map((_, index) => (
+                  <VideoCardLoading key={`loading-${index}`} style=" aspect-video rounded-lg bg-neutral-200 dark:dark-modal" />
+                ))}
               </div>
-            ))}
+            ) : (
+              firstLoadRelatedVideos.map((video) => (
+                <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => refreshRelatedVideosOnVideoChange(video)}>
+                  <VideoCard video={video} />
+                </div>
+              ))
+            )}
           </div>
         </>
       </div>
