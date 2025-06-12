@@ -10,21 +10,24 @@ import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
+import { useNavigationType, useParams } from 'react-router-dom';
 
 export const VideoPlayer: React.FC = () => {
-  const { selectedVideo } = useSelectedVideo();
-
-  const videoId = selectedVideo?.id.videoId;
+  const { selectedVideo, setSelectedVideo } = useSelectedVideo();
 
   const playerRef = useRef<YouTubePlayer | null>(null);
 
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
-  const [firstLoadRelatedVideos, setFirstLoadRelatedVideos] = useState<Video[]>([]);
+  const [relatedVideos, setRelatedVideos] = useState<Video[]>([]);
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const pagePaginationRef = useRef<HTMLDivElement | null>(null);
   const pageScrollSentinelRef = useRef(null);
+
+  const { videoId } = useParams<{ videoId: string }>();
+
+  const navigationType = useNavigationType();
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -36,7 +39,7 @@ export const VideoPlayer: React.FC = () => {
     },
   };
 
-  const handleExpandVideoDescription = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleExpandVideoDescription = (): void => {
     setExpandVideoDescription((prev) => !prev);
   };
 
@@ -53,38 +56,15 @@ export const VideoPlayer: React.FC = () => {
   const { comments, commentsLoading, commentsError, fetchComments, hasMore, topLevelCount, commentsPageToken, resetComments } =
     useYoutubeComments(apiKey, 10);
 
-  const { fetchRelatedVideos, loading, handleSelectedVideo } = useYoutubeVideos(apiKey, 10);
+  const { fetchRelatedVideos, loading: relatedVideosLoading, handleSelectedVideo, fetchVideoById } = useYoutubeVideos(apiKey, 10);
 
-  const handleFetchRelatedVideos = async (video: Video) => {
-    try {
-      if (video && video.snippet.categoryId) {
-        const videos = await fetchRelatedVideos(video.snippet.categoryId);
-        if (videos && videos.length > 0) {
-          setFirstLoadRelatedVideos(videos);
-        }
-      }
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'an error occurred fetching related videos');
+  const messagesPaginations = useCallback(async () => {
+    if (commentsLoading || commentsError || !hasMore || !selectedVideo?.id.videoId || topLevelCount >= 50) return;
+
+    if (commentsPageToken && commentsPageToken !== 'undefined') {
+      await fetchComments(selectedVideo.id.videoId, commentsPageToken);
     }
-  };
-
-  const refreshRelatedVideosOnVideoChange = async (video: Video) => {
-    try {
-      if (video) {
-        handleSelectedVideo(video);
-        resetComments();
-        await fetchRelatedVideos(video.id.videoId);
-        await fetchComments(video.id.videoId);
-      }
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'an error occurred fetching related videos');
-    }
-  };
-
-  const handlePagination = useCallback(async () => {
-    if (commentsLoading || commentsError || !hasMore || !videoId || topLevelCount >= 50) return;
-    await fetchComments(videoId, commentsPageToken);
-  }, [commentsLoading, commentsError, hasMore, videoId, topLevelCount, fetchComments, commentsPageToken]);
+  }, [commentsLoading, commentsError, hasMore, selectedVideo?.id.videoId, topLevelCount, commentsPageToken, fetchComments]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -92,7 +72,7 @@ export const VideoPlayer: React.FC = () => {
         const [entry] = entries;
 
         if (entry.isIntersecting) {
-          handlePagination();
+          messagesPaginations();
         }
       },
       {
@@ -111,22 +91,73 @@ export const VideoPlayer: React.FC = () => {
         observer.unobserve(pageScrollSentinelRef.current);
       }
     };
-  }, [handlePagination]);
+  }, [messagesPaginations]);
 
-  /*
- Handles first load of messages
-  */
   useEffect(() => {
-    if (selectedVideo) {
-      fetchComments(selectedVideo.id.videoId);
-    }
+    const loadVideoData = async () => {
+      if (!selectedVideo) return;
+
+      try {
+        resetComments();
+        setRelatedVideos([]);
+        console.log('loading the loadVideo Data');
+
+        const [_, relatedVideos] = await Promise.all([
+          fetchComments(selectedVideo.id.videoId),
+          fetchRelatedVideos(selectedVideo.snippet.categoryId),
+        ]);
+
+        if (relatedVideos) {
+          setRelatedVideos(relatedVideos);
+        }
+      } catch (err) {
+        throw new Error(err instanceof Error ? err.message : 'error when loading video data');
+      }
+    };
+    loadVideoData();
   }, [selectedVideo]);
 
+  /**
+   *  Function to handle page reload and POP
+   */
   useEffect(() => {
-    if (selectedVideo) {
-      handleFetchRelatedVideos(selectedVideo);
-    }
-  }, []);
+    const reloadOnPageChange = async () => {
+      if (!videoId) return;
+
+      const shouldReload = selectedVideo === null || navigationType === 'POP';
+
+      if (!shouldReload) return;
+
+      try {
+        resetComments();
+        setRelatedVideos([]);
+        console.log('loading the reloadOnPageChange');
+        const video = await fetchVideoById(videoId);
+
+        if (!video) return;
+
+        setSelectedVideo(video);
+
+        const [_, relatedVideos] = await Promise.all([
+          fetchComments(video.id.videoId),
+          fetchRelatedVideos(video.snippet.categoryId),
+        ]);
+
+        if (relatedVideos) {
+          setRelatedVideos(relatedVideos);
+        }
+
+        if (relatedVideos) {
+          setRelatedVideos(relatedVideos);
+        }
+      } catch (err) {
+        throw new Error(err instanceof Error ? err.message : 'error when reloading selected video');
+      }
+    };
+    reloadOnPageChange();
+  }, [selectedVideo, videoId, navigationType]);
+
+
 
   return (
     <div ref={pagePaginationRef} className="h-screen flex flex-col overflow-y-scroll scroll-smooth no-scrollbar ">
@@ -315,25 +346,26 @@ export const VideoPlayer: React.FC = () => {
               </ul>
             </div>
             {/* Spinning Circle*/}
-            {commentsLoading && (
-              <div className="flex w-full justify-center items-center ">
-                {/* eslint-disable-next-line max-len */}
-                <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
-              </div>
-            )}
+            {commentsLoading ||
+              (comments.length === 0 && (
+                <div className="flex w-full justify-center items-center ">
+                  {/* eslint-disable-next-line max-len */}
+                  <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
+                </div>
+              ))}
           </div>
           <div className="hidden  min-h-fit h-fit lg:flex flex-col justify-start items-center  w-[600px] flex-shrink">
-            {loading ? (
+            {!relatedVideos || relatedVideosLoading || relatedVideos.length === 0 ? (
               <div className="w-full space-y-10">
                 {Array.from({
-                  length: firstLoadRelatedVideos.length,
+                  length: 10,
                 }).map((_, index) => (
                   <VideoCardLoading key={`loading-${index}`} style=" aspect-video rounded-lg bg-neutral-200 dark:dark-modal" />
                 ))}
               </div>
             ) : (
-              firstLoadRelatedVideos.map((video) => (
-                <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => refreshRelatedVideosOnVideoChange(video)}>
+              relatedVideos.map((video) => (
+                <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
                   <VideoCard video={video} />
                 </div>
               ))

@@ -19,30 +19,35 @@ export interface VideoSnippet {
   };
   channelId: string;
   channelTitle: string;
-  channelDescription?: string;
+  channelDescription: string;
   channelLogo?: string;
   publishedAt: string;
   subscriberCount?:string
-  categoryId?: string;
+  categoryId: string;
 }
 
 export interface VideoStatistics {
   viewCount: string;
   likeCount?: string;
   dislikeCount?: string;
-  commentCount?: string;
+  commentCount: string;
   duration?: string;
-  categoryId?:string
+  categoryId?: string;
 }
 
 export interface VideoId {
   videoId: string;
 }
 
+export interface VideoContentDetails {
+  duration: string;
+}
+
 export interface Video {
   id: VideoId;
   snippet: VideoSnippet;
   statistics?: VideoStatistics;
+  contentDetails?: VideoContentDetails;
 }
 
 interface UseYoutubeVideosResult {
@@ -50,7 +55,8 @@ interface UseYoutubeVideosResult {
   error: string | null;
   handleSelectedVideo: (video:Video) => void;
   fetchVideos: (nextPageToken?: string) => Promise<Video[] | undefined>;
-  fetchRelatedVideos:(categoryId:string, nextPageToken?:string) => Promise<Video[] | undefined>;
+  fetchVideoById:(videoId:string) => Promise<Video| undefined>;
+  fetchRelatedVideos: (categoryId: string , nextPageToken?: string) => Promise<Video[] | undefined>;
   nextPageToken: string | null
 }
 
@@ -63,9 +69,10 @@ export default function useYoutubeVideos(
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
-  const{setCurrentVideo } = useSelectedVideo()
+  const{setSelectedVideo } = useSelectedVideo()
 
   const navigate = useNavigate();
+
 
   /**
    * A callback function to handle selection of a video. It sets the currently selected video
@@ -75,13 +82,13 @@ export default function useYoutubeVideos(
    *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
    */
   const handleSelectedVideo = useCallback((video:Video)=> {
-    const {
-      id: { videoId }} = video
+
+    const videoId = video.id.videoId;
 
     if (!videoId) return
 
     try{
-      setCurrentVideo(video)
+      setSelectedVideo(video)
     }
     catch (err){
       throw new Error(err instanceof Error ? err.message : 'An error occurred');
@@ -89,7 +96,7 @@ export default function useYoutubeVideos(
     finally {
       navigate(`/watch/${videoId}`);
     }
-  },[navigate, setCurrentVideo])
+  },[navigate, setSelectedVideo])
 
 
   const fetchVideoStatistics = async (videoIds: string[]) => {
@@ -112,7 +119,7 @@ export default function useYoutubeVideos(
           dislikeCount: item.statistics?.dislikeCount || '0',
           commentCount: item.statistics?.commentCount || '0',
           duration: item.contentDetails?.duration || 'PT0S',
-          categoryId: item.snippet?.categoryId || ''
+          categoryId: item.snippet?.categoryId || '',
         };
         return map;
       }, {});
@@ -189,7 +196,6 @@ export default function useYoutubeVideos(
 
         return videoItems.map((video: Video) => ({
           ...video,
-          // id: { videoId: video.id  },
           statistics: {
             viewCount: statisticsMap[video.id.videoId]?.viewCount,
             likeCount: statisticsMap[video.id.videoId]?.likeCount,
@@ -207,7 +213,8 @@ export default function useYoutubeVideos(
             publishedAt: video.snippet.publishedAt,
             subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
             channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
-            categoryId: statisticsMap[video.id.videoId]?.categoryId,
+            categoryId: statisticsMap[video.id.videoId]?.categoryId || '',
+
           },
         }))
       }
@@ -274,7 +281,7 @@ export default function useYoutubeVideos(
             subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
             channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
             description: video.snippet.description,
-            categoryId: statisticsMap[video.id.videoId]?.categoryId,
+            categoryId: statisticsMap[video.id.videoId]?.categoryId || '',
           },
         }))
       }
@@ -286,11 +293,70 @@ export default function useYoutubeVideos(
     }
   };
 
+  const fetchVideoById = async (videoId: string) => {
+
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try{
+
+      const url = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoId}&part=snippet,statistics,contentDetails`
+
+      const response = await axios.get(url)
+
+      if (response.status === 200) {
+        const videoData  = response.data.items[0]
+        const channelId = videoData.snippet.channelId
+
+        const channelRes = await axios.get(
+          `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet,statistics`
+        );
+
+        const channelData = channelRes.data.items[0]
+
+        return {
+          id: {
+            videoId: videoData.id,
+          },
+          snippet: {
+            title: videoData.snippet.title,
+            description: videoData.snippet.description,
+            thumbnails: videoData.snippet.thumbnails,
+            channelId,
+            channelTitle: channelData?.snippet?.title || '',
+            channelLogo: channelData?.snippet?.thumbnails?.default?.url || '',
+            publishedAt: videoData.snippet.publishedAt,
+            subscriberCount: channelData?.statistics?.subscriberCount || '0',
+            channelDescription: channelData?.snippet?.description || '',
+            categoryId: videoData.snippet?.categoryId || '',
+          },
+          statistics: {
+            viewCount: videoData.statistics?.viewCount || '0',
+            likeCount: videoData.statistics?.likeCount || '0',
+            dislikeCount: videoData.statistics?.dislikeCount || '0',
+            commentCount: videoData.statistics?.commentCount || '0',
+            duration: videoData.contentDetails?.duration || 'PT0S',
+
+          },
+        };
+
+      }
+
+    }catch(err){
+      setError(err instanceof Error ? err.message : 'An error occurred fetching video by id');
+    }
+  }
+
   return {
     loading,
     error,
     fetchVideos,
     fetchRelatedVideos,
+    fetchVideoById,
     nextPageToken,
     handleSelectedVideo,
   };

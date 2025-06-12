@@ -9,9 +9,5 @@ interface SelectedVideoProviderProps {
 export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ children }) => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
-  return (
-    <SelectedVideoContext.Provider value={{ selectedVideo, setCurrentVideo: setSelectedVideo }}>
-      {children}
-    </SelectedVideoContext.Provider>
-  );
+  return <SelectedVideoContext.Provider value={{ selectedVideo, setSelectedVideo }}>{children}</SelectedVideoContext.Provider>;
 };
