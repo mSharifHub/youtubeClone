@@ -52,14 +52,7 @@ interface UseYouTubeCommentsResult {
   commentsError: string | null;
 }
 
-/**
- * A custom hook for fetching and managing YouTube comments for a specific video using the YouTube Data API.
- *
- * @param {string} apiKey - The YouTube Data API key required to authenticate requests.
- * @param{number} maxResults
- * @return {UseYouTubeCommentsResult} An object containing the current state of the comments, loading state, error state, a function to fetch comments, and a flag indicating if more comments are available.
- *
- */
+
 export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTubeCommentsResult {
   /**
    * Represents the user's comments in a system or application.
@@ -123,18 +116,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
     setCommentsError(null);
 
     try {
-      /**
-       * The URL used to fetch comment threads for a specific YouTube video using the YouTube Data API v3.
-       * This URL includes the snippet and replies parts, the video ID, API key, and optionally max results
-       * and a page token for pagination.
-       *
-       * Components:
-       * - `part=snippet,replies`: Specifies the called parts of the API resource.
-       * - `videoId`: Identifies the particular video for which comments are retrieved.
-       * - `key`: The API key required for authenticating YouTube Data API requests.
-       * - `maxResults`: Defines the maximum number of results to return in a single request.
-       * - `pageToken`: (Optional) Token for fetching the next page of results.
-       */
+
       const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
       const response = await axios.get(url);

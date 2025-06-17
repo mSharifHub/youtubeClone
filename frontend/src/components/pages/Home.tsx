@@ -1,94 +1,41 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import { firstShortsRowsDisplayValues, firstVideoRowsDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
+import { videosPerRowDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
 import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
-import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
-import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
+import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
+import { loadFromDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 
 export const Home: React.FC = () => {
-  /**
-   * A boolean variable that indicates whether a user is currently logged in.
-   * It is set to true when the user has successfully authenticated, and false otherwise.
-   * @see ../userContext
-   */
+
   const {
     state: { isLoggedIn },
   } = useUser();
 
-  /**
-  @constant videosPerRow{number}
-  @description A constant value that dynamically determines the number of videos per row using hook useVideoGrid
-  @see hooks/useVideoGrid.ts - The custom hook implementation for detecting grid setting
-   */
-  const videosPerRow = useVideoGrid(firstVideoRowsDisplayValues);
+  const videosPerRow = useVideoGrid(videosPerRowDisplayValues);
 
-  /**
-   *
-@constant shortsVideosPerRow{number}
-@description A constant value that dynamically determines the number of videos per row using hook useVideoGrid
-@see hooks/useVideoGrid.ts - The custom hook implementation for detecting grid setting
-  */
-  const shortsVideosPerRow = useVideoGrid(firstShortsRowsDisplayValues);
-
-  /**
-   * @constant  uses videosPerRow
-   * @returns total videos for the first video section
-   */
-  const totalVideosFirstRow = videosPerRow ? videosPerRow * 2 : 0;
-  /**
-   * @constant  uses shorts Videos
-   * @returns total videos for the first video section
-   */
-  const totalShortsRow = shortsVideosPerRow ? shortsVideosPerRow : 0;
+   const totalVideosToFetch = videosPerRow ? videosPerRow * 2 : 10;
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
-  /**
-   * A mutable reference object used with the `useRef`  to  use the custom infinite scroll implementation to load more videos
-   */
+
   const containerLazyLoadRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef(null);
 
-  const { loading: firstRowLoading, fetchVideos: fetchFirstRow, } = useYoutubeVideos(apiKey, totalVideosFirstRow);
+  const { videos ,setVideos,videosLoading ,videosError ,fetchVideos,  videosNextPageToken, handleSelectedVideo } = useYoutubeVideos(apiKey, totalVideosToFetch);
 
-  /**
-   * Represents a row of data or information related to shorts.
-   */
-  const { loading: shortsLoading, fetchVideos: fetchShortsRow } = useYoutubeVideos(apiKey, totalShortsRow);
-
-  const totalVideosToFetch = videosPerRow ? videosPerRow * 2 : 10;
-
-  const { loading: isInfScrollLoading, error: isInfScrollError, fetchVideos: infFetchVideos, nextPageToken, handleSelectedVideo, } = useYoutubeVideos(apiKey, totalVideosToFetch);
-
-  const [firstRowVideos, setFirstRowVideos] = React.useState<Video[]>([]);
-  const [shortsRowVideos, setShortsRowVideos] = React.useState<Video[]>([]);
-  const [infScrollVideos, setInfScrollVideos] = React.useState<Video[]>([]);
-
-  const handleInfiniteScroll = useCallback(async () => {
-    if (isInfScrollLoading || infScrollVideos.length >= 50 || isInfScrollError) return;
+  const handleVideosScroll = useCallback(async () => {
+    if (videosLoading || videos.length >= 50 || videosError) return;
 
     try {
-      if (nextPageToken) {
-        const newVideos = await infFetchVideos(nextPageToken);
-
-        if (!newVideos){
-          return
-        }
-        else{
-          setInfScrollVideos((prev)=>{
-            const unique = newVideos.filter((newVideo)=> !prev.some((existing)=> existing.id.videoId === newVideo.id.videoId))
-            const updated = [...prev,...unique]
-            saveToDB('infiniteScroll', updated)
-            return updated
-          })
-        }
+      if (videosNextPageToken) {
+        await fetchVideos(videosNextPageToken);
       }
     } catch (error) {
       console.error('Error fetching more videos on scroll', error);
     }
-  }, [isInfScrollLoading, isInfScrollError, nextPageToken]);
+  }, [videosLoading, videos.length, videosError, videosNextPageToken]);
 
 
   useEffect(() => {
@@ -96,7 +43,7 @@ export const Home: React.FC = () => {
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && isLoggedIn) {
-          handleInfiniteScroll();
+          handleVideosScroll();
         }
       },
       {
@@ -115,67 +62,17 @@ export const Home: React.FC = () => {
         observer.unobserve(sentinelRef.current);
       }
     };
-  }, [handleInfiniteScroll, isLoggedIn]);
+  }, [handleVideosScroll, isLoggedIn]);
 
-
-  const handleFirstRowCache = async ()=>{
-    try{
-      const cachedVideos = await loadFromDB('firstRow');
-
-      if (cachedVideos.length > 0){
-        // Debug fetch and caching
-        console.log("loaded from cache first row")
-        setFirstRowVideos(cachedVideos)
-      }else{
-        const videos = await fetchFirstRow();
-        // Debug fetch and caching
-        console.log("fetched first row")
-        if (videos && videos.length > 0){
-          await saveToDB('firstRow', videos);
-          setFirstRowVideos(videos);
-        }
-      }
-    }catch(error){
-      console.error("failed to load or fetch first row videos")
-    }
-  }
-
-  const handleShortsRowCache = async ()=>{
-    try{
-      const cachedVideos = await loadFromDB('shortsRow');
-
-      if (cachedVideos.length > 0){
-        // Debug fetch and caching
-        console.log("loaded from cache shorts row")
-        setShortsRowVideos(cachedVideos)
-      }else{
-        const videos = await fetchShortsRow()
-        // Debug fetch and caching
-        console.log("fetched shorts row")
-        if (videos && videos.length > 0){
-          await saveToDB('shortsRow', videos);
-          setShortsRowVideos(videos);
-        }
-      }
-    }catch(error){
-      throw new Error(error instanceof Error ? error.message : 'an error occurred fetching videos');
-    }
-  }
-
-  const loadInitialFirstRowInfiniteScroll = async ()=>{
+  const fetchVideosOnLoad = async ()=>{
     try{
       const cachedVideos = await loadFromDB('infiniteScroll');
       if (cachedVideos.length > 0){
-        setInfScrollVideos(cachedVideos)
+        setVideos(cachedVideos)
       }
       else{
-        const videos = await infFetchVideos();
-        if (videos && videos.length > 0){
-          await saveToDB('infiniteScroll', videos);
-          setInfScrollVideos(videos);
-        }
+        await  fetchVideos();
       }
-
     }catch(err){
       throw new Error(err instanceof Error ? err.message : 'an error occurred fetching videos');
     }
@@ -184,14 +81,11 @@ export const Home: React.FC = () => {
   useEffect(() => {
     if (!isLoggedIn) return;
     const load = async  ()=>{
-      await handleFirstRowCache()
-      await handleShortsRowCache()
-      await loadInitialFirstRowInfiniteScroll()
+     await fetchVideosOnLoad()
     }
     load()
   }, [isLoggedIn]);
 
-  /***************End of API Call To Fetch Videos **********************************/
   return (
     <div
       className="h-screen flex flex-col justify-between  items-start scroll-smooth  gap-y-[80px] overflow-y-auto p-8 "
@@ -201,65 +95,16 @@ export const Home: React.FC = () => {
 
       {isLoggedIn && (
         <>
-          {/* first row of videos */}
-          <div
-            className={`min-h-fit grow w-full grid grid-flow-row auto-rows-auto gap-12  `}
-            style={{
-              gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
-            }}
-          >
-            {firstRowVideos
-              .slice(0, totalVideosFirstRow)
-              .map((video) =>
-                !firstRowLoading ? (
-                  <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} />
-                ) : (
-                  <VideoCardLoading
-                    style="flex justify-center items-center aspect-video rounded-lg  bg-neutral-200 dark:dark-modal"
-                    key={`${video.id.videoId}-${video.snippet.title}`}
-                  />
-                ),
-              )}
-          </div>
-          {/*YouTube Shorts row */}
-          <div className="min-h-fit w-full flex flex-col justify-start items-start ">
-            {/*YouTube Shorts logo */}
-            <div className="flex flex-row  justify-start items-center  mb-4 ">
-              <img
-                src="https://img.icons8.com/?size=100&id=ot8QhAKun4rZ&format=png&color=000000"
-                className="min-h-10 min-w-10 h-10 w-10"
-                alt="YoutubeShorts"
-              />
-              <h1 className="font-bold text-lg">Shorts</h1>
-            </div>
-
-            <div className=" h-[600px] w-full grid  grid-flow-col  gap-12 ">
-              {shortsRowVideos
-                .slice(0, shortsVideosPerRow)
-                .map((video) =>
-                  !shortsLoading ? (
-                    <VideoCard key={`${video.id.videoId}-${video.snippet.title}`} video={video} shorts={true} />
-                  ) : (
-                    <VideoCardLoading
-                      style="flex justify-center items-center h-[500px] rounded-lg  bg-neutral-200 dark:dark-modal "
-                      key={`${video.id.videoId}-${video.snippet.title}`}
-                    />
-                  ),
-                )}
-            </div>
-          </div>
-
-          {/* infinite video scroll */}
           <div
             className={`min-h-fit grow w-full grid grid-flow-row gap-8  p-2 `}
             style={{
               gridTemplateColumns: `repeat(${videosPerRow},minmax(0,1fr))`,
             }}
           >
-            {infScrollVideos
+            {videos
               .slice(
                 0,
-                Math.floor(infScrollVideos.length / (videosPerRow ? videosPerRow : 1)) * (videosPerRow ? videosPerRow : 1),
+                Math.floor(videos.length / (videosPerRow ? videosPerRow : 1)) * (videosPerRow ? videosPerRow : 1),
               )
               .map((video) => (
                 <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
@@ -268,7 +113,7 @@ export const Home: React.FC = () => {
               ))}
           </div>
 
-          {isInfScrollLoading && (
+          {videosLoading && (
             <>
               <div
                 className="min-h-fit w-full grid grid-flow-row  mt-8 gap-10 "
@@ -277,7 +122,7 @@ export const Home: React.FC = () => {
                 }}
               >
                 {Array.from({
-                  length: totalVideosFirstRow,
+                  length: 10,
                 }).map((_, index) => (
                   <VideoCardLoading key={`loading-${index}`} style=" aspect-video rounded-lg bg-neutral-200 dark:dark-modal" />
                 ))}

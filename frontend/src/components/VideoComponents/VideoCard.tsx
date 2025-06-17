@@ -167,7 +167,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video, shor
       <div className=" flex flex-col  cursor-pointer ">
         {/* video thumbnails*/}
         <div
-          className={`relative grow flex justify-center items-center   aspect-video`}
+          className={`relative grow flex justify-center items-center aspect-video`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >

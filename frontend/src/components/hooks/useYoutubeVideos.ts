@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
+import { saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
 export interface VideoSnippet {
@@ -51,13 +52,18 @@ export interface Video {
 }
 
 interface UseYoutubeVideosResult {
-  loading: boolean | null;
-  error: string | null;
+  videosLoading: boolean;
+  videosError: string | null;
   handleSelectedVideo: (video:Video) => void;
-  fetchVideos: (nextPageToken?: string) => Promise<Video[] | undefined>;
+  fetchVideos: (nextPageToken?: string) => Promise<void>;
+  videos: Video[] | []
+  setVideos: (videos: Video[] | []) => void;
+  relatedVideos: Video[] | [];
+  relatedVideosLoading: boolean;
+  relatedVideosError: string | null;
+  fetchRelatedVideos: (categoryId: string, pageToken?: string) => Promise<void>;
   fetchVideoById:(videoId:string) => Promise<Video| undefined>;
-  fetchRelatedVideos: (categoryId: string , nextPageToken?: string) => Promise<Video[] | undefined>;
-  nextPageToken: string | null
+  videosNextPageToken: string | null
 }
 
 
@@ -65,39 +71,19 @@ export default function useYoutubeVideos(
   apiKey: string,
   maxResult: number,
 ): UseYoutubeVideosResult {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [videosLoading, setVideosLoading] = useState<boolean>(false);
+  const [videosError, setVideosError] = useState<string | null>(null);
+  const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
 
-  const{setSelectedVideo } = useSelectedVideo()
+  const [relatedVideos, setRelatedVideos] = useState<Video[]>([]);
+  const [relatedVideosLoading, setRelatedVideosLoading] = useState<boolean>(false);
+  const [relatedVideosError, setRelatedVideosError] = useState<string | null>(null);
+
+  const {setSelectedVideo} = useSelectedVideo()
+
 
   const navigate = useNavigate();
-
-
-  /**
-   * A callback function to handle selection of a video. It sets the currently selected video
-   * and navigates to the corresponding video watch page.
-   *@function
-   *@param {Video} video - The video object representing the selected video, which includes its `id` and `videoId`.
-   *@setCurrentVideo - Use context to set the selected video and retrieve the data to use on the play video page
-   */
-  const handleSelectedVideo = useCallback((video:Video)=> {
-
-    const videoId = video.id.videoId;
-
-    if (!videoId) return
-
-    try{
-      setSelectedVideo(video)
-    }
-    catch (err){
-      throw new Error(err instanceof Error ? err.message : 'An error occurred');
-    }
-    finally {
-      navigate(`/watch/${videoId}`);
-    }
-  },[navigate, setSelectedVideo])
-
 
   const fetchVideoStatistics = async (videoIds: string[]) => {
     try {
@@ -166,10 +152,10 @@ export default function useYoutubeVideos(
 
   const fetchRelatedVideos = async (categoryId: string, pageToken?: string ) =>{
 
-    if (loading) return
+    if (relatedVideosLoading) return
 
-    setLoading(true);
-    setError(null);
+    setRelatedVideosLoading(true);
+    setVideosError(null);
 
     try{
 
@@ -185,7 +171,7 @@ export default function useYoutubeVideos(
 
         if (response.data.nextPageToken) {
           const newPageToken = response.data.nextPageToken;
-          setNextPageToken(newPageToken);
+          setVideosNextPageToken(newPageToken);
         }
 
         const videoItems: Video[] = response.data.items;
@@ -194,7 +180,7 @@ export default function useYoutubeVideos(
         const statisticsMap = await fetchVideoStatistics(videoIds);
         const channelMap = await fetchChannelDetails(channelIds);
 
-        return videoItems.map((video: Video) => ({
+        const videos = videoItems.map((video: Video) => ({
           ...video,
           statistics: {
             viewCount: statisticsMap[video.id.videoId]?.viewCount,
@@ -217,26 +203,27 @@ export default function useYoutubeVideos(
 
           },
         }))
+        setRelatedVideos(videos)
       }
-
     }
     catch(err){
-
-      setError( err instanceof Error ? err.message : 'Failed to fetch related videos details.');
+      setRelatedVideosError( err instanceof Error ? err.message : 'Failed to fetch related videos details.');
     }
     finally {
-      setLoading(false);
+      setRelatedVideosLoading(false);
     }
 
   }
 
   const fetchVideos = async (pageToken?: string) => {
-    if (loading) {
+    if (videosLoading) {
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    if (videos.length >= 50) return;
+
+    setVideosLoading(true);
+    setVideosError(null);
 
     try {
       const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
@@ -250,7 +237,7 @@ export default function useYoutubeVideos(
 
         if (response.data.nextPageToken.length > 0) {
           const newPageToken = response.data.nextPageToken;
-          setNextPageToken(newPageToken);
+          setVideosNextPageToken(newPageToken);
         }
 
         const videoItems: Video[] = response.data.items;
@@ -262,7 +249,7 @@ export default function useYoutubeVideos(
 
         const channelMap = await fetchChannelDetails(channelIds);
 
-        return videoItems.map((video: Video) => ({
+        const videos = videoItems.map((video: Video) => ({
           ...video,
           statistics: {
             ...video.statistics,
@@ -284,23 +271,32 @@ export default function useYoutubeVideos(
             categoryId: statisticsMap[video.id.videoId]?.categoryId || '',
           },
         }))
+
+        setVideos( (previous)=>{
+          const newVideos = videos.filter(video=> !previous.some(v=>v.id.videoId === video.id.videoId ))
+          if ( newVideos.length === 0) return previous
+          const updated = [...previous, ...newVideos]
+          saveToDB('infiniteScroll', updated);
+          return updated;
+        })
       }
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setVideosError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setLoading(false);
+
+      setVideosLoading(false);
     }
   };
 
   const fetchVideoById = async (videoId: string) => {
 
-    if (loading) {
+    if (videosLoading) {
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    setVideosLoading(true);
+    setVideosError(null);
 
     try{
 
@@ -347,17 +343,37 @@ export default function useYoutubeVideos(
       }
 
     }catch(err){
-      setError(err instanceof Error ? err.message : 'An error occurred fetching video by id');
+      setVideosError(err instanceof Error ? err.message : 'An error occurred fetching video by id');
     }
   }
 
+  const handleSelectedVideo =async (video:Video)=> {
+    const videoId = video.id.videoId;
+    if (!videoId) return
+    try{
+      setSelectedVideo(video);
+    }
+    catch(err){
+      throw new Error(err instanceof Error ? err.message : 'An error occurred setting selected video');
+    }
+    finally {
+      navigate(`/watch/${videoId}`);
+    }
+  }
+
+
   return {
-    loading,
-    error,
+    videosLoading,
+    videosError,
     fetchVideos,
+    videos,
+    setVideos,
     fetchRelatedVideos,
+    relatedVideos,
+    relatedVideosLoading,
+    relatedVideosError,
     fetchVideoById,
-    nextPageToken,
+    videosNextPageToken,
     handleSelectedVideo,
   };
 

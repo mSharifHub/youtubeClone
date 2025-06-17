@@ -12,7 +12,7 @@ module.exports = {
   plugins: ['react-refresh', 'prettier'],
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-    'prettier/prettier': ['warn', { printWidth: 130 }],
-    'max-len': ['warn', { code: 130, tabWidth: 2, ignoreUrls: true }],
+    'prettier/prettier': ['warn', { printWidth: 180 }],
+    'max-len': ['warn', { code: 180, tabWidth: 2, ignoreUrls: true }],
   },
 };
