@@ -7,13 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import useYoutubeVideos, { Video } from '../hooks/useYoutubeVideos.ts';
+import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
-import { useNavigationType } from 'react-router-dom';
+import { useNavigationType, useParams } from 'react-router-dom';
 
 export const VideoPlayer: React.FC = () => {
-  const { selectedVideo } = useSelectedVideo();
+  const { selectedVideo, setSelectedVideo } = useSelectedVideo();
 
   const playerRef = useRef<YouTubePlayer | null>(null);
 
@@ -24,6 +24,8 @@ export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const pagePaginationRef = useRef<HTMLDivElement | null>(null);
   const pageScrollSentinelRef = useRef(null);
+
+  const { videoId } = useParams<{ videoId: string }>();
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -51,7 +53,7 @@ export const VideoPlayer: React.FC = () => {
 
   const { comments, commentsLoading, commentsError, fetchComments, hasMore, topLevelCount, commentsPageToken } = useYoutubeComments(apiKey, 10);
 
-  const { handleSelectedVideo, fetchRelatedVideos, relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeVideos(apiKey, 10);
+  const { handleSelectedVideo, fetchRelatedVideos, relatedVideos, relatedVideosLoading, singleVideoFetch, fetchVideoById } = useYoutubeVideos(apiKey, 10);
 
   const messagesPaginations = useCallback(async () => {
     if (commentsLoading || commentsError || !hasMore || !selectedVideo?.id.videoId || topLevelCount >= 50) return;
@@ -87,22 +89,37 @@ export const VideoPlayer: React.FC = () => {
       }
     };
   }, [messagesPaginations]);
-
-  const loadSelectedVideoContent = async () => {
-    if (!selectedVideo) return;
-    await fetchRelatedVideos(selectedVideo.snippet.categoryId);
-    await fetchComments(selectedVideo.id.videoId);
-  };
-
-  useEffect(() => {
-    if (!selectedVideo) return;
-    loadSelectedVideoContent();
-  }, [selectedVideo]);
-
-
-  useEffect(() => {
-    console.log(relatedVideos)
-  }, [relatedVideos]);
+  //
+  // useEffect(() => {
+  //   if (!selectedVideo) return;
+  //   if (!selectedVideo?.snippet?.categoryId || !selectedVideo?.id?.videoId) return;
+  //
+  //   fetchRelatedVideos(selectedVideo.snippet.categoryId);
+  //   fetchComments(selectedVideo.id.videoId);
+  // }, [selectedVideo?.snippet?.categoryId, selectedVideo?.id?.videoId]);
+  //
+  //
+  // useEffect(() => {
+  //   console.log('RELATED VIDEOS UPDATED:', relatedVideos);
+  // }, [relatedVideos]);
+  //
+  // // const reloadOnBrowser = async () => {
+  // //   if (selectedVideo === null || navigationType === 'POP') {
+  // //     if (videoId) {
+  // //       await fetchVideoById(videoId);
+  // //       await fetchComments(videoId);
+  // //       if (singleVideoFetch) {
+  // //         setSelectedVideo(singleVideoFetch);
+  // //         await fetchRelatedVideos(singleVideoFetch.snippet.categoryId);
+  // //       }
+  // //     }
+  // //   }
+  // // };
+  // //
+  // // useEffect(() => {
+  // //   if (!videoId) return;
+  // //   reloadOnBrowser();
+  // // }, []);
 
   return (
     <div ref={pagePaginationRef} className="h-screen flex flex-col overflow-y-scroll scroll-smooth no-scrollbar ">
@@ -205,7 +222,6 @@ export const VideoPlayer: React.FC = () => {
             </div>
 
             {/*description container*/}
-
             {selectedVideo?.snippet.channelDescription ? (
               <>
                 <div className={`relative ${expandVideoDescription ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg `}>
@@ -317,7 +333,6 @@ export const VideoPlayer: React.FC = () => {
             {/* Spinning Circle*/}
             {commentsLoading && (
               <div className="flex w-full justify-center items-center ">
-                {/* eslint-disable-next-line max-len */}
                 <div className="min-h-9 min-w-9  h-9 w-9 border-2 rounded-full animate-spin  duration-75 dark:border-slate-300 dark:border-t-black border-grey  border-t-white" />
               </div>
             )}
