@@ -1,6 +1,6 @@
 export const videosPerRowDisplayValues = {
   display_less_480: 1,
-  display_481_699: 1,
+  display_481_699: 2,
   display_700_899: 2,
   display_900_1124: 3,
   display_1125_1420: 3,

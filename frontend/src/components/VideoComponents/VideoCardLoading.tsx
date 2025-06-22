@@ -1,14 +1,11 @@
 import React from 'react';
 
-interface VideoCardLoadingProps {
-  style: string;
-}
 
-export const VideoCardLoading: React.FC<VideoCardLoadingProps> = ({ style }) => {
+export const VideoCardLoading= () => {
   return (
     <div className="flex flex-col animate-wave-opacity ">
       {/* skeleton for video thumbnails */}
-      <div className={style} />
+      <div className="aspect-video rounded-lg bg-neutral-200 dark:dark-modal" />
       {/* skeleton for video and channel information */}
       <div className="flex flex-initial p-2 space-x-2">
         {/* skeleton for channel logo */}

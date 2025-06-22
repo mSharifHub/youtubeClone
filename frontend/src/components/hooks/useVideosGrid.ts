@@ -1,70 +1,45 @@
 import { useEffect, useState } from 'react';
 import { useThrottle } from './useThrottle.ts';
 
-/**
- * @videosPerRow{number} return number of videos show per row.
- * @setVideosPerRow{void} function that uses screen width to set number of videos to show
- * @return is the number of videos per row to be used
- */
-
 interface VideoGridProps {
-  display_less_480?: number | undefined;
-  display_481_699?: number | undefined;
-  display_700_899?: number | undefined;
-  display_900_1124?: number | undefined;
-  display_1125_1420?: number | undefined;
-  display_1421_1739?: number | undefined;
-  display_1740_1920?: number | undefined;
-  display_full?: number | undefined;
+  display_less_480?: number;
+  display_481_699?: number;
+  display_700_899?: number;
+  display_900_1124?: number;
+  display_1125_1420?: number;
+  display_1421_1739?: number;
+  display_1740_1920?: number;
+  display_full?: number;
 }
 
-export const useVideoGrid = ({
-  display_less_480,
-  display_481_699,
-  display_700_899,
-  display_900_1124,
-  display_1125_1420,
-  display_1421_1739,
-  display_1740_1920,
-  display_full,
-}: VideoGridProps): number | undefined => {
-  const [videosPerRow, setVideosPerRow] = useState<number | undefined>(display_full);
+function getVideosPerRowFromWidth(props: VideoGridProps, width: number): number {
+  const { display_less_480, display_481_699, display_700_899, display_900_1124, display_1125_1420, display_1421_1739, display_1740_1920, display_full } = props;
+
+  if (width <= 480) return display_less_480 ?? 1;
+  if (width >= 481 && width <= 699) return display_481_699 ?? 1;
+  if (width >= 700 && width <= 899) return display_700_899 ?? 2;
+  if (width >= 900 && width <= 1124) return display_900_1124 ?? 3;
+  if (width >= 1125 && width <= 1420) return display_1125_1420 ?? 3;
+  if (width >= 1421 && width <= 1739) return display_1421_1739 ?? 4;
+  if (width >= 1740 && width <= 1920) return display_1740_1920 ?? 5;
+  return display_full ?? 5;
+}
+
+export const useVideoGrid = (props: VideoGridProps): number => {
+  const [videosPerRow, setVideosPerRow] = useState<number>(() => (typeof window !== 'undefined' ? getVideosPerRowFromWidth(props, window.innerWidth) : props.display_full ?? 1));
 
   const determineVideosToShow = () => {
-    const screenWidth = window.innerWidth;
-
-    if (screenWidth <= 480) {
-      setVideosPerRow(display_less_480); // Very small screens
-    } else if (screenWidth >= 481 && screenWidth <= 699) {
-      setVideosPerRow(display_481_699); // Small screens
-    } else if (screenWidth >= 700 && screenWidth <= 899) {
-      setVideosPerRow(display_700_899); // Small-to-medium screens
-    } else if (screenWidth >= 900 && screenWidth <= 1124) {
-      setVideosPerRow(display_900_1124); // Medium screens
-    } else if (screenWidth >= 1125 && screenWidth <= 1420) {
-      setVideosPerRow(display_1125_1420); // Medium-to-large screens
-    } else if (screenWidth >= 1421 && screenWidth <= 1739) {
-      setVideosPerRow(display_1421_1739); // Large screens
-    } else if (screenWidth >= 1740 && screenWidth <= 1920) {
-      setVideosPerRow(display_1740_1920); // Very large screens
-    } else {
-      setVideosPerRow(display_full); // Ultra-wide or full-screen displays
-    }
+    setVideosPerRow(getVideosPerRowFromWidth(props, window.innerWidth));
   };
 
-  // Adding the throttle function here with 90 ms time out
   const throttleVideosToShowPerRow = useThrottle(determineVideosToShow, 100);
 
-  // use effect to change the state whenever
   useEffect(() => {
-    throttleVideosToShowPerRow();
-
     const handleVideosToShow = () => {
       throttleVideosToShowPerRow();
     };
 
     window.addEventListener('resize', handleVideosToShow);
-
     return () => window.removeEventListener('resize', handleVideosToShow);
   }, [throttleVideosToShowPerRow]);
 

@@ -1,5 +1,8 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { UseinfiniteScrollOptions } from '../helpers/youtubeVideoInterfaces.ts';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
+import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
 export interface CommentSnippet {
   authorDisplayName: string;
@@ -37,86 +40,35 @@ export interface CommentThread {
   };
 }
 
-/**
- * Represents the result of using YouTube comments functionality, including the list of comments,
- * loading state, error information, and functionality to fetch additional comments for a video.
- */
-interface UseYouTubeCommentsResult {
-  comments: CommentThread[];
+interface useYoutubeComments {
+  comments: CommentThread[] | [];
   commentsLoading: boolean;
-  commentsPageToken: string | null;
-  topLevelCount: number;
-  fetchComments: (videoId: string, pageToken?: string | null) => Promise<void>;
-  resetComments: () => void;
-  hasMore: boolean;
   commentsError: string | null;
 }
 
-
-export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTubeCommentsResult {
-  /**
-   * Represents the user's comments in a system or application.
-   * This variable stores the collection of comments made by a user.
-   * It is used to display or process user-generated feedback or remarks.
-   */
+export function useYoutubeComments(apiKey: string, maxResults: number, sentinelRef?: React.RefObject<Element>, options?: UseinfiniteScrollOptions): useYoutubeComments {
   const [comments, setComments] = useState<CommentThread[]>([]);
   const [topLevelCount, setTopLevelCount] = useState<number>(0);
-  /**
-   * A boolean variable indicating the loading state of comments.
-   * If true, the application is currently loading comments.
-   * If false, the comment loading process is complete or not initiated.
-   */
+
   const [commentsLoading, setCommentsLoading] = useState<boolean>(false);
-  /**
-   * Represents an error related to the handling, processing, or validation of comments.
-   */
+
   const [commentsError, setCommentsError] = useState<string | null>(null);
-  /**
-   * A token used for pagination in fetching comments.
-   * Represents a pointer to the current page of comments and is used to fetch the next page of results.
-   * Typically provided by APIs that paginate comment data.
-   * The value of this token changes as the user navigates through pages.
-   */
+
   const [commentsPageToken, setCommentsPageToken] = useState<string | null>(null);
 
-  /**
-   * Fetches and processes comment threads for a specific YouTube video using the YouTube Data API v3.
-   *
-   * @async
-   * @function fetchComments
-   * @param {string} videoId - The unique identifier of the YouTube video for which to retrieve comments.
-   * @param {string} [pageToken] - An optional pagination token for fetching the next page of comments.
-   * @returns {Promise<void>} A promise that resolves when the comment threads have been fetched and processed.
-   *
-   * This function retrieves comments using the provided video ID and stores the fetched comment threads
-   * in a state variable. If a page token is provided, it fetches the corresponding page of comment threads
-   * to facilitate pagination.
-   *
-   * Key function behaviors:
-   * - Prevents multiple requests by checking if comments are already loading.
-   * - Handles errors and sets an error state if an error occurs during fetching.
-   * - Updates the pagination token to allow loading additional pages.
-   * - Processes and maps raw comment thread data into a structured format for easier use.
-   *
-   * The comments include information such as:
-   * - Top-level comment details (text, author, metadata, etc.).
-   * - Replies and their associated metadata, if available.
-   *
-   * The function utilizes state updates to manage:
-   * - The loading state (`setCommentsLoading`).
-   * - Error information (`setCommentsError`).
-   * - Fetched comment threads (`setComments`).
-   * - The pagination token for subsequent requests (`setCommentsPageToken`).
-   */
+  const {
+    state: { isLoggedIn },
+  } = useUser();
+
+  const { selectedVideo } = useSelectedVideo();
 
   const fetchComments = async (videoId: string, pageToken?: string | null): Promise<void> => {
-    if (commentsLoading) return;
+    if (commentsLoading || topLevelCount >= 50) return;
 
     setCommentsLoading(true);
     setCommentsError(null);
 
     try {
-
       const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
       const response = await axios.get(url);
@@ -171,14 +123,12 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
       }));
 
       setComments((prevComments) => {
-        const newThreads = fetchedCommentThreads.filter(
-          (newThread) => !prevComments.some((thread) => thread.id === newThread.id),
-        );
+        const newThreads = fetchedCommentThreads.filter((newThread) => !prevComments.some((thread) => thread.id === newThread.id));
         const updatedTopLevelComments = [...prevComments, ...newThreads];
         setTopLevelCount(updatedTopLevelComments.length);
         return updatedTopLevelComments;
       });
-      setCommentsPageToken(data.nextPageToken || null);
+      setCommentsPageToken(data.nextPageToken ?? null);
     } catch (err) {
       setCommentsError(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
     } finally {
@@ -193,14 +143,46 @@ export function useYoutubeComments(apiKey: string, maxResults: number): UseYouTu
     setCommentsError(null);
   };
 
+  useEffect(() => {
+    if (!selectedVideo && !selectedVideo.id.videoId) return;
+
+    resetComments();
+    fetchComments(selectedVideo.id.videoId);
+  }, [selectedVideo?.id.videoId]);
+
+  useEffect(() => {
+    if (!sentinelRef?.current) return;
+
+    const node = sentinelRef.current;
+
+    if (!node || !selectedVideo || !commentsPageToken || commentsLoading || !isLoggedIn) return;
+
+    let observer: IntersectionObserver | null = null;
+
+    const handleIntersect = async ([entry]: IntersectionObserverEntry[]) => {
+      if (entry.isIntersecting) {
+        observer?.unobserve(node);
+        await fetchComments(selectedVideo.id.videoId, commentsPageToken);
+        observer?.observe(node);
+      }
+    };
+
+    observer = new IntersectionObserver(handleIntersect, {
+      root: options ? options.root : null,
+      rootMargin: options ? options.rootMargin : '',
+      threshold: options ? options.threshold : 0,
+    });
+
+    observer.observe(node);
+
+    return () => {
+      observer?.disconnect();
+    };
+  }, [commentsPageToken, isLoggedIn, selectedVideo.id.videoId, sentinelRef]);
+
   return {
     comments,
     commentsLoading,
     commentsError,
-    topLevelCount,
-    fetchComments,
-    hasMore: commentsPageToken !== null,
-    commentsPageToken,
-    resetComments,
   };
 }
