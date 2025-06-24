@@ -13,7 +13,7 @@ interface CommentsThreadsProps {
 
 export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, handleShowTopLevelReplies, showTopLevelReplies }) => {
   return (
-    <ul className="min-h-fit flex flex-col  space-y-10  ">
+    <ul className="min-h-fit h-fit w-full flex p-2 flex-col  space-y-10 ">
       {comments.map((thread) => (
         <li key={thread.id}>
           {/* top level comment */}

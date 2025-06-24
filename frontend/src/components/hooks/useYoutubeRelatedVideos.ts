@@ -76,6 +76,14 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     }
   };
 
+  useEffect(() => {
+    if (!selectedVideo) return;
+    const load = async () => {
+      await fetchRelatedVideos(selectedVideo.snippet.categoryId);
+    };
+    load()
+  }, [selectedVideo?.id.videoId]);
+
   return {
     relatedVideos,
     relatedVideosLoading,

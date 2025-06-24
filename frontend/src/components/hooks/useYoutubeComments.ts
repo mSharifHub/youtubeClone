@@ -140,6 +140,19 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
     setCommentsError(null);
   };
 
+  useEffect(() => {
+    if (!selectedVideo) return;
+    const load = async () => {
+      resetComments();
+      try {
+        if (selectedVideo.id.videoId) await fetchComments(selectedVideo?.id.videoId);
+      } catch (err) {
+        throw new Error(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
+      }
+    };
+    load();
+  }, [selectedVideo?.id.videoId]);
+
   return {
     comments,
     topLevelCount,
