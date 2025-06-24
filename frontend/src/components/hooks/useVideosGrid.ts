@@ -26,7 +26,7 @@ function getVideosPerRowFromWidth(props: VideoGridProps, width: number): number 
 }
 
 export const useVideoGrid = (props: VideoGridProps): number => {
-  const [videosPerRow, setVideosPerRow] = useState<number>(() => (typeof window !== 'undefined' ? getVideosPerRowFromWidth(props, window.innerWidth) : props.display_full ?? 1));
+  const [videosPerRow, setVideosPerRow] = useState<number>(() => (typeof window !== 'undefined' ? getVideosPerRowFromWidth(props, window.innerWidth) : (props.display_full ?? 1)));
 
   const determineVideosToShow = () => {
     setVideosPerRow(getVideosPerRowFromWidth(props, window.innerWidth));

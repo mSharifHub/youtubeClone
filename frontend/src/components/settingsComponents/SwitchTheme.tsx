@@ -49,9 +49,7 @@ export const SwitchTheme: React.FC = (): JSX.Element => {
             className="h-10 min-w-full flex justify-center items-center transition-colors duration-75 text-sm ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
           >
             <div className="relative w-full h-full flex justify-start items-center px-10">
-              {(action.label.split(' ').shift()?.toLowerCase() as Theme) === theme && (
-                <FontAwesomeIcon icon={faCheck} className=" absolute left-4  text-lg" />
-              )}
+              {(action.label.split(' ').shift()?.toLowerCase() as Theme) === theme && <FontAwesomeIcon icon={faCheck} className=" absolute left-4  text-lg" />}
               {action.label}
             </div>
           </div>

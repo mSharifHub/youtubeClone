@@ -25,7 +25,7 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     setRelatedVideosError(null);
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=10`;
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=10&q=trending`;
       const { data } = await axios.get(url);
 
       if (!data.items || data.items.length === 0) {
@@ -75,21 +75,6 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
       setRelatedVideosLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!selectedVideo) return;
-
-    const load = async () => {
-      const categoryId = selectedVideo.snippet.categoryId;
-
-      if (!categoryId) return;
-
-      setRelatedVideos([]);
-      await fetchRelatedVideos(categoryId);
-    };
-
-    load();
-  }, [selectedVideo.id.videoId]);
 
   return {
     relatedVideos,

@@ -1,7 +1,5 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { UseinfiniteScrollOptions } from '../helpers/youtubeVideoInterfaces.ts';
-import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
 export interface CommentSnippet {
@@ -42,11 +40,14 @@ export interface CommentThread {
 
 interface useYoutubeComments {
   comments: CommentThread[] | [];
+  fetchComments: (videoId: string, pageToken?: string | null) => Promise<void>;
   commentsLoading: boolean;
   commentsError: string | null;
+  commentsPageToken: string | null;
+  topLevelCount: number;
 }
 
-export function useYoutubeComments(apiKey: string, maxResults: number, sentinelRef?: React.RefObject<Element>, options?: UseinfiniteScrollOptions): useYoutubeComments {
+export function useYoutubeComments(apiKey: string, maxResults: number): useYoutubeComments {
   const [comments, setComments] = useState<CommentThread[]>([]);
   const [topLevelCount, setTopLevelCount] = useState<number>(0);
 
@@ -56,14 +57,10 @@ export function useYoutubeComments(apiKey: string, maxResults: number, sentinelR
 
   const [commentsPageToken, setCommentsPageToken] = useState<string | null>(null);
 
-  const {
-    state: { isLoggedIn },
-  } = useUser();
-
   const { selectedVideo } = useSelectedVideo();
 
   const fetchComments = async (videoId: string, pageToken?: string | null): Promise<void> => {
-    if (commentsLoading || topLevelCount >= 50) return;
+    if (commentsLoading) return;
 
     setCommentsLoading(true);
     setCommentsError(null);
@@ -143,46 +140,12 @@ export function useYoutubeComments(apiKey: string, maxResults: number, sentinelR
     setCommentsError(null);
   };
 
-  useEffect(() => {
-    if (!selectedVideo && !selectedVideo.id.videoId) return;
-
-    resetComments();
-    fetchComments(selectedVideo.id.videoId);
-  }, [selectedVideo?.id.videoId]);
-
-  useEffect(() => {
-    if (!sentinelRef?.current) return;
-
-    const node = sentinelRef.current;
-
-    if (!node || !selectedVideo || !commentsPageToken || commentsLoading || !isLoggedIn) return;
-
-    let observer: IntersectionObserver | null = null;
-
-    const handleIntersect = async ([entry]: IntersectionObserverEntry[]) => {
-      if (entry.isIntersecting) {
-        observer?.unobserve(node);
-        await fetchComments(selectedVideo.id.videoId, commentsPageToken);
-        observer?.observe(node);
-      }
-    };
-
-    observer = new IntersectionObserver(handleIntersect, {
-      root: options ? options.root : null,
-      rootMargin: options ? options.rootMargin : '',
-      threshold: options ? options.threshold : 0,
-    });
-
-    observer.observe(node);
-
-    return () => {
-      observer?.disconnect();
-    };
-  }, [commentsPageToken, isLoggedIn, selectedVideo.id.videoId, sentinelRef]);
-
   return {
     comments,
+    topLevelCount,
+    fetchComments,
     commentsLoading,
     commentsError,
+    commentsPageToken,
   };
 }

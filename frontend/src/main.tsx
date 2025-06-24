@@ -11,7 +11,6 @@ import { MenuBarProvider } from './contexts/menuBarContext/MenuBarProvider.tsx';
 import { SettingModalsProvider } from './contexts/SetttingsModalsContext/SettingModalsProvider.tsx';
 import { SelectedVideoProvider } from './contexts/selectedVideoContext/SelectedVideoProvider.tsx';
 
-
 Modal.setAppElement('#root');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

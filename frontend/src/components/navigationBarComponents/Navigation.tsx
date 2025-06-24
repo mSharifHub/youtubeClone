@@ -80,13 +80,8 @@ export default function NavigationBar() {
             className="h-[20px] w-[20px] p-2 flex justify-center items-center rounded-full  transition-transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700  cursor-pointer  "
           />
           {/* YouTube Icon to page redirect to home page */}
-          <div
-            onClick={() => (window.location.href = '/')}
-            title="Youtube Home"
-            className="flex justify-center items-center cursor-pointer space-x-1"
-          >
+          <div onClick={() => (window.location.href = '/')} title="Youtube Home" className="flex justify-center items-center cursor-pointer space-x-1">
             <img src={youtubeIconPath} alt={youtubeIconPath.split('/').pop()?.split('.')[0]} className="h-9 w-19  min-w-9" />
-
           </div>
         </div>
         {/*middle of the navigation bar e*/}
@@ -115,18 +110,13 @@ export default function NavigationBar() {
               {/* Add-video component content */}
               <div className="h-10 w-28  min-w-28  rounded-full transition-transform duration-150 ease-out  bg-neutral-100 hover:bg-neutral-200   dark:bg-neutral-800 dark:hover:bg-neutral-700  cursor-pointer ">
                 <div className=" h-full w-full flex justify-center  items-center space-x-2 transition-transform duration-75 ease-in-out  hover:scale-110 ">
-                  <FontAwesomeIcon icon={faPlus}  />
+                  <FontAwesomeIcon icon={faPlus} />
                   <h1 className="text-sm font-semibold">Create</h1>
                 </div>
               </div>
               {/* bell component content */}
               <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full transition-transform duration-150 ease-out  hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer ">
-                <img
-                  src={bellIconPath}
-                  title="Alerts"
-                  alt={videoIconPath.split('/').pop()?.split('.')[0]}
-                  className="min-w-6 min-h-6 w-6 h-6 dark:invert"
-                />
+                <img src={bellIconPath} title="Alerts" alt={videoIconPath.split('/').pop()?.split('.')[0]} className="min-w-6 min-h-6 w-6 h-6 dark:invert" />
               </div>
             </>
           ) : (
@@ -151,11 +141,7 @@ export default function NavigationBar() {
           <div onClick={() => (!isLoggedIn ? redirectGoogleAuth() : null)}>
             {user && user.profilePicture ? (
               <div onClick={(e) => handleShowSettingModal(e)} className="cursor-pointer relative" title="User Account">
-                <img
-                  src={user.profilePicture}
-                  alt={`${user.username}-profilePicture`}
-                  className="rounded-full min-h-8 min-w-8 w-8 h-8"
-                />
+                <img src={user.profilePicture} alt={`${user.username}-profilePicture`} className="rounded-full min-h-8 min-w-8 w-8 h-8" />
                 {/* Use component settings within the  html tag */}
                 {settingModalToggler && <SettingsModal isOpen={settingModalToggler} onClickOutside={handleCloseSettingModal} />}
                 {/* subModal component */}

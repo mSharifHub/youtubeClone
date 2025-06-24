@@ -56,30 +56,9 @@ export default function MenuBar() {
       {/* row-1*/}
 
       <section className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}>
-        <MenuComponent
-          customIconSrc={homeIconPath}
-          isPath={visited}
-          title="Home"
-          link="/"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          title="Shorts"
-          isPath={visited}
-          customIconSrc={shortsIconPath}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          title="Subscriptions"
-          isPath={visited}
-          customIconSrc={subscriptionIconPath}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={homeIconPath} isPath={visited} title="Home" link="/" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent title="Shorts" isPath={visited} customIconSrc={shortsIconPath} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent title="Subscriptions" isPath={visited} customIconSrc={subscriptionIconPath} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
       </section>
       {isLoggedIn ? (
         <>
@@ -97,65 +76,16 @@ export default function MenuBar() {
               onMouseLeave={mouseLeave}
             />
 
-            <MenuComponent
-              customIconSrc={yourChannelPath}
-              title="Your channel"
-              isPath={visited}
-              link="#"
-              hidden={toggler}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={historyIconPath}
-              title="History"
-              isPath={visited}
-              link="#"
-              hidden={toggler}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={playListPath}
-              title="Playlist"
-              isPath={visited}
-              link="#"
-              hidden={toggler}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={watchLaterPath}
-              title="Watch later"
-              isPath={visited}
-              link="#"
-              hidden={toggler}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
-            <MenuComponent
-              customIconSrc={thumbsUpIconPath}
-              title="Liked videos"
-              isPath={visited}
-              link="#"
-              hidden={toggler}
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
+            <MenuComponent customIconSrc={yourChannelPath} title="Your channel" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+            <MenuComponent customIconSrc={historyIconPath} title="History" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+            <MenuComponent customIconSrc={playListPath} title="Playlist" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+            <MenuComponent customIconSrc={watchLaterPath} title="Watch later" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+            <MenuComponent customIconSrc={thumbsUpIconPath} title="Liked videos" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
           </section>
           {/* row-3*/}
-          <section
-            className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  flex-initial w-[12rem] ' : 'w-16'}`}
-          >
+          <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4  flex-initial w-[12rem] ' : 'w-16'}`}>
             <h1 className="capitalize mx-4">subscriptions</h1>
-            <MenuComponent
-              customIconSrc={allSubscriptionIconPath}
-              title="Subscriptions"
-              isPath={visited}
-              link="#"
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
-            />
+            <MenuComponent customIconSrc={allSubscriptionIconPath} title="Subscriptions" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
           </section>
         </>
       ) : (
@@ -171,143 +101,27 @@ export default function MenuBar() {
       )}
 
       {/* row-4 Explore */}
-      <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
-      >
+      <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}>
         <h1 className="capitalize mx-4">explore</h1>
-        <MenuComponent
-          customIconSrc={trendingIconPath}
-          title="Trending"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={shoppingIconPath}
-          title="Shopping"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={musicIconPath}
-          isPath={visited}
-          title="Music"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={moviesIconPath}
-          title="Movies"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={liveIconPath}
-          title="Live"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={gamingIconPath}
-          isPath={visited}
-          title="Gaming"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={newsIconPath}
-          title="News"
-          link="#"
-          isPath={visited}
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={sportsIconPath}
-          title="Sports"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={coursesIconPath}
-          isPath={visited}
-          title="Courses"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={fashionBeautyIconPath}
-          isPath={visited}
-          title="Fashion"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={podcastIconPath}
-          isPath={visited}
-          title="Podcast"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={playableIconPath}
-          isPath={visited}
-          title="Playables"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+        <MenuComponent customIconSrc={trendingIconPath} title="Trending" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={shoppingIconPath} title="Shopping" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={musicIconPath} isPath={visited} title="Music" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={moviesIconPath} title="Movies" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={liveIconPath} title="Live" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={gamingIconPath} isPath={visited} title="Gaming" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={newsIconPath} title="News" link="#" isPath={visited} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={sportsIconPath} title="Sports" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={coursesIconPath} isPath={visited} title="Courses" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={fashionBeautyIconPath} isPath={visited} title="Fashion" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={podcastIconPath} isPath={visited} title="Podcast" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={playableIconPath} isPath={visited} title="Playables" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
       </section>
       {/* row-5 */}
-      <section
-        className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}
-      >
-        <MenuComponent
-          customIconSrc={settingsIconPath}
-          title="Settings"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={reportIconPath}
-          title="Report"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={helpIconPatch}
-          isPath={visited}
-          title="Help"
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
-        <MenuComponent
-          customIconSrc={sendFeedBackPath}
-          title="Feedback"
-          isPath={visited}
-          link="#"
-          onMouseEnter={mouseEnter}
-          onMouseLeave={mouseLeave}
-        />
+      <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}>
+        <MenuComponent customIconSrc={settingsIconPath} title="Settings" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={reportIconPath} title="Report" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={helpIconPatch} isPath={visited} title="Help" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent customIconSrc={sendFeedBackPath} title="Feedback" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
       </section>
       {/* row-6 */}
       <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'flex-initial w-[12rem] ' : 'w-16'}`}>

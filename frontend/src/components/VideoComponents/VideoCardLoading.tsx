@@ -1,7 +1,6 @@
 import React from 'react';
 
-
-export const VideoCardLoading= () => {
+export const VideoCardLoading = () => {
   return (
     <div className="flex flex-col animate-wave-opacity ">
       {/* skeleton for video thumbnails */}

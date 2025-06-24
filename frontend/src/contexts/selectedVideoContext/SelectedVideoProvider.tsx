@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Video } from '../../components/hooks/useYoutubeVideos.ts';
 import { SelectedVideoContext } from './SelectedVideoContext.ts';
+import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
 
 interface SelectedVideoProviderProps {
   children: React.ReactNode;

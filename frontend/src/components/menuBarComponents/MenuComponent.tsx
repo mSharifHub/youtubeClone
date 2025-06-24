@@ -13,17 +13,7 @@ interface MenuComponentProps {
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export default function MenuComponent({
-  customIconSrc,
-  title,
-  link,
-  reverse,
-  isOffCanvas,
-  hidden,
-  isPath,
-  onMouseEnter,
-  onMouseLeave,
-}: MenuComponentProps) {
+export default function MenuComponent({ customIconSrc, title, link, reverse, isOffCanvas, hidden, isPath, onMouseEnter, onMouseLeave }: MenuComponentProps) {
   const { state } = useMenuBar();
 
   const isVisited = isPath(title);
@@ -36,9 +26,7 @@ export default function MenuComponent({
         onMouseLeave={onMouseLeave}
       >
         <div className={` flex justify-center items-center ${reverse ? 'order-2' : null} dark:invert  `}>
-          {customIconSrc && (
-            <img src={customIconSrc} alt={`${title}-icon`} className=" min-h-[24px] min-w-[24px] h-[24px] w-[24px]" />
-          )}
+          {customIconSrc && <img src={customIconSrc} alt={`${title}-icon`} className=" min-h-[24px] min-w-[24px] h-[24px] w-[24px]" />}
         </div>
         <div
           className={` p-0.5 capitalize ${!state.toggler && !reverse ? 'mx-4' : null} ${state.toggler && !isOffCanvas ? 'text-[8.5px]' : 'text-sm'}  ${reverse && state.toggler && !isOffCanvas ? 'hidden' : 'flex'} `}

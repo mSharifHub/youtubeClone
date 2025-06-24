@@ -1,8 +1,4 @@
-export type ActionType =
-  | { type: 'HANDLE_MENU' }
-  | { type: 'SYSTEM_TOGGLE_MENU' }
-  | { type: 'USER_TOGGLE_MENU' }
-  | { type: 'RESET_STATE_TOGGLE_MENU' };
+export type ActionType = { type: 'HANDLE_MENU' } | { type: 'SYSTEM_TOGGLE_MENU' } | { type: 'USER_TOGGLE_MENU' } | { type: 'RESET_STATE_TOGGLE_MENU' };
 
 export interface MenuState {
   toggler: boolean;

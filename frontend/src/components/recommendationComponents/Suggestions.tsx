@@ -69,10 +69,7 @@ export default function Suggestions() {
             className={` ${isStart ? 'hidden' : null}  absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white  dark:from-darkTheme via-[rgba(255,255,255,0.5)]  to-transparent pointer-events-none z-10`}
           />
           {/* scroll area */}
-          <div
-            ref={scrollRef}
-            className="h-full  flex justify-start items-center space-x-4 overflow-x-auto scroll-smooth whitespace-nowrap no-scrollbar "
-          >
+          <div ref={scrollRef} className="h-full  flex justify-start items-center space-x-4 overflow-x-auto scroll-smooth whitespace-nowrap no-scrollbar ">
             {dummyData.map((item) => (
               <div onMouseEnter={(e) => mouseEnter(e, item.title)} onMouseLeave={mouseLeave} key={item.index}>
                 <RecommendationsFilter title={item.title} link={item.link} />
@@ -87,10 +84,7 @@ export default function Suggestions() {
         </div>
 
         {/* right arrow */}
-        <div
-          className={`h-10 w-10  flex ${isEnd ? 'visible' : 'invisible'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`}
-          title="scroll right"
-        >
+        <div className={`h-10 w-10  flex ${isEnd ? 'visible' : 'invisible'} justify-center items-center rounded-full hover:bg-neutral-200 cursor-pointer`} title="scroll right">
           <FontAwesomeIcon icon={faChevronRight} />
         </div>
       </section>

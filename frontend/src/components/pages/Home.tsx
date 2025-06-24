@@ -3,23 +3,24 @@ import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
-import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
-import Spinning from '../VideoComponents/Spinning.tsx';
+import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 
 export const Home: React.FC = () => {
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-
   const { videos, videosLoading,fetchVideos, videosNextPageToken,handleSelectedVideo, videosError } = useYoutubeVideos(apiKey, 10)
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
+
+  const {state:{isLoggedIn}} = useUser()
 
 
   const handleLoadVideos = async ()=>{
@@ -41,54 +42,54 @@ export const Home: React.FC = () => {
 
   }, []);
 
-
-  useEffect(() => {
-    fetchVideos({})
-  }, []);
-
   return(
-    <div ref={containerRef}
-      className="  h-screen overflow-y-scroll scroll-smooth  px-4 pt-6 ">
-      <ul className="grid grid-flow-row gap-4 "
-           style={{
-             gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-           }}
-      >
-        {
-        videos.slice(0,fullRowCount).map((video) => (
-           <li key={video.id.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
-          ))
-        }
-      </ul>
+    isLoggedIn ?
+        (
+          <div ref={containerRef} className="  h-screen overflow-y-scroll scroll-smooth  px-4 pt-6 ">
+              <ul className="grid grid-flow-row gap-4 "
+                  style={{
+                    gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
+                  }}
+              >
+                {
+                  videos.slice(0,fullRowCount).map((video) => (
+                    <li key={video.id.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
+                  ))
+                }
+              </ul>
 
-      <div  className="h-4" ref={sentinelRef}/>
+              <div  className="h-4" ref={sentinelRef}/>
 
-      {videosLoading && (
-        <>
-          <ul
-            className=" grid grid-flow-row gap-4"
-            style={{
-              gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-            }}
-          >
-            {Array.from({
-              length: videosPerRow * 2,
-            }).map((_, index) => (
-              <li key={`loading-${index}`}>
-                <VideoCardLoading  />
-              </li>
-            ))}
-          </ul>
-          <Spinning/>
-    </>
-  )}
+              {videosLoading && (
+                <>
+                  <ul
+                    className=" grid grid-flow-row gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {Array.from({
+                      length: videosPerRow * 2,
+                    }).map((_, index) => (
+                      <li key={`loading-${index}`}>
+                        <VideoCardLoading  />
+                      </li>
+                    ))}
+                  </ul>
+                  <SpinningCircle/>
+                </>
+              )}
 
-    </div>
-  )}
+            </div>
+        )
+      :
+      (
+        <div className=" h-screen  flex flex-col justify-start items-center ">
+          <NotLoggedInBanner/>
+        </div>
+      )
 
-
-
-
-
+  )
+}
 
 

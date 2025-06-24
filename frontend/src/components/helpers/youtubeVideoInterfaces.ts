@@ -50,5 +50,4 @@ export interface UseinfiniteScrollOptions {
   rootMargin?: string;
   threshold?: number;
   enabled?: boolean;
-
 }

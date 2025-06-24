@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Video } from '../../components/hooks/useYoutubeVideos.ts';
+import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
 
 interface VideoContextType {
   selectedVideo: Video | null;
@@ -9,7 +9,6 @@ interface VideoContextType {
 export const SelectedVideoContext = createContext<VideoContextType | undefined>(undefined);
 
 export const useSelectedVideo = (): VideoContextType => {
-
   const context = useContext(SelectedVideoContext);
 
   if (!context) {
