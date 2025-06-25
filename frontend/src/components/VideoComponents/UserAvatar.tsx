@@ -6,7 +6,6 @@ interface UseAvatarProps {
 }
 
 export const UserAvatar: React.FC<UseAvatarProps> = ({ imagerUrl, userName }) => {
-  console.log('function called');
 
   const [imageError, setImageError] = React.useState<boolean>(false);
 
@@ -17,7 +16,7 @@ export const UserAvatar: React.FC<UseAvatarProps> = ({ imagerUrl, userName }) =>
     return { r, g, b };
   }, []);
 
-  const userInitial: string = userName.charAt(0).toUpperCase();
+  const userInitial: string = userName.charAt(1).toUpperCase();
 
   if (imagerUrl && imagerUrl.trim() !== '' && !imageError) {
     return (
@@ -26,12 +25,7 @@ export const UserAvatar: React.FC<UseAvatarProps> = ({ imagerUrl, userName }) =>
         alt={userName}
         className=" min-h-12 min-w-12 h-12 w-12 flex justify-center items-center object-cover rounded-full "
         loading="lazy"
-        onError={(event) => {
-          (event.target as HTMLImageElement).style.display = 'none';
-          (event.target as HTMLImageElement).src = '';
-          (event.target as HTMLImageElement).alt = '';
-          setImageError(true);
-        }}
+        onError={() => setImageError(true)}
       />
     );
   }

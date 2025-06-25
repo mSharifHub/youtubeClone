@@ -1,9 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
 import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
 import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
@@ -47,17 +46,9 @@ export const VideoPlayer: React.FC = () => {
 
   const { handleSelectedVideo } = useYoutubeVideos(apiKey);
 
-  const { comments, commentsLoading, commentsPageToken, topLevelCount, fetchComments, commentsError } = useYoutubeComments(apiKey, 10);
-
-  const loadMoreComments = async () => {
-    if (!commentsPageToken || !selectedVideo) return;
-    await fetchComments(selectedVideo.id.videoId, commentsPageToken);
-  };
-
-  const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount);
+  const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
 
   const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
-
 
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">

@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
+import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
 export interface CommentSnippet {
   authorDisplayName: string;
@@ -40,11 +41,11 @@ export interface CommentThread {
 
 interface useYoutubeComments {
   comments: CommentThread[] | [];
-  fetchComments: (videoId: string, pageToken?: string | null) => Promise<void>;
   commentsLoading: boolean;
   commentsError: string | null;
   commentsPageToken: string | null;
   topLevelCount: number;
+  sentinelRef: RefObject<HTMLDivElement>;
 }
 
 export function useYoutubeComments(apiKey: string, maxResults: number): useYoutubeComments {
@@ -136,12 +137,19 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
     [apiKey],
   );
 
+  const loadMoreComments = async () => {
+    if (!commentsPageToken || !selectedVideo) return;
+    await fetchComments(selectedVideo.id.videoId, commentsPageToken);
+  };
+
   const resetComments = () => {
     setComments([]);
     setTopLevelCount(0);
     setCommentsPageToken(null);
     setCommentsError(null);
   };
+
+  const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount);
 
   useEffect(() => {
     if (!selectedVideo) return;
@@ -159,9 +167,9 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
   return {
     comments,
     topLevelCount,
-    fetchComments,
     commentsLoading,
     commentsError,
     commentsPageToken,
+    sentinelRef,
   };
 }

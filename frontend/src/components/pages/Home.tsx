@@ -5,16 +5,17 @@ import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
-
+import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 export const Home: React.FC = () => {
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-  const { videos, videosLoading,fetchVideos, videosNextPageToken,handleSelectedVideo } = useYoutubeVideos(apiKey, 10)
+  const { videos, videosLoading,sentinelRef} = useYoutubeVideos(apiKey, 10)
+
+  const handleSelectedVideo = useHandleSelectedVideo()
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -22,10 +23,6 @@ export const Home: React.FC = () => {
 
   const {state:{isLoggedIn}} = useUser()
 
-
-  const handleLoadVideos = async ()=>{if(videosNextPageToken) {await fetchVideos({pageToken:videosNextPageToken})}}
-
-  const sentinelRef = useIntersectionObserver(handleLoadVideos,videosLoading,videos.length)
 
   useEffect(() => {
     if (containerRef.current) {

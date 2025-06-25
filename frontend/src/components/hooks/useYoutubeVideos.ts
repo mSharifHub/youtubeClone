@@ -1,20 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Video } from '../helpers/youtubeVideoInterfaces.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
+import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
   videosError: string | null;
-  handleSelectedVideo: (video:Video) => void;
   videos: Video[]
-  videosNextPageToken: string | null;
-  fetchVideos: (options: { pageToken?: string; query?: string }) =>  Promise<void>;
+  sentinelRef: React.RefObject<HTMLDivElement>
 }
 
 export default function useYoutubeVideos(
@@ -27,9 +24,8 @@ export default function useYoutubeVideos(
   const [videosError, setVideosError] = useState<string | null>(null);
   const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
 
-  const {setSelectedVideo} = useSelectedVideo()
-  const navigate = useNavigate();
   const { state: { isLoggedIn } } = useUser();
+
 
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
@@ -108,12 +104,13 @@ export default function useYoutubeVideos(
     }
   },[apiKey])
 
-  const handleSelectedVideo = useCallback((video: Video) => {
-    const videoId = video.id.videoId;
-    if (!videoId) return;
-    setSelectedVideo(video);
-    navigate(`/watch/${videoId}`);
-  }, [navigate]);
+  const loadMoreVideos = async () => {
+    if (!videosNextPageToken) return;
+    await fetchVideos({pageToken:videosNextPageToken})
+  }
+
+
+  const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length)
 
 
   useEffect(() => {
@@ -136,9 +133,7 @@ export default function useYoutubeVideos(
   return {
     videos,
     videosLoading,
-    videosNextPageToken,
     videosError,
-    fetchVideos,
-    handleSelectedVideo,
+    sentinelRef,
   };
 }
