@@ -14,7 +14,7 @@ export const Home: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-  const { videos, videosLoading,fetchVideos, videosNextPageToken,handleSelectedVideo, videosError } = useYoutubeVideos(apiKey, 10)
+  const { videos, videosLoading,fetchVideos, videosNextPageToken,handleSelectedVideo } = useYoutubeVideos(apiKey, 10)
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,23 +23,17 @@ export const Home: React.FC = () => {
   const {state:{isLoggedIn}} = useUser()
 
 
-  const handleLoadVideos = async ()=>{
-    if(videosNextPageToken){
-      await fetchVideos({pageToken:videosNextPageToken})
-    }
-  }
+  const handleLoadVideos = async ()=>{if(videosNextPageToken) {await fetchVideos({pageToken:videosNextPageToken})}}
 
   const sentinelRef = useIntersectionObserver(handleLoadVideos,videosLoading,videos.length)
 
   useEffect(() => {
-
     if (containerRef.current) {
       containerRef.current.scrollTo({
         top: 0,
         behavior: 'smooth',
       });
     }
-
   }, []);
 
   return(
@@ -58,7 +52,8 @@ export const Home: React.FC = () => {
                 }
               </ul>
 
-              <div  className="h-4" ref={sentinelRef}/>
+            {/*Sentinel Observer*/}
+              <div className="h-4" ref={sentinelRef}/>
 
               {videosLoading && (
                 <>
@@ -79,7 +74,6 @@ export const Home: React.FC = () => {
                   <SpinningCircle/>
                 </>
               )}
-
             </div>
         )
       :

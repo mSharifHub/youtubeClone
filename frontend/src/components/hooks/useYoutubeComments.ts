@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 
 export interface CommentSnippet {
@@ -59,79 +59,82 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
 
   const { selectedVideo } = useSelectedVideo();
 
-  const fetchComments = async (videoId: string, pageToken?: string | null): Promise<void> => {
-    if (commentsLoading) return;
+  const fetchComments = useCallback(
+    async (videoId: string, pageToken?: string | null): Promise<void> => {
+      if (commentsLoading) return;
 
-    setCommentsLoading(true);
-    setCommentsError(null);
+      setCommentsLoading(true);
+      setCommentsError(null);
 
-    try {
-      const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
+      try {
+        const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
-      const response = await axios.get(url);
+        const response = await axios.get(url);
 
-      if (!response.data.items || response.data.items.length === 0) return;
+        if (!response.data.items || response.data.items.length === 0) return;
 
-      const data = response.data;
+        const data = response.data;
 
-      const fetchedCommentThreads: CommentThread[] = data.items.map((item: any) => ({
-        id: item.id,
-        snippet: {
-          videoId: item.snippet.videoId,
-          topLevelComment: {
-            id: item.snippet.topLevelComment.id,
-            snippet: {
-              authorDisplayName: item.snippet.topLevelComment.snippet.authorDisplayName,
-              authorProfileImageUrl: item.snippet.topLevelComment.snippet.authorProfileImageUrl,
-              authorChannelUrl: item.snippet.topLevelComment.snippet.authorChannelUrl,
-              authorChannelId: item.snippet.topLevelComment.snippet.authorChannelId,
-              channelId: item.snippet.topLevelComment.snippet.channelId,
-              textDisplay: item.snippet.topLevelComment.snippet.textDisplay,
-              textOriginal: item.snippet.topLevelComment.snippet.textOriginal,
-              parentId: item.snippet.topLevelComment.snippet.parentId,
-              canRate: item.snippet.topLevelComment.snippet.canRate,
-              viewerRating: item.snippet.topLevelComment.snippet.viewerRating,
-              likeCount: item.snippet.topLevelComment.snippet.likeCount,
-              publishedAt: item.snippet.topLevelComment.snippet.publishedAt,
-              updatedAt: item.snippet.topLevelComment.snippet.updatedAt,
+        const fetchedCommentThreads: CommentThread[] = data.items.map((item: any) => ({
+          id: item.id,
+          snippet: {
+            videoId: item.snippet.videoId,
+            topLevelComment: {
+              id: item.snippet.topLevelComment.id,
+              snippet: {
+                authorDisplayName: item.snippet.topLevelComment.snippet.authorDisplayName,
+                authorProfileImageUrl: item.snippet.topLevelComment.snippet.authorProfileImageUrl ?? '',
+                authorChannelUrl: item.snippet.topLevelComment.snippet.authorChannelUrl,
+                authorChannelId: item.snippet.topLevelComment.snippet.authorChannelId,
+                channelId: item.snippet.topLevelComment.snippet.channelId,
+                textDisplay: item.snippet.topLevelComment.snippet.textDisplay,
+                textOriginal: item.snippet.topLevelComment.snippet.textOriginal,
+                parentId: item.snippet.topLevelComment.snippet.parentId,
+                canRate: item.snippet.topLevelComment.snippet.canRate,
+                viewerRating: item.snippet.topLevelComment.snippet.viewerRating,
+                likeCount: item.snippet.topLevelComment.snippet.likeCount,
+                publishedAt: item.snippet.topLevelComment.snippet.publishedAt,
+                updatedAt: item.snippet.topLevelComment.snippet.updatedAt,
+              },
             },
+            canReply: item.snippet.canReply,
+            totalReplyCount: item.snippet.totalReplyCount,
+            isPublic: item.snippet.isPublic,
           },
-          canReply: item.snippet.canReply,
-          totalReplyCount: item.snippet.totalReplyCount,
-          isPublic: item.snippet.isPublic,
-        },
-        replies: item.replies
-          ? {
-              comments: item.replies.comments.map((reply: any) => ({
-                authorDisplayName: reply.snippet.authorDisplayName,
-                authorProfileImageUrl: reply.snippet.authorProfileImageUrl,
-                authorChannelUrl: reply.snippet.authorChannelUrl,
-                authorChannelId: reply.snippet.authorChannelId,
-                channelId: reply.snippet.channelId,
-                textDisplay: reply.snippet.textDisplay,
-                textOriginal: reply.snippet.textOriginal,
-                parentId: reply.snippet.parentId,
-                canRate: reply.snippet.canRate,
-                viewerRating: reply.snippet.viewerRating,
-                likeCount: reply.snippet.likeCount,
-              })),
-            }
-          : undefined,
-      }));
+          replies: item.replies
+            ? {
+                comments: item.replies.comments.map((reply: any) => ({
+                  authorDisplayName: reply.snippet.authorDisplayName,
+                  authorProfileImageUrl: reply.snippet.authorProfileImageUrl,
+                  authorChannelUrl: reply.snippet.authorChannelUrl,
+                  authorChannelId: reply.snippet.authorChannelId,
+                  channelId: reply.snippet.channelId,
+                  textDisplay: reply.snippet.textDisplay,
+                  textOriginal: reply.snippet.textOriginal,
+                  parentId: reply.snippet.parentId,
+                  canRate: reply.snippet.canRate,
+                  viewerRating: reply.snippet.viewerRating,
+                  likeCount: reply.snippet.likeCount,
+                })),
+              }
+            : undefined,
+        }));
 
-      setComments((prevComments) => {
-        const newThreads = fetchedCommentThreads.filter((newThread) => !prevComments.some((thread) => thread.id === newThread.id));
-        const updatedTopLevelComments = [...prevComments, ...newThreads];
-        setTopLevelCount(updatedTopLevelComments.length);
-        return updatedTopLevelComments;
-      });
-      setCommentsPageToken(data.nextPageToken ?? null);
-    } catch (err) {
-      setCommentsError(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
-    } finally {
-      setCommentsLoading(false);
-    }
-  };
+        setComments((prevComments) => {
+          const newThreads = fetchedCommentThreads.filter((newThread) => !prevComments.some((thread) => thread.id === newThread.id));
+          const updatedTopLevelComments = [...prevComments, ...newThreads];
+          setTopLevelCount(updatedTopLevelComments.length);
+          return updatedTopLevelComments;
+        });
+        setCommentsPageToken(data.nextPageToken ?? null);
+      } catch (err) {
+        setCommentsError(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
+      } finally {
+        setCommentsLoading(false);
+      }
+    },
+    [apiKey],
+  );
 
   const resetComments = () => {
     setComments([]);
@@ -151,7 +154,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
       }
     };
     load();
-  }, [selectedVideo?.id.videoId]);
+  }, [fetchComments, selectedVideo]);
 
   return {
     comments,

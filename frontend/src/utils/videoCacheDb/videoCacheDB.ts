@@ -1,7 +1,13 @@
 import { openDB } from 'idb';
+import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
 
 const DB_NAME = 'videoCacheDB';
 const STORE_NAME = 'videos';
+
+interface VideoCacheDB {
+  videos: Video[] | any[];
+  nextPageToken?: string | null;
+}
 
 export const initVideoDB = async () => {
   return openDB(DB_NAME, 1, {
@@ -13,12 +19,12 @@ export const initVideoDB = async () => {
   });
 };
 
-export const saveToDB = async (key: string, value: Video[]) => {
+export const saveToDB = async (key: string, value: VideoCacheDB) => {
   const db = await initVideoDB();
   await db.put(STORE_NAME, { key, value });
 };
 
-export const loadFromDB = async (key: string): Promise<Video[]> => {
+export const loadFromDB = async (key: string): Promise<VideoCacheDB> => {
   const db = await initVideoDB();
   const record = await db.get(STORE_NAME, key);
   return record?.value || [];

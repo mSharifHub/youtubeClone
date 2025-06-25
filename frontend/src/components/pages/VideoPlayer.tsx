@@ -58,10 +58,11 @@ export const VideoPlayer: React.FC = () => {
 
   const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
 
+
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">
       {/* Main Row: player/comments + related */}
-      <div className="w-full flex flex-row  gap-16  p-4">
+      <div className="w-full flex flex-row  gap-10  p-4">
         {/* column-1*/}
         <div className="w-full flex-1  gap-4 ">
           {/* video Player and video information*/}

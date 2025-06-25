@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
-import { fetchVideoStatistics } from '../helpers/fetchVideoStatistics.ts';
-import { fetchChannelDetails } from '../helpers/fetchChannelDetails.ts';
-import {Video } from '../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../helpers/youtubeVideoInterfaces.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
-
+import { fetchVideoStatistics } from '../helpers/fetchVideoStatistics.ts';
+import { fetchChannelDetails } from '../helpers/fetchChannelDetails.ts';
+import axios from 'axios';
 
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
@@ -32,8 +31,10 @@ export default function useYoutubeVideos(
   const navigate = useNavigate();
   const { state: { isLoggedIn } } = useUser();
 
-  const fetchVideos = async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
-    if (videosLoading || videos.length >= 50) return;
+
+  const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
+
+    if (videosLoading) return;
 
     setVideosLoading(true);
     setVideosError(null);
@@ -46,6 +47,7 @@ export default function useYoutubeVideos(
       if (!response.data.items || response.data.items.length === 0) {
         setVideosError(response.statusText);
         setVideos([])
+        setVideosNextPageToken(null)
         setVideosLoading(false)
         return
       }
@@ -84,17 +86,19 @@ export default function useYoutubeVideos(
           },
         }))
 
-        let updated:Video[] = []
-
-        setVideos( (previous)=>{
-          const newVideos = videos.filter(video=> !previous.some(v=>v.id.videoId === video.id.videoId ))
-          if ( newVideos.length === 0) return previous
-          const  updatedList = [...previous, ...newVideos]
-          updated = [...updatedList]
-          return updatedList
+      setVideos ((previous)=>{
+        const existingIds = new Set(previous.map(v=>v.id.videoId))
+        const newVideos = videos.filter(video=> !existingIds.has(video.id.videoId))
+        if ( newVideos.length === 0) return previous
+        const updatedList = [...previous,...newVideos]
+        const updated = [...updatedList]
+        saveToDB("homeVideosScroll",{
+          videos: updated,
+          nextPageToken:response.data.nextPageToken ?? null,
         })
+        return updatedList
+      })
 
-        await saveToDB("homeVideosScroll",updated)
 
     } catch (err) {
       setVideosError(err instanceof Error ? err.message : 'An error occurred');
@@ -102,32 +106,32 @@ export default function useYoutubeVideos(
 
       setVideosLoading(false);
     }
-  }
+  },[apiKey])
 
   const handleSelectedVideo = useCallback((video: Video) => {
     const videoId = video.id.videoId;
     if (!videoId) return;
-
     setSelectedVideo(video);
     navigate(`/watch/${videoId}`);
-
-  }, [navigate, setSelectedVideo]);
+  }, [navigate]);
 
 
   useEffect(() => {
     const loadVideos = async ()=>{
       if (isLoggedIn) {
         const videosCache = await  loadFromDB("homeVideosScroll")
-        if (videosCache && videosCache.length > 0) {
-          setVideos(videosCache)
+        if (videosCache && videosCache.videos && videosCache.videos.length > 0) {
+          setVideos(videosCache.videos)
+          setVideosNextPageToken(videosCache.nextPageToken ?? null)
           return
         }
-        await fetchVideos({})
+          await fetchVideos({})
       }
     }
     loadVideos()
 
-  }, [isLoggedIn]);
+  }, [fetchVideos, isLoggedIn,]);
+
 
   return {
     videos,

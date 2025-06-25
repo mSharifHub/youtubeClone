@@ -1,10 +1,9 @@
 import { UseinfiniteScrollOptions } from '../helpers/youtubeVideoInterfaces.ts';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
-export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, limit: number, options?: UseinfiniteScrollOptions) => {
+export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, dataLength: number, limit: number = 50, options?: UseinfiniteScrollOptions) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -12,10 +11,10 @@ export const useIntersectionObserver = (callBack: () => Promise<void>, loading: 
     observerRef.current = new IntersectionObserver(
       async (entries) => {
         const target = entries[0];
-        if (target.isIntersecting && limit < 50 && !loading) {
+        if (dataLength >= limit) return;
+        if (target.isIntersecting && !loading) {
           if (sentinelRef.current) {
             observerRef.current?.unobserve(sentinelRef.current);
-            setCount((prev) => prev + 1);
             await callBack();
           }
         }
@@ -32,11 +31,7 @@ export const useIntersectionObserver = (callBack: () => Promise<void>, loading: 
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [callBack, loading, options, limit]);
-  useEffect(() => {
-    if (count === 0) return;
-    console.log(count);
-  }, [count]);
+  }, [callBack, options]);
 
   return sentinelRef;
 };

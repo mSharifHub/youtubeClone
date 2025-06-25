@@ -4,6 +4,7 @@ import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { CommentThread } from '../hooks/useYoutubeComments.ts';
+import { UserAvatar } from './UserAvatar.tsx';
 
 interface CommentsThreadsProps {
   comments: CommentThread[];
@@ -13,7 +14,7 @@ interface CommentsThreadsProps {
 
 export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, handleShowTopLevelReplies, showTopLevelReplies }) => {
   return (
-    <ul className="min-h-fit h-fit w-full flex p-2 flex-col  space-y-10 ">
+    <ul className="min-h-fit h-fit w-full flex p-4 flex-col  space-y-10 ">
       {comments.map((thread) => (
         <li key={thread.id}>
           {/* top level comment */}
@@ -21,12 +22,7 @@ export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, hand
             {/*Logo*/}
             <div className="flex justify-start p-2  ">
               <div className="flex flex-row space-x-2">
-                <img
-                  src={thread.snippet.topLevelComment.snippet.authorProfileImageUrl}
-                  alt=""
-                  className=" min-h-12 min-w-12 h-12 w-12 flex justify-center items-center object-cover rounded-full"
-                  loading="lazy"
-                />
+                <UserAvatar imagerUrl={thread.snippet.topLevelComment.snippet.authorProfileImageUrl} userName={thread.snippet.topLevelComment.snippet.authorDisplayName} />
               </div>
             </div>
             <div className=" w-full flex flex-col  space-y-2  ">
@@ -65,7 +61,7 @@ export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, hand
                   {thread.replies?.comments.map((reply, index) => (
                     <li key={index} className="flex flex-row space-x-4">
                       <div className="flex justify-start p-2">
-                        <img src={reply.authorProfileImageUrl} className=" min-h-8 min-w-8 h-8 w-8 rounded-full" loading="lazy" />
+                        <UserAvatar imagerUrl={reply.authorProfileImageUrl} userName={reply.authorDisplayName} />
                       </div>
                       <div className="flex flex-col">
                         <strong>{reply.authorDisplayName}</strong>
