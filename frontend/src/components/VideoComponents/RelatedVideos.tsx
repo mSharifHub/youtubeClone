@@ -13,7 +13,7 @@ interface RelatedVideosProps {
 export const RelatedVideos: React.FC<RelatedVideosProps> = ({ relatedVideos, relatedVideosLoading, handleSelectedVideo, relatedVideosError }) => {
   return (
     <>
-      {relatedVideosLoading || relatedVideos.length === 0 ? (
+      {relatedVideosLoading ? (
         <div className="w-full space-y-10">
           {Array.from({
             length: 5,
@@ -21,6 +21,8 @@ export const RelatedVideos: React.FC<RelatedVideosProps> = ({ relatedVideos, rel
             <VideoCardLoading key={`loading-${index}`} />
           ))}
         </div>
+      ) : relatedVideosError ? (
+        <div className="flex justify-center items-center font-bold">{relatedVideosError}</div>
       ) : (
         relatedVideos.map((video) => (
           <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
@@ -28,7 +30,6 @@ export const RelatedVideos: React.FC<RelatedVideosProps> = ({ relatedVideos, rel
           </div>
         ))
       )}
-      {relatedVideosError && <div>{relatedVideosError}</div>}
     </>
   );
 };

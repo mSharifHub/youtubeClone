@@ -5,7 +5,6 @@ import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
 export interface CommentSnippet {
   authorDisplayName: string;
-  authorProfileImageUrl?: string;
   authorChannelUrl?: string;
   authorChannelId?: {
     value: string;
@@ -60,6 +59,8 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
 
   const { selectedVideo } = useSelectedVideo();
 
+  const MAX_LIMIT = 50;
+
   const fetchComments = useCallback(
     async (videoId: string, pageToken?: string | null): Promise<void> => {
       if (commentsLoading) return;
@@ -84,7 +85,6 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
               id: item.snippet.topLevelComment.id,
               snippet: {
                 authorDisplayName: item.snippet.topLevelComment.snippet.authorDisplayName,
-                authorProfileImageUrl: item.snippet.topLevelComment.snippet.authorProfileImageUrl ?? '',
                 authorChannelUrl: item.snippet.topLevelComment.snippet.authorChannelUrl,
                 authorChannelId: item.snippet.topLevelComment.snippet.authorChannelId,
                 channelId: item.snippet.topLevelComment.snippet.channelId,
@@ -106,7 +106,6 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
             ? {
                 comments: item.replies.comments.map((reply: any) => ({
                   authorDisplayName: reply.snippet.authorDisplayName,
-                  authorProfileImageUrl: reply.snippet.authorProfileImageUrl,
                   authorChannelUrl: reply.snippet.authorChannelUrl,
                   authorChannelId: reply.snippet.authorChannelId,
                   channelId: reply.snippet.channelId,
@@ -129,7 +128,8 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
         });
         setCommentsPageToken(data.nextPageToken ?? null);
       } catch (err) {
-        setCommentsError(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
+        setCommentsError(err instanceof Error ? err.message : '');
+        throw new Error(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
       } finally {
         setCommentsLoading(false);
       }
@@ -149,7 +149,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
     setCommentsError(null);
   };
 
-  const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount);
+  const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount, MAX_LIMIT);
 
   useEffect(() => {
     if (!selectedVideo) return;
@@ -162,7 +162,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
       }
     };
     load();
-  }, [fetchComments, selectedVideo]);
+  }, [selectedVideo]);
 
   return {
     comments,

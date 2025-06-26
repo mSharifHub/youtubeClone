@@ -27,7 +27,8 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
 
       try {
         const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=10&q=trending&regionCode=US`;
-        const { data } = await axios.get(url);
+        const response = await axios.get(url);
+        const { data } = response;
 
         if (!data.items || data.items.length === 0) {
           setRelatedVideos([]);
@@ -70,9 +71,8 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
           const newVideos = fetchedVideoData.filter((video) => !existingIds.has(video.id.videoId));
           return [...previous, ...newVideos];
         });
-
-
       } catch (error) {
+        setRelatedVideosError(error instanceof Error ? error.message : 'An error occurred while fetching related videos');
         throw new Error(error instanceof Error ? error.message : 'An error occurred while fetching related videos');
       } finally {
         setRelatedVideosLoading(false);
@@ -81,14 +81,14 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     [selectedVideo],
   );
 
-  useEffect(() => {
-    if (!selectedVideo) return;
-    const load = async () => {
-      setRelatedVideos([]);
-      await fetchRelatedVideos(selectedVideo.snippet.categoryId);
-    };
-    load();
-  }, [fetchRelatedVideos, selectedVideo]);
+  // useEffect(() => {
+  //   if (!selectedVideo) return;
+  //   const load = async () => {
+  //     setRelatedVideos([]);
+  //     await fetchRelatedVideos(selectedVideo.snippet.categoryId);
+  //   };
+  //   load();
+  // }, [fetchRelatedVideos, selectedVideo]);
 
   return {
     relatedVideos,

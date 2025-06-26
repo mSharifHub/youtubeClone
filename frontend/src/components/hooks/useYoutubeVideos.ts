@@ -26,6 +26,7 @@ export default function useYoutubeVideos(
 
   const { state: { isLoggedIn } } = useUser();
 
+   const MAX_LIMIT:  number = 50
 
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
@@ -109,9 +110,7 @@ export default function useYoutubeVideos(
     await fetchVideos({pageToken:videosNextPageToken})
   }
 
-
-  const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length)
-
+  const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
 
   useEffect(() => {
     const loadVideos = async ()=>{

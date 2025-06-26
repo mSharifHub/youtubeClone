@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import MainLayout from './components/layouts/MainLayout.tsx';
 import { Home } from './components/pages/Home.tsx';
 import NotFound from './components/pages/NotFound.tsx';
@@ -10,17 +10,13 @@ config.autoAddCss = false;
 function App() {
   return (
     <>
-      <div>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route path="/watch/:videoId" element={<VideoPlayer />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="watch" element={<VideoPlayer />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </>
   );
 }

@@ -10,23 +10,26 @@ import { ThemeProvider } from './contexts/darkModeContext/ThemeProvider.tsx';
 import { MenuBarProvider } from './contexts/menuBarContext/MenuBarProvider.tsx';
 import { SettingModalsProvider } from './contexts/SetttingsModalsContext/SettingModalsProvider.tsx';
 import { SelectedVideoProvider } from './contexts/selectedVideoContext/SelectedVideoProvider.tsx';
+import { BrowserRouter } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <ApolloProvider client={client}>
-      <UserProvider>
-        <SelectedVideoProvider>
-          <ThemeProvider>
-            <MenuBarProvider>
-              <SettingModalsProvider>
-                <App />
-              </SettingModalsProvider>
-            </MenuBarProvider>
-          </ThemeProvider>
-        </SelectedVideoProvider>
-      </UserProvider>
+      <BrowserRouter>
+        <UserProvider>
+          <SelectedVideoProvider apiKey={import.meta.env.VITE_YOUTUBE_API_3}>
+            <ThemeProvider>
+              <MenuBarProvider>
+                <SettingModalsProvider>
+                  <App />
+                </SettingModalsProvider>
+              </MenuBarProvider>
+            </ThemeProvider>
+          </SelectedVideoProvider>
+        </UserProvider>
+      </BrowserRouter>
     </ApolloProvider>
   </GoogleOAuthProvider>,
 );

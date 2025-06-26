@@ -1,23 +1,18 @@
-import React, {useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
-import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
-import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
 import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
 import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
+import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 
 export const VideoPlayer: React.FC = () => {
-  const { selectedVideo } = useSelectedVideo();
-
+  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const playerRef = useRef<YouTubePlayer | null>(null);
-
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
-
-  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -44,7 +39,7 @@ export const VideoPlayer: React.FC = () => {
 
   const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
 
-  const { handleSelectedVideo } = useYoutubeVideos(apiKey);
+  const handleSelectedVideo = useHandleSelectedVideo();
 
   const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
 
@@ -65,7 +60,7 @@ export const VideoPlayer: React.FC = () => {
             expandVideoDescription={expandVideoDescription}
           />
           {/* comments section */}
-          <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} />
+          <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />
 
           {/*/ sentinel observer */}
           <div ref={sentinelRef} className="h-2  w-full" />
