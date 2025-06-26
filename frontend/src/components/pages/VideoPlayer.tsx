@@ -37,8 +37,6 @@ export const VideoPlayer: React.FC = () => {
     playerRef.current = event.target;
   };
 
-  const YoutubeComponent = YouTube as YouTubeProps as React.FC<YouTubeProps>;
-
   const handleSelectedVideo = useHandleSelectedVideo();
 
   const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
@@ -53,7 +51,7 @@ export const VideoPlayer: React.FC = () => {
         <div className="w-full flex-1  gap-4 ">
           {/* video Player and video information*/}
           <VideoCardPlayer
-            YoutubeComponent={YoutubeComponent}
+            YoutubeComponent={YouTube}
             opts={opts}
             onReady={onReady}
             handleExpandVideoDescription={handleExpandVideoDescription}
@@ -67,7 +65,6 @@ export const VideoPlayer: React.FC = () => {
 
           {/* SpinningCircle Circle*/}
           {commentsLoading && <SpinningCircle />}
-          {commentsError && <div>{commentsError}</div>}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">

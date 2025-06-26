@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SelectedVideoContext } from './SelectedVideoContext.ts';
 import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigationType, useSearchParams } from 'react-router-dom';
 import { fetchVideo } from '../../components/helpers/FetchVideo.ts';
 
 interface SelectedVideoProviderProps {
@@ -13,18 +13,23 @@ export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ ap
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const videoId = searchParams.get('v');
+  const navigationType = useNavigationType();
 
-    const reloadSelectedVideo = async () => {
-      if (!selectedVideo && videoId) {
-        console.log('fetching video on provider');
+  useEffect(() => {
+    const syncSelectedVideos = async () => {
+      const videoId = searchParams.get('v');
+
+      if (!videoId) return;
+
+      if (navigationType === 'POP') {
         const video = await fetchVideo(videoId, apiKey);
-        if (video) setSelectedVideo(video);
+        if (!video) return;
+        setSelectedVideo(video);
       }
     };
-    reloadSelectedVideo();
-  }, [apiKey, searchParams, selectedVideo]);
+    syncSelectedVideos()
+  }, [apiKey, navigationType, searchParams]);
+
 
   return <SelectedVideoContext.Provider value={{ selectedVideo, setSelectedVideo }}>{children}</SelectedVideoContext.Provider>;
 };

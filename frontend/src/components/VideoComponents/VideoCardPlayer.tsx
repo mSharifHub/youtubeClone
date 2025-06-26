@@ -1,6 +1,5 @@
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
-import { YouTubeProps } from 'react-youtube';
-import React from 'react';
+import YouTube, { YouTubeProps } from 'react-youtube';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { formatNumber } from '../helpers/formatNumber.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +13,7 @@ export default function VideoCardPlayer({
   handleExpandVideoDescription,
   expandVideoDescription,
 }: {
-  YoutubeComponent: React.ComponentType<YouTubeProps>;
+  YoutubeComponent: typeof YouTube;
   opts: YouTubeProps['opts'];
   onReady: YouTubeProps['onReady'];
   handleExpandVideoDescription: () => void;
@@ -25,7 +24,11 @@ export default function VideoCardPlayer({
   return (
     <div className="min-h-fit h-fit w-full flex flex-col justify-start items-start gap-8   rounded-lg">
       <div className="relative flex  flex-none w-full  min-h-[250px]   aspect-video ">
-        <YoutubeComponent videoId={selectedVideo?.id.videoId} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
+        {selectedVideo ? (
+          <YoutubeComponent videoId={selectedVideo.id.videoId} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
+        ) : (
+          <div className="h-full  w-full bg-neutral-200 dark:dark-modal  animate-wave-opacity rounded-lg" />
+        )}
       </div>
       {!selectedVideo ? (
         <div className="flex flex-col w-full gap-10">

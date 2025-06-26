@@ -156,7 +156,8 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
     const load = async () => {
       resetComments();
       try {
-        if (selectedVideo.id.videoId) await fetchComments(selectedVideo?.id.videoId);
+        if (!selectedVideo.id.videoId) return;
+        await fetchComments(selectedVideo?.id.videoId);
       } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
       }

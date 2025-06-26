@@ -126,7 +126,7 @@ export default function useYoutubeVideos(
     }
     loadVideos()
 
-  }, [fetchVideos, isLoggedIn,]);
+  }, [isLoggedIn,]);
 
 
   return {
