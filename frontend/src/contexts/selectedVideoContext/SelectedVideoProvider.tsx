@@ -23,6 +23,7 @@ export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ ap
 
       if (navigationType === 'POP') {
         const video = await fetchVideo(videoId, apiKey);
+        console.log("updating the selected video context",video)
         if (!video) return;
         setSelectedVideo(video);
       }

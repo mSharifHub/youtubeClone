@@ -85,6 +85,7 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     if (!selectedVideo) return;
     const load = async () => {
       setRelatedVideos([]);
+      console.log('loading related videos');
       await fetchRelatedVideos(selectedVideo.snippet.categoryId);
     };
     load();

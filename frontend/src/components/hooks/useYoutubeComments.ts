@@ -2,6 +2,7 @@ import axios from 'axios';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
+import { useNavigationType } from 'react-router-dom';
 
 export interface CommentSnippet {
   authorDisplayName: string;
@@ -58,6 +59,8 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
   const [commentsPageToken, setCommentsPageToken] = useState<string | null>(null);
 
   const { selectedVideo } = useSelectedVideo();
+
+  const navigationType = useNavigationType();
 
   const MAX_LIMIT = 50;
 
@@ -155,15 +158,14 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
     if (!selectedVideo) return;
     const load = async () => {
       resetComments();
-      try {
-        if (!selectedVideo.id.videoId) return;
-        await fetchComments(selectedVideo?.id.videoId);
-      } catch (err) {
-        throw new Error(err instanceof Error ? err.message : 'An error occurred fetching comments threads');
+      if (selectedVideo.id.videoId) {
+        console.log('fetching message threads from selected video');
+        await fetchComments(selectedVideo.id.videoId);
       }
     };
     load();
   }, [selectedVideo]);
+
 
   return {
     comments,

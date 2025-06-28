@@ -117,10 +117,12 @@ export default function useYoutubeVideos(
       if (isLoggedIn) {
         const videosCache = await  loadFromDB("homeVideosScroll")
         if (videosCache && videosCache.videos && videosCache.videos.length > 0) {
+          console.log("first load from useVideo Hook, caching from the db index")
           setVideos(videosCache.videos)
           setVideosNextPageToken(videosCache.nextPageToken ?? null)
           return
         }
+        console.log("first load from useVideo Hook, fetching from the api")
           await fetchVideos({})
       }
     }
