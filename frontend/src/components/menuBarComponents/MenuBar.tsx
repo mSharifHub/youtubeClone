@@ -1,5 +1,4 @@
 import MenuComponent from './MenuComponent.tsx';
-// importing the path for the customs icons
 import shortsIconPath from '../../assets/menu_bar_icons/shorts.png';
 import homeIconPath from '../../assets/menu_bar_icons/home.png';
 import subscriptionIconPath from '../../assets/menu_bar_icons/subscription.png';

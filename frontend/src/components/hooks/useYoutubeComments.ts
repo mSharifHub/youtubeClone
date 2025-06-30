@@ -2,7 +2,6 @@ import axios from 'axios';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
-import { useNavigationType } from 'react-router-dom';
 
 export interface CommentSnippet {
   authorDisplayName: string;
@@ -48,6 +47,8 @@ interface useYoutubeComments {
   sentinelRef: RefObject<HTMLDivElement>;
 }
 
+const MAX_LIMIT = 50;
+
 export function useYoutubeComments(apiKey: string, maxResults: number): useYoutubeComments {
   const [comments, setComments] = useState<CommentThread[]>([]);
   const [topLevelCount, setTopLevelCount] = useState<number>(0);
@@ -59,10 +60,6 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
   const [commentsPageToken, setCommentsPageToken] = useState<string | null>(null);
 
   const { selectedVideo } = useSelectedVideo();
-
-  const navigationType = useNavigationType();
-
-  const MAX_LIMIT = 50;
 
   const fetchComments = useCallback(
     async (videoId: string, pageToken?: string | null): Promise<void> => {
@@ -154,18 +151,17 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
 
   const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount, MAX_LIMIT);
 
-  useEffect(() => {
-    if (!selectedVideo) return;
-    const load = async () => {
-      resetComments();
-      if (selectedVideo.id.videoId) {
-        console.log('fetching message threads from selected video');
-        await fetchComments(selectedVideo.id.videoId);
-      }
-    };
-    load();
-  }, [selectedVideo]);
-
+  // useEffect(() => {
+  //   if (!selectedVideo) return;
+  //   const load = async () => {
+  //     resetComments();
+  //     if (selectedVideo.id.videoId) {
+  //       console.log('fetching message threads from selected video');
+  //       await fetchComments(selectedVideo.id.videoId);
+  //     }
+  //   };
+  //   load();
+  // }, [selectedVideo]);
 
   return {
     comments,

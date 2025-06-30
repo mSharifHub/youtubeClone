@@ -21,8 +21,6 @@ export const RelatedVideos: React.FC<RelatedVideosProps> = ({ relatedVideos, rel
             <VideoCardLoading key={`loading-${index}`} />
           ))}
         </div>
-      ) : relatedVideosError ? (
-        <div className="flex justify-center items-center font-bold">{relatedVideosError}</div>
       ) : (
         relatedVideos.map((video) => (
           <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>

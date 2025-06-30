@@ -23,6 +23,17 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-1.5px)' },
         },
+        thumbsUp: {
+          '0%, 100%': { transform: 'scale(1) rotateZ(0deg)' },
+          '50%': { transform: 'scale(1.5) rotateZ(-45deg)' },
+        },
+
+        beltSwing: {
+          '0%, 100%': { transform: 'rotateZ(0deg)' },
+          '20%': { transform: 'rotateZ(-25deg)' },
+          '50%': { transform: 'rotateZ(25deg)' },
+          '80%': { transform: 'rotateZ(-15deg)' },
+        },
       },
       animation: {
         'opacity-pulse': 'opacityAndPulse 2s ease-in-out infinite',
@@ -30,6 +41,8 @@ export default {
         'wave-opacity': 'wave 2s ease-in-out infinite,opacityAndPulse 2s ease-in-out infinite',
         'slide-right': 'slideRight 0.25s  ease-out',
         'slide-left': 'slideLeft 0.25s ease-out ',
+        'thumbs-up': 'thumbsUp 0.5s ease-in-out',
+        'belt-swing': 'beltSwing 0.7s ease-in-out',
       },
 
       colors: {

@@ -16,7 +16,6 @@ interface CommentsThreadsProps {
 export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, handleShowTopLevelReplies, showTopLevelReplies, commentsError }) => {
   return (
     <>
-      {commentsError && <div className="flex w-full justify-center items-center font-bold">{commentsError}</div>}
       <ul className="min-h-fit h-fit w-full flex p-4 flex-col  space-y-10 ">
         {comments.map((thread) => (
           <li key={thread.id}>

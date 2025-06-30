@@ -7,12 +7,21 @@ import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
+
+  const [liked, setLiked] = useState<boolean>(false); // refactor as context dispatch state
+  const [dislike, setDislike] = useState<boolean>(false);
+  const [animateLike, setAnimateLike] = useState<boolean>(false);
+  const [subscribed, setSubscribed] = useState<boolean>(false); // refactor as context dispatch state
+  const [animateRing, setAnimateRing] = useState<boolean>(false);
+
+  const [openShareModal, setopenShareModal] = useState<boolean>(false);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -23,6 +32,14 @@ export const VideoPlayer: React.FC = () => {
       modestbranding: 1,
       origin: window.location.origin, // must check during deployment
     },
+  };
+
+  const handleOpenShareModal = () => {
+    setopenShareModal(true);
+  };
+
+  const handleCloseShareModal = () => {
+    setopenShareModal(false);
   };
 
   const handleExpandVideoDescription = (): void => {
@@ -43,8 +60,42 @@ export const VideoPlayer: React.FC = () => {
 
   const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
 
+  const handleLike = () => {
+    if (!liked) {
+      setAnimateLike(false);
+      setTimeout(() => {
+        setAnimateLike(true);
+        setDislike(false);
+      }, 10);
+    }
+    setLiked((prev) => !prev);
+    if (dislike) setDislike(false);
+  };
+
+  const handleDislike = () => {
+    if (!dislike) {
+      setTimeout(() => {
+        setLiked(false);
+      }, 10);
+    }
+    setDislike((prev) => !prev);
+    if (liked) setLiked(false);
+  };
+
+  const handleSubscribe = () => {
+    if (!subscribed) {
+      setAnimateRing(false);
+      setTimeout(() => {
+        setAnimateRing(true);
+      }, 10);
+    }
+    setSubscribed((prev) => !prev);
+  };
+
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">
+      {/* share Modal*/}
+      <ShareModal isOpenShareModal={openShareModal} onClose={handleCloseShareModal} />
       {/* Main Row: player/comments + related */}
       <div className="w-full flex flex-row  gap-10  p-4">
         {/* column-1*/}
@@ -56,6 +107,15 @@ export const VideoPlayer: React.FC = () => {
             onReady={onReady}
             handleExpandVideoDescription={handleExpandVideoDescription}
             expandVideoDescription={expandVideoDescription}
+            liked={liked}
+            dislike={dislike}
+            handleLike={handleLike}
+            animateLike={animateLike}
+            subscribed={subscribed}
+            handleDislike={handleDislike}
+            handleOpenShareModal={handleOpenShareModal}
+            handleSubscribe={handleSubscribe}
+            animateRing={animateRing}
           />
           {/* comments section */}
           <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />

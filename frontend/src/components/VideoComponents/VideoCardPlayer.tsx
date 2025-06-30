@@ -3,23 +3,45 @@ import YouTube, { YouTubeProps } from 'react-youtube';
 import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
 import { formatNumber } from '../helpers/formatNumber.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faShare } from '@fortawesome/free-solid-svg-icons';
-import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { faBell as faBellSolid, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faBell as faBellRegular } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsDown as faThumbsDownRegular, faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
 
 export default function VideoCardPlayer({
   YoutubeComponent,
   opts,
   onReady,
   handleExpandVideoDescription,
+  handleOpenShareModal,
   expandVideoDescription,
+  liked,
+  dislike,
+  handleLike,
+  animateLike,
+  subscribed,
+  handleDislike,
+  handleSubscribe,
+  animateRing,
 }: {
   YoutubeComponent: typeof YouTube;
   opts: YouTubeProps['opts'];
   onReady: YouTubeProps['onReady'];
   handleExpandVideoDescription: () => void;
+  handleOpenShareModal: () => void;
   expandVideoDescription: boolean;
+  liked: boolean;
+  dislike: boolean;
+  animateLike: boolean;
+  animateRing: boolean;
+  subscribed: boolean;
+  handleLike: () => void;
+  handleDislike: () => void;
+  handleSubscribe: () => void;
 }) {
   const { selectedVideo } = useSelectedVideo();
+  const likeCount = Number(selectedVideo?.statistics?.likeCount);
+  const dislikeCount = Number(selectedVideo?.statistics?.dislikeCount);
 
   return (
     <div className="min-h-fit h-fit w-full flex flex-col justify-start items-start gap-8   rounded-lg">
@@ -48,7 +70,7 @@ export default function VideoCardPlayer({
             <h1 className="font-bold text-lg text-wrap "> {decodeHtmlEntities(selectedVideo?.snippet.title)}</h1>
           </div>
           {/* second-column */}
-          <div className=" flex flex-row flex-wrap  gap-2">
+          <div className=" flex flex-row flex-wrap  gap-3">
             <div className="flex justify-start items-center gap-4 grow ">
               <img
                 src={selectedVideo?.snippet.channelLogo}
@@ -63,30 +85,41 @@ export default function VideoCardPlayer({
                   <span>subscribers</span>
                 </div>
               </div>
-              <button className=" flex-none px-5 bg-neutral-100  h-10 space-x-2  text-xs  text-nowrap dark:bg-neutral-800 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-700">
-                <FontAwesomeIcon icon={faBell} />
-                <span>Subscribe</span>
+              <button
+                onClick={handleSubscribe}
+                className={`flex flex-none justify-center items-center  h-10 w-36  text-nowrap  text-xs  font-bold  bg-neutral-200 dark:bg-neutral-800 rounded-full  border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700`}
+              >
+                <FontAwesomeIcon icon={subscribed ? faBellSolid : faBellRegular} className={`text-lg ${animateRing ? 'animate-belt-swing ' : ''}`} />
+                <h3 className=" w-20">{subscribed ? <span>subscribed</span> : <span> subscribe</span>}</h3>
               </button>
             </div>
             <div className="flex justify-end items-center gap-4 ">
-              <div className="flex items-center bg-neutral-100 h-10 dark:bg-neutral-800 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-700">
-                <button className="h-full flex items-center px-6   hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
-                  <FontAwesomeIcon icon={faThumbsUp} />
+              <div className={'flex items-center bg-neutral-100 h-10 dark:bg-neutral-800 rounded-full overflow-hidden border   border-neutral-200 dark:border-neutral-700'}>
+                <button
+                  onClick={handleLike}
+                  className={`h-full flex  justify-center text-center p-2  items-center px-3  gap-2  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition`}
+                >
+                  <FontAwesomeIcon icon={liked ? faThumbsUpSolid : faThumbsUpRegular} className={`text-xl ${animateLike ? 'animate-thumbs-up ' : ''}`} />
+                  {likeCount > 0 && <h3 className="font-bold h-full flex justify-center items-center">{formatNumber(likeCount)}</h3>}
                 </button>
                 <div className="w-px h-6 bg-neutral-300 dark:bg-neutral-700" />
-                <button className=" h-full flex items-center px-6  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
-                  <FontAwesomeIcon icon={faThumbsDown} className="-scale-x-100" />
+                <button onClick={handleDislike} className=" h-full flex items-center px-3  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
+                  <FontAwesomeIcon icon={dislike ? faThumbsDownSolid : faThumbsDownRegular} className="-scale-x-100 text-xl" />
+                  {dislikeCount > 0 && <h3 className="font-bold">{formatNumber(dislikeCount)}</h3>}
                 </button>
               </div>
-              <button className="px-4 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
+              <button
+                onClick={handleOpenShareModal}
+                className="px-4 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+              >
                 <FontAwesomeIcon icon={faShare} />
                 <span>Share</span>
               </button>
             </div>
           </div>
-          {/*Comments statistics*/}
+          {/*Comments && statistics*/}
           <div className="flex flex-row space-x-4 text-xl font-bold">
-            <h1>{selectedVideo?.statistics?.commentCount}</h1>
+            <h1>{formatNumber(selectedVideo?.statistics?.commentCount)}</h1>
             <h1>Comments</h1>
           </div>
           {/*description container*/}

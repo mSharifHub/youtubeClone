@@ -11,6 +11,8 @@ interface useYoutubeRelatedVideosOptions {
   relatedVideosError: string | null;
 }
 
+const MAX_DEFAULT = 10;
+
 export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelatedVideosOptions {
   const [relatedVideos, setRelatedVideos] = useState<Video[]>([]);
   const [relatedVideosLoading, setRelatedVideosLoading] = useState(false);
@@ -26,7 +28,7 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
       setRelatedVideosError(null);
 
       try {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=1&q=trending&regionCode=US`;
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=${MAX_DEFAULT}&q=trending&regionCode=US`;
         const response = await axios.get(url);
         const { data } = response;
 
@@ -81,15 +83,15 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     [apiKey],
   );
 
-  useEffect(() => {
-    if (!selectedVideo) return;
-    const load = async () => {
-      setRelatedVideos([]);
-      console.log('loading related videos');
-      await fetchRelatedVideos(selectedVideo.snippet.categoryId);
-    };
-    load();
-  }, [selectedVideo]);
+  // useEffect(() => {
+  //   if (!selectedVideo) return;
+  //   const load = async () => {
+  //     setRelatedVideos([]);
+  //     console.log('loading related videos');
+  //     await fetchRelatedVideos(selectedVideo.snippet.categoryId);
+  //   };
+  //   load();
+  // }, [selectedVideo]);
 
   return {
     relatedVideos,
