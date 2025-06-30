@@ -11,6 +11,8 @@ urlpatterns = [
 
     path('api/auth/google/callback/', GoogleAuthCallBackView.as_view(), name='google-callback'),
 
+    # path('api/auth/linkedin/callback/')
+
     path('api/auth/logout/', LogoutView.as_view(), name='logout'),
     # Graphql
     path("graphql/", csrf_protect(FileUploadGraphQLView.as_view(graphiql=True))),

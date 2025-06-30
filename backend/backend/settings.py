@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from datetime import timedelta
+from idlelib.sidebar import LineNumbers
 from pathlib import Path
 from django.contrib import staticfiles
 from django.core.checks import templates
@@ -111,16 +112,6 @@ DATABASES = {
 }
 
 
-CACHES = {
-    "default":{
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS":{
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        }
-    }
-}
-
 
 
 AUTH_USER_MODEL = 'api.User'
@@ -177,12 +168,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 
-GOOGLE_CLIENT_ID = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-GOOGLE_CLIENT_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-GOOGLE_REDIRECT_URI = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+GOOGLE_REDIRECT_URI = os.getenv('REDIRECT_URI')
 CLIENT_ADDRESS = os.getenv('CLIENT_ADDRESS')
 GOOGLE_CLOUD_PROJECT_ID = os.getenv('GOOGLE_CLOUD_PROJECT_ID')
 GOOGLE_CLOUD_PUB_SUB_TOPIC_ID = os.getenv('GOOGLE_CLOUD_PUB_SUB_TOPIC_ID')
+
+LINKEDIN_CLIENT_ID = os.getenv('LINKEDIN_CLIENT_ID')
+LINKEDIN_CLIENT_SECRET = os.getenv('LINKEDIN_CLIENT_SECRET')
+LINKEDIN_REDIRECT_URI = os.getenv('LINKEDIN_REDIRECT_URI')
 
 LANGUAGE_CODE = "en-us"
 
