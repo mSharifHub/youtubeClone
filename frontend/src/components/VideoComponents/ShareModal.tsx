@@ -27,19 +27,21 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpenShareModal, onClos
       style={{ content: { outline: 'none' } }}
       className={'flex flex-col  relative justify-start items-start bg-white  p-8 pt-20  gap-4  dark:bg-neutral-800  h-[80vh] max-h-[450px] w-[80vw] max-w-[500px] rounded-xl'}
     >
-      <div
-        onClick={onClose}
-        className="absolute top-3 right-5 p-2 cursor-pointer">
+      <div onClick={onClose} className="absolute top-3 right-5 p-2 cursor-pointer">
         <FontAwesomeIcon icon={faX} className="font-thin  text-xl" />
       </div>
       <div className="w-full border-t-[0.5px] border-t-white" />
-      <div className=" w-full flex flex-row  justify-around items-center  gap-6 ">
-        {socialMediaArray.map((socialMedia) => (
-          <div key={socialMedia.name} className="flex  flex-none flex-col justify-center items-center">
-            <img src={socialMedia.icon} alt={socialMedia.name} className=" h-24 w-24 rounded-full object-cover" />
-            <div className="text-center w-full font-bold">{socialMedia.name}</div>
-          </div>
-        ))}
+      <div className=" w-full flex flex-row  justify-around overflow-x-scroll scroll-smooth no-scrollbar items-center  gap-6 ">
+        {socialMediaArray.map((social) => {
+          const Icon = social.icon;
+          return (
+            <div key={social.name} className="flex  flex-none flex-col justify-center items-center cursor-pointer">
+              <Icon size={80} round={true} />
+
+              <div className="text-center w-full font-bold">{social.name}</div>
+            </div>
+          );
+        })}
       </div>
       <form className="w-full relative">
         <label>

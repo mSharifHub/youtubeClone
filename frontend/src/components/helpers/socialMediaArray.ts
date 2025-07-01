@@ -1,24 +1,15 @@
-import facebookIcon from '../../assets/social_media_icons/facebookIcon.png';
-import linkedinIcon from '../../assets/social_media_icons/linkedinIcon.png';
-import xIcon from '../../assets/social_media_icons/xIcon.png';
+import { LinkedinIcon, FacebookIcon, XIcon, RedditIcon, WhatsappIcon } from 'react-share';
+import React from 'react';
 
 type SocialMedia = {
   name: string;
-  icon: string;
+  icon: React.ComponentType<any>;
 };
 
 export const socialMediaArray: SocialMedia[] = [
-  {
-    name: 'facebook',
-    icon: facebookIcon,
-  },
-  {
-    name: 'linkedin',
-    icon: linkedinIcon,
-  },
-  {
-    name: 'x',
-    icon: xIcon,
-  },
-
+  { name: 'facebook', icon: FacebookIcon },
+  { name: 'linkedin', icon: LinkedinIcon },
+  { name: 'x', icon: XIcon },
+  { name: 'reddit', icon: RedditIcon },
+  { name: 'whatsapp', icon: WhatsappIcon },
 ];
