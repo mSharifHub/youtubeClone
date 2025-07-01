@@ -1,7 +1,12 @@
 # import json
 # from datetime import datetime, timedelta
 # import django.contrib.auth
+import base64
+import json
+
+import requests
 from django.conf import settings
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -187,25 +192,6 @@ class LogoutView(APIView):
 
 
 
-class LinkedInCallBackApiView(APIView):
-    def get(self, request):
-        code = request.GET.get('code')
-        error = request.GET.get('error')
 
-        if error:
-            return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
-        if not code:
-            return Response({'error': 'Code is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        token_url = "https://www.linkedin.com/oauth/v2/accessToken"
-
-        data = {
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": settings.LINKEDIN_REDIRECT_URI,
-            "client_id": settings.LINKEDIN_CLIENT_ID,
-            "client_secret": settings.LINKEDIN_CLIENT_SECRET
-        }
-
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
