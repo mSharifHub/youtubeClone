@@ -119,7 +119,7 @@ export const VideoPlayer: React.FC = () => {
             animateRing={animateRing}
           />
           {/* user comment section */}
-          <UserMakeComment/>
+          <UserMakeComment />
           {/* comments section */}
           <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />
 
