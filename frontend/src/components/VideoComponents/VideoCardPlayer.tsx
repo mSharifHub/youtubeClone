@@ -117,11 +117,6 @@ export default function VideoCardPlayer({
               </button>
             </div>
           </div>
-          {/*Comments && statistics*/}
-          <div className="flex flex-row space-x-4 text-xl font-bold">
-            <h1>{formatNumber(selectedVideo?.statistics?.commentCount)}</h1>
-            <h1>Comments</h1>
-          </div>
           {/*description container*/}
           <div className={`relative ${expandVideoDescription ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg `}>
             {/* text container */}
@@ -139,6 +134,11 @@ export default function VideoCardPlayer({
             >
               {expandVideoDescription ? 'show less' : '...more'}
             </button>
+          </div>
+          {/*Comments && statistics*/}
+          <div className="flex flex-row space-x-4 text-xl font-bold">
+            <h1>{formatNumber(selectedVideo?.statistics?.commentCount)}</h1>
+            <h1>Comments</h1>
           </div>
         </section>
       )}

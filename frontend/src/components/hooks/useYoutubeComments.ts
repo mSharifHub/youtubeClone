@@ -69,7 +69,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
       setCommentsError(null);
 
       try {
-        const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
+        const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=1${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
         const response = await axios.get(url);
 

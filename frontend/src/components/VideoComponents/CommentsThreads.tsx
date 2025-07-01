@@ -33,12 +33,12 @@ export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, hand
                 {/* Message Content */}
                 <p className="w-full text-wrap">{decodeHtmlEntities(thread.snippet.topLevelComment.snippet.textDisplay)}</p>
                 <div className="flex flex-row justify-start space-x-4">
-                  <div className="flex flex-row justify-start space-x-2">
-                    <FontAwesomeIcon icon={faThumbsUp} size="lg" />
+                  <div className="flex flex-row justify-start space-x-2 ">
+                    <FontAwesomeIcon icon={faThumbsUp} size="lg" className="rounded-full p-1.5 hover:dark-modal hover:cursor-pointer " />
                     <p>{thread.snippet.topLevelComment.snippet.likeCount > 0 ? thread.snippet.topLevelComment.snippet.likeCount : null}</p>
                   </div>
-                  <div className="flex flex-row justify-start space-x-2 -scale-x-100">
-                    <FontAwesomeIcon icon={faThumbsDown} size="lg" />
+                  <div className="flex flex-row justify-start space-x-2 -scale-x-100 ">
+                    <FontAwesomeIcon icon={faThumbsDown} size="lg" className="rounded-full p-1.5  hover:dark-modal hover:cursor-pointer " />
                   </div>
                 </div>
               </div>
@@ -70,11 +70,11 @@ export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, hand
                           <p>{decodeHtmlEntities(reply.textDisplay)}</p>
                           <div className="flex flex-row justify-start items-center space-x-4 ">
                             <div className="flex flex-row justify-center items-center space-x-2 ">
-                              <FontAwesomeIcon icon={faThumbsUp} size="sm" />
+                              <FontAwesomeIcon icon={faThumbsUp} size="sm" className="rounded-full p-1.5 hover:dark-modal hover:cursor-pointer" />
                               <p>{reply.likeCount > 0 ? reply.likeCount : null}</p>
                             </div>
                             <div className="flex flex-row justify-start space-x-2 -scale-x-100">
-                              <FontAwesomeIcon icon={faThumbsDown} size="sm" />
+                              <FontAwesomeIcon icon={faThumbsDown} size="sm" className="rounded-full p-1.5 hover:dark-modal hover:cursor-pointer" />
                             </div>
                           </div>
                         </div>

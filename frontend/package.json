@@ -10,7 +10,8 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "preview": "vite preview",
-    "generate": "graphql-codegen"
+    "generate": "graphql-codegen",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@apollo/client": "^3.10.6",
@@ -58,7 +59,9 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "patch-package": "^8.0.0",
     "postcss": "^8.4.38",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",

@@ -8,6 +8,7 @@ import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
+import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -117,6 +118,8 @@ export const VideoPlayer: React.FC = () => {
             handleSubscribe={handleSubscribe}
             animateRing={animateRing}
           />
+          {/* user comment section */}
+          <UserMakeComment/>
           {/* comments section */}
           <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />
 
