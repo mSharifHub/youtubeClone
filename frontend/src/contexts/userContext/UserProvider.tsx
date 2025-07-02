@@ -1,9 +1,7 @@
-import React, { useReducer, ReactNode } from 'react';
+import React, { useReducer, ReactNode, useEffect } from 'react';
 import { UserContext } from './UserContext.tsx';
 import { userReducer } from './userReducer.ts';
-import Cookies from 'js-cookie';
 import { ViewerQuery } from '../../graphql/types.ts';
-import { decryptData, encryptData } from '../../components/helpers/CookieEncryption.ts';
 import { useQuery } from '@apollo/client';
 import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 
@@ -11,52 +9,26 @@ interface UserProviderProps {
   children: ReactNode;
 }
 
-const getUserState = () => {
-  const authenticatedUser = Cookies.get('user-meta-data');
-
-  if (authenticatedUser) {
-    try {
-      const decryptedData: ViewerQuery['viewer'] = decryptData(authenticatedUser);
-
-      return {
-        user: decryptedData,
-        isLoggedIn: true,
-      };
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  return { user: null, isLoggedIn: false };
+const initialUserState = {
+  user: null,
+  isLoggedIn: false,
 };
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(userReducer, getUserState());
+  const [state, dispatch] = useReducer(userReducer, initialUserState);
 
-  const authenticatedUser = Cookies.get('user-meta-data');
-
-  const { error } = useQuery<ViewerQuery>(VIEWER_QUERY, {
-    skip: !authenticatedUser,
+  const { data, error } = useQuery<ViewerQuery>(VIEWER_QUERY, {
+    fetchPolicy: 'network-only',
     pollInterval: 3600000,
-    onCompleted: (data) => {
-      if (data && data.viewer) {
-        const currentData: ViewerQuery['viewer'] = decryptData(authenticatedUser);
-        const fetchedData = data.viewer;
-
-        if (JSON.stringify(fetchedData) !== JSON.stringify(currentData)) {
-          dispatch({ type: 'SET_USER', payload: fetchedData });
-          const newEncryptedData = encryptData(fetchedData);
-          Cookies.set('user-meta-data', newEncryptedData, {
-            expiresIn: '3h',
-            sameSite: 'strict',
-          });
-        }
-      }
-    },
   });
 
-  if (authenticatedUser && error) {
-    throw new Error(`failed to fetch user data ${error}`);
-  }
+  useEffect(() => {
+    if (error || !data || !data.viewer) {
+      dispatch({ type: 'CLEAR_USER' });
+      return;
+    }
+    dispatch({ type: 'SET_USER', payload: data.viewer });
+  }, [data, error]);
 
   return <UserContext.Provider value={{ state, dispatch }}>{children}</UserContext.Provider>;
 };

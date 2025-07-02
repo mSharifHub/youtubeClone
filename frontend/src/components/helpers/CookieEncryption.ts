@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-export const encryptData = (data: string) => {
+export const encryptData = (data: unknown) => {
   return CryptoJS.AES.encrypt(JSON.stringify(data), import.meta.env.VITE_COOKIE_KEY_ENCRYPTION).toString();
 };
 

@@ -8,35 +8,28 @@ const httpLink = createHttpLink({
   credentials: 'include',
 });
 
-const authLink = setContext((_, { headers }) => {
+const csrfLink = setContext((_, { headers }) => {
   const csrftoken = Cookies.get('csrftoken');
-
-  if (csrftoken) {
-    return {
-      headers: {
-        ...headers,
-        'X-CSRFToken': csrftoken,
-      },
-    };
-  }
-
   return {
     headers: {
       ...headers,
-      'X-CSRFToken': csrftoken ? csrftoken : null,
+      ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
     },
   };
 });
 
-const errorLink = onError(({ graphQLErrors }) => {
+const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
     });
   }
+  if (networkError) {
+    console.error(`[Network error]: ${networkError}`);
+  }
 });
 
-const link = ApolloLink.from([authLink, errorLink, httpLink]);
+const link = ApolloLink.from([errorLink, csrfLink, httpLink]);
 
 const client = new ApolloClient({
   link,
