@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { SelectedVideoContext } from './SelectedVideoContext.ts';
-import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 import { useNavigationType, useSearchParams } from 'react-router-dom';
-import { fetchVideo } from '../../components/helpers/FetchVideo.ts';
+import { fetchVideo } from '../../helpers/FetchVideo.ts';
 
 interface SelectedVideoProviderProps {
   apiKey: string;

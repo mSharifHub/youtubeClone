@@ -4,7 +4,7 @@ import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
 import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import { videosPerRowDisplayValues } from '../helpers/homeVideoDisplayOptions.ts';
+import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';

@@ -1,6 +1,6 @@
 import ReactModal from 'react-modal';
 import React from 'react';
-import { socialMediaArray } from '../helpers/socialMediaArray.ts';
+import { socialMediaArray } from '../../helpers/socialMediaArray.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 

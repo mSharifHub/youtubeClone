@@ -1,7 +1,7 @@
-import { Video } from '../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 import { useCallback, useEffect, useState } from 'react';
-import { fetchVideoStatistics } from '../helpers/fetchVideoStatistics.ts';
-import { fetchChannelDetails } from '../helpers/fetchChannelDetails.ts';
+import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
+import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 

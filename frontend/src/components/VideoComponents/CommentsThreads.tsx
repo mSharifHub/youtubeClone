@@ -1,4 +1,4 @@
-import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
+import { decodeHtmlEntities } from '../../helpers/decodeHtmlEntities.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';

@@ -1,5 +1,5 @@
 import { openDB } from 'idb';
-import { Video } from '../../components/helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 
 const DB_NAME = 'videoCacheDB';
 const STORE_NAME = 'videos';

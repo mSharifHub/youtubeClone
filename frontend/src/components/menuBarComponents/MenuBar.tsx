@@ -31,8 +31,8 @@ import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { LoginComponent } from '../authenticationComponent/LoginComponent.tsx';
 import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
 import { useToolTip } from '../hooks/useToolTip.ts';
-import { ToolTip } from '../helpers/ToolTip.tsx';
-import { visited } from '../helpers/visited.ts';
+import { ToolTip } from '../../helpers/ToolTip.tsx';
+import { visited } from '../../helpers/visited.ts';
 
 export default function MenuBar() {
   const {

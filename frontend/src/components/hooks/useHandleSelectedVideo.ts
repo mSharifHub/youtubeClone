@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Video } from '../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useCallback } from 'react';
 

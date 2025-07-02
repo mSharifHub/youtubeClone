@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
 import Microphone from './Mircrophone.tsx';
-import { ToolTip } from '../helpers/ToolTip.tsx';
+import { ToolTip } from '../../helpers/ToolTip.tsx';
 import { useToolTip } from '../hooks/useToolTip.ts';
 import { useTheme } from '../../contexts/darkModeContext/ThemeContext.ts';
 

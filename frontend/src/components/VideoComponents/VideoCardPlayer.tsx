@@ -1,7 +1,7 @@
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { decodeHtmlEntities } from '../helpers/decodeHtmlEntities.ts';
-import { formatNumber } from '../helpers/formatNumber.ts';
+import { decodeHtmlEntities } from '../../helpers/decodeHtmlEntities.ts';
+import { formatNumber } from '../../helpers/formatNumber.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell as faBellSolid, faShare } from '@fortawesome/free-solid-svg-icons';
 import { faBell as faBellRegular } from '@fortawesome/free-regular-svg-icons';

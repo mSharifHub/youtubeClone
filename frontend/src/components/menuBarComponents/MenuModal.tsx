@@ -35,8 +35,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import youtubeIconPath from '../../assets/navigation_icons/youtube-logo.png';
 import { useToolTip } from '../hooks/useToolTip.ts';
-import { ToolTip } from '../helpers/ToolTip.tsx';
-import { visited } from '../helpers/visited.ts';
+import { ToolTip } from '../../helpers/ToolTip.tsx';
+import { visited } from '../../helpers/visited.ts';
 
 export const MenuModal: React.FC = () => {
   const { state, dispatch } = useMenuBar();

@@ -14,8 +14,6 @@ import { BrowserRouter } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
-
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <ApolloProvider client={client}>

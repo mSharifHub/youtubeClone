@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 config.autoAddCss = false;
 
 function App() {
-
   useEffect(() => {
     fetch('http://localhost:8000/api/csrf/', { credentials: 'include' });
   }, []);

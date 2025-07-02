@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { VideoStatistics } from '../hooks/useYoutubeVideos.ts';
+import { VideoStatistics } from '../components/hooks/useYoutubeVideos.ts';
 
 const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
 

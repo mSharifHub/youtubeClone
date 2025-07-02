@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Video } from '../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
-import { fetchVideoStatistics } from '../helpers/fetchVideoStatistics.ts';
-import { fetchChannelDetails } from '../helpers/fetchChannelDetails.ts';
+import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
+import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
