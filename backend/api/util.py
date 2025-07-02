@@ -26,7 +26,6 @@ def get_google_id_token(code):
     # raise error if not successful
     token_http_post.raise_for_status()
 
-
     token_response_parsed = token_http_post.json()
 
     session = requests.session()

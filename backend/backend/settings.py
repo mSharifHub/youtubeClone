@@ -54,16 +54,18 @@ INSTALLED_APPS = [
 
 ]
 
+AUTHENTICATION_BACKENDS = ['api.auth.GoogleTokenAuthentication']
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "api.middleware.GoogleAuthMiddleWare",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
 ]
 ROOT_URLCONF = "backend.urls"
 
@@ -106,7 +108,6 @@ GRAPHENE = {
     ],
 }
 
-AUTHENTICATION_BACKENDS = ['api.auth.GoogleTokenAuthentication']
 
 
 

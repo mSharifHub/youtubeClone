@@ -1,9 +1,6 @@
-# import json
-# from datetime import datetime, timedelta
-# import django.contrib.auth
+
 import base64
 import json
-
 import requests
 from django.conf import settings
 from django.http.response import HttpResponseRedirect
@@ -15,17 +12,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
 from .util import get_google_id_token, generate_youtube_handler
-from api.models import User
-# from graphql_jwt.shortcuts import get_token, create_refresh_token
 from graphql_jwt import exceptions
-# from .token_utils import revoke_refresh_token
-from django.contrib.auth import login as django_login
+from django.contrib.auth import get_user_model
 from jwt import InvalidTokenError, InvalidIssuerError
 from django.views.decorators.debug import sensitive_variables
 from django.urls import reverse
 from api.helpers import Helpers
-# from google.cloud import pubsub_v1
 
+User = get_user_model()
 
 class GoogleLoginView(APIView):
     @sensitive_variables('code', 'client_id')
@@ -37,7 +31,6 @@ class GoogleLoginView(APIView):
 
         login_hint = request.query_params.get('login_hint', None)
 
-
         auth_url = (
             f"https://accounts.google.com/o/oauth2/v2/auth?"
             f"response_type=code&access_type={access_type}&"
@@ -45,9 +38,8 @@ class GoogleLoginView(APIView):
             f"client_id={client_id}"
         )
 
-
         if login_hint:
-            auth_url += f"&login_hint={login_hint}&prompt=none"  # skips refresh token
+            auth_url += f"&login_hint={login_hint}&prompt=none"
         else:
             auth_url += "&prompt=consent"
 
@@ -67,11 +59,8 @@ class GoogleAuthCallBackView(APIView):
         try:
             token_details = get_google_id_token(code)
             id_info = token_details['id_info']
-            # google_access_token = token_details['access_token']
             google_refresh_token = token_details.get('refresh_token',None)
             google_expires_in = token_details['expires_in']
-
-
             sub = id_info['sub']
             email = id_info['email']
             email_verified = id_info['email_verified']
@@ -89,7 +78,6 @@ class GoogleAuthCallBackView(APIView):
             # 4 Checks if user already exists
             try:
                 user = User.objects.get(email=email)
-                print(f'debugging user does exist {user}')
                 user.save()
 
             except User.DoesNotExist:

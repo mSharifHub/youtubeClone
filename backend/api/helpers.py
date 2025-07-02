@@ -1,9 +1,11 @@
+
 from django.core.files.base import ContentFile
 from api.models import User
 import requests
+from backend import settings
+
 
 class Helpers:
-
     @staticmethod
     def get_profile_picture(user: User, first_name: str, last_name: str, profile_picture_url: str):
 
@@ -37,3 +39,30 @@ class Helpers:
             else:
                 return None
         return None
+
+    @staticmethod
+    def refresh_google_id_token(google_refresh_token):
+        token_url = 'https://oauth2.googleapis.com/token'
+        data = {
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'client_secret': settings.GOOGLE_CLIENT_SECRET,
+            'refresh_token': google_refresh_token,
+            'grant_type': 'refresh_token',
+        }
+
+        try:
+
+            response = requests.post(token_url, data=data)
+            response.raise_for_status()
+            token_data = response.json()
+
+            if 'error' in token_data:
+                raise Exception(f"Google token refresh error {token_data['error']}")
+
+            return token_data
+
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Google token refresh error {str(e)}")
+
+
+
