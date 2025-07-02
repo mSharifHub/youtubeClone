@@ -8,6 +8,8 @@ import requests
 from django.conf import settings
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -55,6 +57,7 @@ class GoogleLoginView(APIView):
 
 class GoogleAuthCallBackView(APIView):
     @sensitive_variables('code', 'details', 'token', 'refresh_token')
+    @method_decorator(csrf_exempt)
     def get(self, request):
         # 1 Gets the code from the query
         code = request.query_params.get('code', None)
@@ -64,7 +67,7 @@ class GoogleAuthCallBackView(APIView):
         try:
             token_details = get_google_id_token(code)
             id_info = token_details['id_info']
-            google_access_token = token_details['access_token']
+            # google_access_token = token_details['access_token']
             google_refresh_token = token_details.get('refresh_token',None)
             google_expires_in = token_details['expires_in']
 
@@ -112,15 +115,13 @@ class GoogleAuthCallBackView(APIView):
 
             Helpers.get_profile_picture(user, first_name, last_name, profile_picture_url)
 
-            django_login(request, user, 'django.contrib.auth.backends.ModelBackend')
-
 
             response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
             # storing google tokens on cookies
             response.set_cookie(
-                'google_access_token',
-                google_access_token,
+                'google_id_token',
+                token_details['id_token'],
                 httponly=True,
                 max_age=google_expires_in,
                 samesite='Strict',
@@ -136,7 +137,6 @@ class GoogleAuthCallBackView(APIView):
                     samesite='Strict',
                     secure=True
                 )
-
 
             return response
         except Exception as err:

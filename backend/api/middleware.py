@@ -8,7 +8,8 @@ class CustomCSRFMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        response['X-CSRF-Token'] = get_csrf_token(request)
+        token = get_csrf_token(request)
+        if token:
+            response['X-CSRFToken'] = token
         return response
-
 

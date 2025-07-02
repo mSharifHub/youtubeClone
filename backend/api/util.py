@@ -35,9 +35,13 @@ def get_google_id_token(code):
 
     request = google.auth.transport.requests.Request(session=cached_session)
 
-    id_info = id_token.verify_oauth2_token(token_response_parsed['id_token'], request, settings.GOOGLE_CLIENT_ID)
+
+    id_info = id_token.verify_oauth2_token(
+        token_response_parsed['id_token'], request, settings.GOOGLE_CLIENT_ID
+    )
 
     return {
+        'id_token': token_response_parsed['id_token'],
         'id_info': id_info,
         'access_token': token_response_parsed['access_token'],
         'refresh_token': token_response_parsed.get('refresh_token',None),
