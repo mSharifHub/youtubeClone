@@ -15,7 +15,7 @@ interface UseYoutubeVideoOptions {
 }
 
 export default function useYoutubeVideos(
-  apiKey: string,
+  apiKey?: string,
   maxResult?: number,
 
 ): UseYoutubeVideoOptions {
@@ -27,7 +27,6 @@ export default function useYoutubeVideos(
   const { state: { isLoggedIn } } = useUser();
 
    const MAX_LIMIT:  number = 50
-
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
@@ -112,23 +111,30 @@ export default function useYoutubeVideos(
 
   const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
 
+
   useEffect(() => {
-    const loadVideos = async ()=>{
-      if (isLoggedIn) {
-        const videosCache = await  loadFromDB("homeVideosScroll")
-        if (videosCache && videosCache.videos && videosCache.videos.length > 0) {
-          console.log("first load from useVideo Hook, caching from the db index")
-          setVideos(videosCache.videos)
-          setVideosNextPageToken(videosCache.nextPageToken ?? null)
-          return
+
+    const loadVideos = async  ()=>{
+      if (!isLoggedIn) return
+        setVideosLoading(true)
+        try{
+          const videosCache = await loadFromDB("homeVideosScroll");
+          if (videosCache) {
+            setVideos(videosCache.videos);
+            setVideosNextPageToken(videosCache.nextPageToken ?? null);
+            setVideosLoading(false)
+            return
+          }
+        }catch(e){
+          setVideosError(e instanceof Error ? e.message : 'An error occurred')
         }
-        console.log("first load from useVideo Hook, fetching from the api")
-          await fetchVideos({})
-      }
+      finally {
+          setVideosLoading(false)
+        }
     }
     loadVideos()
 
-  }, [isLoggedIn,]);
+  }, [isLoggedIn]);
 
 
   return {

@@ -6,6 +6,7 @@ import React from 'react';
 import { CommentThread } from '../hooks/useYoutubeComments.ts';
 import { UserAvatar } from './UserAvatar.tsx';
 
+
 interface CommentsThreadsProps {
   handleShowTopLevelReplies: () => void;
   showTopLevelReplies: boolean;
@@ -13,7 +14,7 @@ interface CommentsThreadsProps {
   commentsError: string | null;
 }
 
-export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, handleShowTopLevelReplies, showTopLevelReplies, commentsError }) => {
+export const CommentsThreads: React.FC<CommentsThreadsProps> = ({ comments, handleShowTopLevelReplies, showTopLevelReplies }) => {
   return (
     <>
       <ul className="min-h-fit h-fit w-full flex p-4 flex-col  space-y-10 ">

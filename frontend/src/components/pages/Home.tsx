@@ -8,6 +8,9 @@ import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+import { useQuery } from '@apollo/client';
+import { ViewerQuery } from '../../graphql/types.ts';
+import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 export const Home: React.FC = () => {
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -23,6 +26,7 @@ export const Home: React.FC = () => {
 
   const {state:{isLoggedIn}} = useUser()
 
+  const {loading} = useQuery<ViewerQuery>(VIEWER_QUERY,{})
 
   useEffect(() => {
     if (containerRef.current) {
@@ -33,7 +37,10 @@ export const Home: React.FC = () => {
     }
   }, []);
 
+  if (loading) return null;
+
   return(
+
     isLoggedIn ?
         (
           <div ref={containerRef} className="  h-screen overflow-y-scroll scroll-smooth  px-4 pt-6 ">

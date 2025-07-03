@@ -9,6 +9,7 @@ import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
+import CommentLoading from '../VideoComponents/CommentLoading.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -23,6 +24,7 @@ export const VideoPlayer: React.FC = () => {
   const [animateRing, setAnimateRing] = useState<boolean>(false);
 
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
+
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -127,7 +129,19 @@ export const VideoPlayer: React.FC = () => {
           <div ref={sentinelRef} className="h-2  w-full" />
 
           {/* SpinningCircle Circle*/}
-          {commentsLoading && <SpinningCircle />}
+          {commentsLoading && (
+            <div className="flex flex-col p-4 gap-4 ">
+              <ul>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <li key={index} className="flex flex-row space-x-4">
+                    <CommentLoading />
+                  </li>
+                ))}
+              </ul>
+
+              <SpinningCircle />
+            </div>
+          )}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">

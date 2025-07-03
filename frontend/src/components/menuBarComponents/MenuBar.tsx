@@ -33,6 +33,9 @@ import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
 import { useToolTip } from '../hooks/useToolTip.ts';
 import { ToolTip } from '../../helpers/ToolTip.tsx';
 import { visited } from '../../helpers/visited.ts';
+import { useQuery } from '@apollo/client';
+import { ViewerQuery } from '../../graphql/types.ts';
+import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 
 export default function MenuBar() {
   const {
@@ -44,9 +47,13 @@ export default function MenuBar() {
     state: { toggler },
   } = useMenuBar();
 
+  const { loading } = useQuery<ViewerQuery>(VIEWER_QUERY, {});
+
   const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } = useToolTip();
 
   const aboutArr = ['about', 'copyright', 'git repository', 'linkedin'];
+
+  if (loading) return null;
 
   return (
     <div
@@ -59,10 +66,11 @@ export default function MenuBar() {
         <MenuComponent title="Shorts" isPath={visited} customIconSrc={shortsIconPath} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
         <MenuComponent title="Subscriptions" isPath={visited} customIconSrc={subscriptionIconPath} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
       </section>
+
       {isLoggedIn ? (
         <>
           {/* row-2*/}
-          <section className={` flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'}`}>
+          <section className={` flex flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]  ' : 'w-16'} `}>
             {/* you should stay visible on toggle */}
 
             <MenuComponent
@@ -91,7 +99,7 @@ export default function MenuBar() {
         <>
           {/* login component */}
           <section
-            className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]' : 'w-16'}`}
+            className={` ${toggler ? 'hidden' : 'flex'}  justify-center items-start flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem]' : 'w-16'} `}
           >
             <h3 className=" flex flex-initial w-[80%]   text-sm text-start">Sign in to like videos, comment, and subscribe.</h3>
             <LoginComponent redirectGoogleAuth={redirectGoogleAuth} />

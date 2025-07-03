@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ApolloProvider client={client}>
       <BrowserRouter>
         <UserProvider>
-          <SelectedVideoProvider apiKey={import.meta.env.VITE_YOUTUBE_API_3}>
+          <SelectedVideoProvider>
             <ThemeProvider>
               <MenuBarProvider>
                 <SettingModalsProvider>

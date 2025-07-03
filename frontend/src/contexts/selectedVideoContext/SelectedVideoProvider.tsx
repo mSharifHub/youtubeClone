@@ -1,36 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { SelectedVideoContext } from './SelectedVideoContext.ts';
 import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
-import { useNavigationType, useSearchParams } from 'react-router-dom';
-import { fetchVideo } from '../../helpers/FetchVideo.ts';
+import useFetchSingleVideo from '../../components/hooks/useFetchSingleVideo.ts';
 
 interface SelectedVideoProviderProps {
-  apiKey: string;
   children: React.ReactNode;
 }
 
-export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ apiKey, children }) => {
+export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ children }) => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [searchParams] = useSearchParams();
 
-  const navigationType = useNavigationType();
+  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
+
+  const { singleVideo } = useFetchSingleVideo(apiKey);
 
   useEffect(() => {
-    const syncSelectedVideos = async () => {
-      const videoId = searchParams.get('v');
-
-      if (!videoId) return;
-
-      if (navigationType === 'POP') {
-        const video = await fetchVideo(videoId, apiKey);
-        console.log("updating the selected video context",video)
-        if (!video) return;
-        setSelectedVideo(video);
-      }
-    };
-    syncSelectedVideos()
-  }, [apiKey, navigationType, searchParams]);
-
+    if (singleVideo) {
+      console.log('called');
+      setSelectedVideo(singleVideo);
+    }
+  }, [singleVideo]);
 
   return <SelectedVideoContext.Provider value={{ selectedVideo, setSelectedVideo }}>{children}</SelectedVideoContext.Provider>;
 };

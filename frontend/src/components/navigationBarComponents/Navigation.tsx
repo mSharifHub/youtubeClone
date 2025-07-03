@@ -23,7 +23,7 @@ import { LoginComponent } from '../authenticationComponent/LoginComponent.tsx';
 
 export default function NavigationBar() {
   const {
-    state: { isLoggedIn, user },
+    state: { isLoggedIn },
   } = useUser();
 
   const { dispatch: settingModalDispatch } = useSettingsModal();

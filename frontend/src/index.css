@@ -11,3 +11,11 @@ ul[class],
 ol[class] {
   list-style: none;
 }
+
+#nprogress .bar {
+  background: red;
+}
+
+#nprogress .spinner{
+  display: none !important;
+}
