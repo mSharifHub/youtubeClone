@@ -31,23 +31,30 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpenShareModal, onClos
         <FontAwesomeIcon icon={faX} className="font-thin  text-xl" />
       </div>
 
-      <div className="flex justify-center items-center p-1   mt-6 w-full">
-        <button className="px-4  py-2 rounded-full  border border-black bg-neutral-200 dark:bg-neutral-300  dark:text-black">Create post</button>
+      <div className="flex justify-center items-center p-1   mt-6 w-full ">
+        <button className="px-4  py-2 rounded-full  darK:border dark:border-black bg-neutral-200 dark:bg-neutral-300  dark:text-black">Create post</button>
       </div>
       <div className="w-full border-t-[0.5px] border-t-black dark:border-t-white" />
       <span className="capitalize  font-extralight  w-full">share</span>
-      <div className=" w-full flex flex-row  justify-around overflow-x-scroll scroll-smooth no-scrollbar items-center gap-12 mb-4 ">
-        {socialMediaArray.map((social) => {
-          const PlatFormIcon = social.icon;
-          const PlatFormShareButton = social.shareButton;
-          const quote = `Hello ${social.name}, check this video on my youtubeClone 🔥🔥🔥`;
-          return (
-            <PlatFormShareButton key={social.name} url={videoAddress} quote={quote} className="flex flex-col items-center  gap-2 cursor-pointer">
-              <PlatFormIcon size={64} round={true} />
-              <div className="text-center w-full ">{social.name}</div>
-            </PlatFormShareButton>
-          );
-        })}
+
+      <div className=" relative w-full ">
+        {/*fading left */}
+        <div className="pointer-events-none absolute md:hidden left-0 top-0 h-full w-12 z-20 bg-gradient-to-r from-white dark:from-neutral-800 to-transparent" />
+        <div className=" h-full flex flex-row  justify-around overflow-x-scroll scroll-smooth no-scrollbar items-center gap-5 mb-4">
+          {socialMediaArray.map((social) => {
+            const PlatFormIcon = social.icon;
+            const PlatFormShareButton = social.shareButton;
+            const quote = `Hello ${social.name}, check this video on my youtubeClone 🔥🔥🔥`;
+            return (
+              <PlatFormShareButton key={social.name} url={videoAddress} quote={quote} className="flex flex-col items-center  gap-2 cursor-pointer">
+                <PlatFormIcon size={64} round={true} />
+                <div className="text-center w-full ">{social.name}</div>
+              </PlatFormShareButton>
+            );
+          })}
+        </div>
+        {/*fading right */}
+        <div className="pointer-events-none absolute md:hidden right-0 top-0 h-full w-12 z-20 bg-gradient-to-l from-white dark:from-neutral-800 to-transparent" />
       </div>
       <form className="w-full relative">
         <label>
@@ -55,7 +62,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpenShareModal, onClos
             type="url"
             value={window.location.href}
             readOnly={true}
-            className="w-full h-12 px-4 py-2  rounded-lg border  border-neutral-500 dark:border-neutral-500  bg-neutral-200 dark:bg-neutral-900 focus:outline-none dark:focus:border-neutral-700"
+            className="w-full h-12 px-4 py-2  rounded-lg dark:border  dark:border-neutral-500  bg-neutral-200 dark:bg-neutral-900 focus:outline-none dark:focus:border-neutral-700"
           />
           <div onClick={handleCopyUrl} className="absolute top-1/2 -translate-y-1/2 right-2 rounded-full px-4 py-1  cursor-pointer bg-blue-500 text-white dark:text-black">
             copy
