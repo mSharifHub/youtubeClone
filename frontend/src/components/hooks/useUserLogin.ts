@@ -39,6 +39,5 @@ export const useUserLogin = () => {
     }
   }, [searchParams, handleFetchUser]);
 
-
   return { redirectGoogleAuth };
 };

@@ -5,6 +5,8 @@ import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
+import NProgress from 'nprogress';
+
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
 interface UseYoutubeVideoOptions {
@@ -27,6 +29,8 @@ export default function useYoutubeVideos(
   const { state: { isLoggedIn } } = useUser();
 
    const MAX_LIMIT:  number = 50
+
+  NProgress.configure({ showSpinner: false });
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
@@ -113,10 +117,8 @@ export default function useYoutubeVideos(
 
 
   useEffect(() => {
-
     const loadVideos = async  ()=>{
       if (!isLoggedIn) return
-        setVideosLoading(true)
         try{
           const videosCache = await loadFromDB("homeVideosScroll");
           if (videosCache) {
@@ -128,13 +130,21 @@ export default function useYoutubeVideos(
         }catch(e){
           setVideosError(e instanceof Error ? e.message : 'An error occurred')
         }
-      finally {
-          setVideosLoading(false)
-        }
+
     }
     loadVideos()
 
   }, [isLoggedIn]);
+
+
+  useEffect(() => {
+    if (videos.length === 0){
+      NProgress.start()
+    }
+    return()=>{
+      NProgress.done()
+    }
+  }, [videos.length]);
 
 
   return {

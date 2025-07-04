@@ -69,7 +69,7 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
       setCommentsError(null);
 
       try {
-        const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=${maxResults}${pageToken ? `&pageToken=${pageToken}` : ''}`;
+        const url = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${apiKey}&maxResults=1${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
         const response = await axios.get(url);
 
@@ -151,17 +151,16 @@ export function useYoutubeComments(apiKey: string, maxResults: number): useYoutu
 
   const sentinelRef = useIntersectionObserver(loadMoreComments, commentsLoading, topLevelCount, MAX_LIMIT);
 
-  useEffect(() => {
-    if (!selectedVideo) return;
-    const load = async () => {
-      resetComments();
-      if (selectedVideo.id.videoId) {
-        console.log('fetching message threads from selected video');
-        await fetchComments(selectedVideo.id.videoId);
-      }
-    };
-    load();
-  }, [selectedVideo]);
+  // useEffect(() => {
+  //   if (!selectedVideo) return;
+  //   const load = async () => {
+  //     resetComments();
+  //     if (selectedVideo.id.videoId) {
+  //       await fetchComments(selectedVideo.id.videoId);
+  //     }
+  //   };
+  //   load();
+  // }, [selectedVideo]);
 
   return {
     comments,

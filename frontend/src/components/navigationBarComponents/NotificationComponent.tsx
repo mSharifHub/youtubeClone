@@ -1,7 +1,6 @@
 import bellIconPath from '../../assets/navigation_icons/bell.png';
 import videoIconPath from '../../assets/navigation_icons/add-video.png';
 
-
 export const NotificationComponent = () => {
   return (
     <div className="h-8 w-8 min-w-8 flex justify-center items-center rounded-full  hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer ">

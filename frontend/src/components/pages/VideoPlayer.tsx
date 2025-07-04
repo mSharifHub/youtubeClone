@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
@@ -10,6 +10,9 @@ import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import CommentLoading from '../VideoComponents/CommentLoading.tsx';
+import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
+import NProgress from 'nprogress';
+import { useSearchParams } from 'react-router-dom';
 
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -23,8 +26,14 @@ export const VideoPlayer: React.FC = () => {
   const [subscribed, setSubscribed] = useState<boolean>(false); // refactor as context dispatch state
   const [animateRing, setAnimateRing] = useState<boolean>(false);
 
+  const { selectedVideo } = useSelectedVideo();
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
 
+  const [searchParams] = useSearchParams();
+
+  const videoId = searchParams.get('v');
+
+  NProgress.configure({ showSpinner: false });
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -55,6 +64,7 @@ export const VideoPlayer: React.FC = () => {
 
   const onReady: YouTubeProps['onReady'] = (event) => {
     playerRef.current = event.target;
+    NProgress.done();
   };
 
   const handleSelectedVideo = useHandleSelectedVideo();
@@ -62,6 +72,8 @@ export const VideoPlayer: React.FC = () => {
   const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
 
   const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
+
+  const filteredSelectedVideosList = relatedVideos.filter((video) => video.id.videoId !== videoId);
 
   const handleLike = () => {
     if (!liked) {
@@ -94,6 +106,12 @@ export const VideoPlayer: React.FC = () => {
     }
     setSubscribed((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (selectedVideo) {
+      NProgress.start();
+    }
+  }, [selectedVideo]);
 
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">
@@ -146,7 +164,7 @@ export const VideoPlayer: React.FC = () => {
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">
           <RelatedVideos
-            relatedVideos={relatedVideos}
+            relatedVideos={filteredSelectedVideosList}
             relatedVideosLoading={relatedVideosLoading}
             handleSelectedVideo={handleSelectedVideo}
             relatedVideosError={relatedVideosError}

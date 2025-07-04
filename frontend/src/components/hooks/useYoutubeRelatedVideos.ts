@@ -4,6 +4,7 @@ import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
+import { useSearchParams } from 'react-router-dom';
 
 interface useYoutubeRelatedVideosOptions {
   relatedVideos: Video[] | [];
@@ -20,6 +21,10 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
 
   const { selectedVideo } = useSelectedVideo();
 
+  const [searchParams] = useSearchParams();
+
+  const currentVideoPlaying = searchParams.get('v');
+
   const fetchRelatedVideos = useCallback(
     async (categoryId: string) => {
       if (relatedVideosLoading || !categoryId) return;
@@ -28,7 +33,7 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
       setRelatedVideosError(null);
 
       try {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=${MAX_DEFAULT}&q=trending&regionCode=US`;
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&videoCategoryId=${categoryId}&maxResults=1&q=trending&regionCode=US`;
         const response = await axios.get(url);
         const { data } = response;
 
@@ -87,7 +92,6 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
     if (!selectedVideo) return;
     const load = async () => {
       setRelatedVideos([]);
-      console.log('loading related videos');
       await fetchRelatedVideos(selectedVideo.snippet.categoryId);
     };
     load();

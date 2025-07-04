@@ -5,8 +5,8 @@ import { useCallback } from 'react';
 
 export const useHandleSelectedVideo = () => {
   const navigate = useNavigate();
-  const { setSelectedVideo } = useSelectedVideo();
 
+  const { setSelectedVideo } = useSelectedVideo();
   return useCallback(
     (video: Video | null) => {
       if (!video) return;

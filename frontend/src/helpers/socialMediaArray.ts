@@ -1,13 +1,4 @@
-import {
-  LinkedinIcon,
-  FacebookIcon,
-  XIcon,
-  WhatsappIcon,
-  LinkedinShareButton,
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from 'react-share';
+import { LinkedinIcon, FacebookIcon, XIcon, WhatsappIcon, LinkedinShareButton, FacebookShareButton, TwitterShareButton, WhatsappShareButton } from 'react-share';
 import React from 'react';
 
 type SocialMedia = {

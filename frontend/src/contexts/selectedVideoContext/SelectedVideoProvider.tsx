@@ -16,7 +16,6 @@ export const SelectedVideoProvider: React.FC<SelectedVideoProviderProps> = ({ ch
 
   useEffect(() => {
     if (singleVideo) {
-      console.log('called');
       setSelectedVideo(singleVideo);
     }
   }, [singleVideo]);
