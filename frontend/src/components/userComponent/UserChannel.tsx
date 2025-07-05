@@ -3,7 +3,12 @@ import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+type ImagePreviews = {
+  file: File;
+  url: string;
+};
 
 export default function UserChannel() {
   const {
@@ -12,8 +17,11 @@ export default function UserChannel() {
 
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [imagePreviews, setImagePreviews] = useState<ImagePreviews[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement | null>(null);
 
+  const MAX_SIZE = 10 * 1024 * 1024;
   const handleUploadImageModal = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowUploadModal((prev) => !prev);
@@ -25,20 +33,39 @@ export default function UserChannel() {
     }
   };
 
+  const handleFiles = (files: FileList | File[]) => {
+    const previews = [...imagePreviews];
+
+    const newFiles = Array.from(files).filter((file) => {
+      return file.type.match('image.*');
+    });
+
+    let previousSize = previews.reduce((acc, curr) => acc + curr.file.size, 0);
+    for (const file of newFiles) {
+      if (previousSize + file.size > MAX_SIZE) {
+        return setError('File size exceeds 10MB');
+      }
+      const url = URL.createObjectURL(file);
+      previousSize += file.size;
+      previews.push({ file, url });
+    }
+    setImagePreviews(previews);
+  };
+
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      console.log(e.target.files[0]);
+    if (e.target.files) {
+      handleFiles(e.target.files);
+      e.target.value = '';
     }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
-    if (e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      console.log(file);
+    if (e.dataTransfer.files) {
+      handleFiles(e.dataTransfer.files);
     }
+    setIsDragging(false);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -52,6 +79,18 @@ export default function UserChannel() {
     e.stopPropagation();
     setIsDragging(false);
   };
+
+  useEffect(() => {
+    if (imagePreviews) {
+      console.log(imagePreviews);
+    }
+  }, [imagePreviews]);
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [imagePreviews]);
 
   return (
     <div className="h-screen  flex flex-col justify-start items-center p-8 gap-12 overflow-y-scroll overflow-hidden scroll-smooth">
@@ -98,13 +137,14 @@ export default function UserChannel() {
               >
                 <FontAwesomeIcon icon={faX} className="text-xl font-thin" />
               </div>
-              <input type="file" className="hidden" accept="image/*" onChange={handleFileInputChange} ref={fileInput} />
+              <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileInputChange} ref={fileInput} />
               <div className=" flex flex-col justify-center items-center gap-4">
                 <FontAwesomeIcon icon={faImage} className="text-4xl" />
                 <h3 className="text-sm">Click or drag image(s) from your computer</h3>
               </div>
             </div>
           )}
+
           <div className=" flex justify-end gap-8">
             <button className="px-5 py-1.5 rounded-full  ">cancel</button>
             <button className="px-5 py-1.5 rounded-full border ">Post</button>
