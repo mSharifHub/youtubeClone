@@ -58,7 +58,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
                   <img src={user.profilePicture} alt={`${user.username}-profilePicture`} className="rounded-full min-h-12 min-w-12 w-12 h-12 " />
                 ) : null}
               </div>
-              {/*user name and youtubeHandler*/}
+              {/*username and youtubeHandler*/}
               <div className="col-span-1 col-start-2 flex flex-col justify-start items-start">
                 <div className="flex justify-start items-center space-x-2">
                   <span>{user?.firstName}</span>
@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
                 </div>
                 <div className="flex justify-start items-center ">@{user?.youtubeHandler}</div>
 
-                <Link to="#" className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
+                <Link to={"/you"} className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
                   View your channel
                 </Link>
               </div>

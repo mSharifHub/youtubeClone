@@ -8,10 +8,28 @@ import { VideoPlayer } from './components/pages/VideoPlayer.tsx';
 import { useEffect } from 'react';
 config.autoAddCss = false;
 import 'nprogress/nprogress.css';
+import UserChannel from './components/pages/UserChannel.tsx';
+import { ProtectedUserRoute } from './components/userComponent/ProtectedUserRoute.tsx';
+import { useUser } from './contexts/userContext/UserContext.tsx';
+import { useQuery } from '@apollo/client';
+import { ViewerQuery } from './graphql/types.ts';
+import { VIEWER_QUERY } from './graphql/queries/queries.ts';
 function App() {
+  const {
+    state: { isLoggedIn },
+  } = useUser();
+
+  const { loading } = useQuery<ViewerQuery>(VIEWER_QUERY, {});
+
   useEffect(() => {
     fetch('http://localhost:8000/api/csrf/', { credentials: 'include' });
   }, []);
+
+  useEffect(() => {
+    console.log('isLoggedIn', isLoggedIn);
+  }, [isLoggedIn]);
+
+
 
   return (
     <>
@@ -19,7 +37,16 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="watch" element={<VideoPlayer />} />
+          <Route
+            path="you"
+            element={
+              <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loading}>
+                <UserChannel />
+              </ProtectedUserRoute>
+            }
+          />
         </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

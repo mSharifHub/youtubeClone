@@ -137,14 +137,15 @@ export default function useYoutubeVideos(
   }, [isLoggedIn]);
 
 
-  useEffect(() => {
-    if (videos.length === 0){
-      NProgress.start()
-    }
-    return()=>{
-      NProgress.done()
-    }
-  }, [videos.length]);
+  // useEffect(() => {
+  //   if (!isLoggedIn ) return;
+  //   if (videos.length === 0){
+  //     NProgress.start()
+  //   }
+  //   return()=>{
+  //     NProgress.done()
+  //   }
+  // }, [videos.length]);
 
 
   return {

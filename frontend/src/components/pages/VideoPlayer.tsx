@@ -64,7 +64,6 @@ export const VideoPlayer: React.FC = () => {
 
   const onReady: YouTubeProps['onReady'] = (event) => {
     playerRef.current = event.target;
-    NProgress.done();
   };
 
   const handleSelectedVideo = useHandleSelectedVideo();
@@ -107,11 +106,6 @@ export const VideoPlayer: React.FC = () => {
     setSubscribed((prev) => !prev);
   };
 
-  useEffect(() => {
-    if (selectedVideo) {
-      NProgress.start();
-    }
-  }, [selectedVideo]);
 
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">

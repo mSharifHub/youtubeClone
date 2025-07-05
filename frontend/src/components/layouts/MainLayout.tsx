@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import NavigationBar from '../navigationBarComponents/Navigation.tsx';
 import MenuBar from '../menuBarComponents/MenuBar.tsx';
 import Suggestions from '../recommendationComponents/Suggestions.tsx';
@@ -11,6 +11,7 @@ export default function MainLayout() {
   } = useUser();
 
   const location = useLocation();
+  const { youtubeHandler } = useParams();
 
   const isVideoPage = location.pathname.startsWith('/watch');
 
@@ -23,7 +24,7 @@ export default function MainLayout() {
         {/* main div*/}
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
           {/* MLL suggestions container */}
-          {isLoggedIn && !isVideoPage && <Suggestions />}
+          {isLoggedIn && !isVideoPage && !youtubeHandler && <Suggestions />}
           <Outlet />
         </div>
       </main>

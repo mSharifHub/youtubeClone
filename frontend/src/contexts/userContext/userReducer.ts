@@ -2,7 +2,7 @@ import { ViewerQuery } from '../../graphql/types.ts';
 
 export interface UserState {
   user: ViewerQuery['viewer'] | null;
-  isLoggedIn: boolean;
+  isLoggedIn: undefined | boolean;
 }
 
 export type UserAction = { type: 'SET_USER'; payload: ViewerQuery['viewer'] } | { type: 'CLEAR_USER' };
