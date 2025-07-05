@@ -8,12 +8,13 @@ import { VideoPlayer } from './components/pages/VideoPlayer.tsx';
 import { useEffect } from 'react';
 config.autoAddCss = false;
 import 'nprogress/nprogress.css';
-import UserChannel from './components/pages/UserChannel.tsx';
-import { ProtectedUserRoute } from './components/userComponent/ProtectedUserRoute.tsx';
+import You from './components/pages/You.tsx';
+import { ProtectedUserRoute } from './routerProtectors/ProtectedUserRoute.tsx';
 import { useUser } from './contexts/userContext/UserContext.tsx';
 import { useQuery } from '@apollo/client';
 import { ViewerQuery } from './graphql/types.ts';
 import { VIEWER_QUERY } from './graphql/queries/queries.ts';
+import UserChannel from './components/userComponent/UserChannel.tsx';
 function App() {
   const {
     state: { isLoggedIn },
@@ -29,8 +30,6 @@ function App() {
     console.log('isLoggedIn', isLoggedIn);
   }, [isLoggedIn]);
 
-
-
   return (
     <>
       <Routes>
@@ -39,6 +38,14 @@ function App() {
           <Route path="watch" element={<VideoPlayer />} />
           <Route
             path="you"
+            element={
+              <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loading}>
+                <You />
+              </ProtectedUserRoute>
+            }
+          />
+          <Route
+            path=":youtubeHandler"
             element={
               <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loading}>
                 <UserChannel />

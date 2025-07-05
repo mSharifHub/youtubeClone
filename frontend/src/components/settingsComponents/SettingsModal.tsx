@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { useClickOutside } from '../hooks/useClickOutside.ts';
 import { useTheme } from '../../contexts/darkModeContext/ThemeContext.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -66,9 +66,9 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
                 </div>
                 <div className="flex justify-start items-center ">@{user?.youtubeHandler}</div>
 
-                <Link to={"/you"} className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
+                <NavLink to={`/@${user?.youtubeHandler}`}  className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
                   View your channel
-                </Link>
+                </NavLink>
               </div>
             </div>
           </section>

@@ -24,7 +24,7 @@ export default function MainLayout() {
         {/* main div*/}
         <div className=" flex flex-col flex-grow w-full overflow-hidden ">
           {/* MLL suggestions container */}
-          {isLoggedIn && !isVideoPage && !youtubeHandler && <Suggestions />}
+          {isLoggedIn && !isVideoPage && location.pathname !== '/you' && !youtubeHandler && <Suggestions />}
           <Outlet />
         </div>
       </main>
