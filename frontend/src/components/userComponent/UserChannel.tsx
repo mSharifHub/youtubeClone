@@ -1,7 +1,7 @@
 import { UserProfileCard } from './UserProfileCard.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faX, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faX, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -16,10 +16,9 @@ export default function UserChannel() {
   } = useUser();
 
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isDraggingDropZone, setIsDraggingDropZone] = useState<boolean>(false);
   const [imagePreviews, setImagePreviews] = useState<ImagePreviews[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [previewsSize, setPreviewsSize] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const MAX_MB = 10 * 1024 * 1024;
@@ -34,12 +33,12 @@ export default function UserChannel() {
 
   const acceptable_mime_type = Object.values(FileMimeType) as string[];
 
-  const handleUploadImageModal = (e: React.MouseEvent) => {
+  const handleShowDropZoneModal = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowUploadModal((prev) => !prev);
   };
 
-  const handleDropZoneClick = () => {
+  const handleDropZoneClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -54,7 +53,7 @@ export default function UserChannel() {
 
     let previousSize = previews.reduce((acc, curr) => acc + curr.file.size, 0);
     for (const file of newFiles) {
-      if (previousSize + file.size > MAX_MB || imagePreviews.length >= 10) {
+      if (previousSize + file.size > MAX_MB || imagePreviews.length >= MAX_UPLOADS) {
         return setError('Can not exceed 10MB or 10 pictures');
       }
       const url = URL.createObjectURL(file);
@@ -65,7 +64,6 @@ export default function UserChannel() {
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation();
     if (e.target.files) {
       handleFiles(e.target.files);
       e.target.value = '';
@@ -74,23 +72,19 @@ export default function UserChannel() {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     if (e.dataTransfer.files) {
       handleFiles(e.dataTransfer.files);
     }
-    setIsDragging(false);
+    setIsDraggingDropZone(false);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
+    setIsDraggingDropZone(true);
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
+    setIsDraggingDropZone(false);
   };
 
   const handleRemoveFile = ({ index, event }: { index: number; event: React.MouseEvent<HTMLButtonElement> }) => {
@@ -102,11 +96,10 @@ export default function UserChannel() {
     });
   };
 
-  useEffect(() => {
-    if (imagePreviews) {
-      console.log(imagePreviews);
-    }
-  }, [imagePreviews]);
+  const clearPost = () => {
+    setImagePreviews([]);
+    setShowUploadModal(false);
+  };
 
   useEffect(() => {
     if (error) {
@@ -140,14 +133,19 @@ export default function UserChannel() {
           />
 
           {!showUploadModal && (
-            <section className="flex  flex-row h-10  justify-start items-center">
+            <section className="flex  flex-row h-10  gap-5 justify-start items-center">
               <div
-                onClick={handleUploadImageModal}
+                onClick={handleShowDropZoneModal}
                 className=" flex px-4 h-full  items-center gap-2 rounded-full  capitalize bg-transparent hover:bg-neutral-200 hover:dark:bg-neutral-700 hover:cursor-pointer"
               >
                 <FontAwesomeIcon icon={faImage} className="text-lg" />
                 image
               </div>
+              {imagePreviews.length > 0 && (
+                <h3 className="text-sm text-gray-500">
+                  {imagePreviews.length} {imagePreviews.length === 1 ? 'file' : 'files'} attached
+                </h3>
+              )}
             </section>
           )}
 
@@ -157,27 +155,26 @@ export default function UserChannel() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={handleDropZoneClick}
-              className={` min-h-[400px] h-fit relative flex flex-col justify-center items-center  rounded-xl border   dark:border-neutral-600  bg-neutral-100 dark:bg-neutral-700 hover:cursor-pointer`}
+              className={` min-h-[400px] h-fit relative flex flex-col justify-center items-center  rounded-xl border  ${isDraggingDropZone ? 'bg-blue-500 opacity-50' : 'bg-neutral-100 dark:bg-neutral-700 '} dark:border-neutral-600  hover:cursor-pointer`}
             >
               {error && <div>{error}</div>}
 
               {imagePreviews.length > 0 && (
-                <div className="relative flex w-full aspect-square  p-8   justify-center items-center">
+                <div className="relative flex w-full aspect-square  p-8 justify-center items-center">
                   {imagePreviews.map((preview, index) => {
-                    const rotateAngle = index % 2 === 0 ? 'rotate-3' : '-rotate-3';
+                    const rotateAngle = index % 2 === 0 ? 'rotate-6' : '-rotate-6';
                     const closeButtonIndex = index % 2 === 0 ? 'right-0 top-0' : 'left-0 top-0 ';
                     const zIndex = 10 + index;
                     return (
                       <div
                         key={preview.file.name}
-                        className={`absolute ${rotateAngle} flex justify-center items-center h-[80%] w-[80%] max-h-[80%] max-w-[80%] `}
+                        onAnimationStartCapture={(e) => e.stopPropagation()}
+                        className={`absolute ${imagePreviews.length > 1 ? `${rotateAngle}` : ''} flex justify-center items-center h-[80%] w-[80%] max-h-[80%] max-w-[80%]  `}
                         style={{ zIndex }}
                       >
-                        <div className="h-full w-full relative ">
-                          <button
-                            onClick={(event)=>handleRemoveFile({index,event})}
-                            className={` absolute  ${closeButtonIndex} h-10 w-10  `}>
-                            <FontAwesomeIcon icon={faX} className="text-2xl text-white " />
+                        <div className="h-full w-full relative">
+                          <button onClick={(event) => handleRemoveFile({ index, event })} className={` absolute  ${closeButtonIndex} h-10 w-10  `}>
+                            <FontAwesomeIcon icon={faX} className="text-2xl h-10 w-10 text-white  " />
                           </button>
                           <img src={preview.url} alt={preview.file.name} className=" h-full w-full object-cover" />
                         </div>
@@ -187,10 +184,8 @@ export default function UserChannel() {
                 </div>
               )}
 
-              {isDragging && <div className="absolute inset-0 rounded-lg bg-blue-500 opacity-50 w-full h-full" />}
-
               <div
-                onClick={handleUploadImageModal}
+                onClick={handleShowDropZoneModal}
                 className="absolute -top-4 -right-2 h-10 w-10 flex justify-center items-center rounded-full  border    bg-white shadow  dark:border-0 dark:bg-neutral-900 cursor-pointer opacity-70"
               >
                 <FontAwesomeIcon icon={faMinus} className=" font-thin" />
@@ -208,7 +203,9 @@ export default function UserChannel() {
           )}
 
           <div className=" flex justify-end gap-8">
-            <button className="px-5 py-1.5 rounded-full  ">cancel</button>
+            <button onClick={clearPost} className="px-5 py-1.5 rounded-full  ">
+              cancel
+            </button>
             <button className="px-5 py-1.5 rounded-full border ">Post</button>
           </div>
         </form>
