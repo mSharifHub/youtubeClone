@@ -115,11 +115,7 @@ export default function UserChannel() {
     setUserInput(value);
   }, 500);
 
-  // const handleOnPostSubumit = (e: React.MouseEvent<HTMLDivElement>) => {
-  //   if (imagePreviews && imagePreviews.length > 0) {
-  //     const files = [...imagePreviews];
-  //   }
-  // };
+
 
   const clearPost = () => {
     setImagePreviews([]);
@@ -158,9 +154,6 @@ export default function UserChannel() {
             placeholder="Share something with your fans..."
             className="w-full h-12 bg-transparent border-b border-neutral-300 dark:border-neutral-600 focus:outline-none text-base placeholder-neutral-400 dark:placeholder-neutral-500"
           />
-
-          <p>Live value: {liveValue}</p>
-          <p>Debounced value: {userInput}</p>
 
           {!showUploadModal && (
             <section className="flex  flex-row h-10  gap-5 justify-start items-center">

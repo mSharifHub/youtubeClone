@@ -33,10 +33,6 @@ export default function useYoutubeVideos(
 
 const {state:{isLoggedIn}} = useUser()
 
-  // const  {data} = useQuery<ViewerQuery>(VIEWER_QUERY,{
-  //   fetchPolicy: 'cache-only',
-  // })
-
 
   // const loadMoreVideos = async () => {
   //   if (!videosNextPageToken) return;
@@ -123,17 +119,33 @@ const {state:{isLoggedIn}} = useUser()
   },[apiKey])
 
 
-  // useEffect(() => {
-  //   console.log('isLoggedIn', isLoggedIn);
-  // }, [isLoggedIn]);
-
-
   useEffect(() => {
     if (!isLoggedIn) return
+
     const load = async () => {
-      if (location.pathname === '/') {
-        await fetchVideos({})
+      try{
+        setVideos([])
+        setVideosNextPageToken(null)
+
+        const cachedData = await loadFromDB('homeVideosScroll')
+
+        if (cachedData &&  Array.isArray(cachedData.videos) && cachedData.videos.length > 0 ) {
+            console.log("loading from cache")
+            setVideos(cachedData.videos)
+            setVideosNextPageToken(cachedData.nextPageToken || null)
+        }else{
+          console.log("loading from api")
+          await fetchVideos({})
+        }
+
+      }catch (err){
+        setVideosError(err instanceof Error ? err.message : 'An error occurred while loading videos')
+        setVideos([])
       }
+      finally {
+        setVideosLoading(false)
+      }
+
     }
     load()
   }, [isLoggedIn]);
