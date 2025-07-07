@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
-import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
 import NProgress from 'nprogress';
-
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
+import { useUser } from '../../contexts/userContext/UserContext.tsx';
 
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
@@ -25,12 +24,27 @@ export default function useYoutubeVideos(
   const [videosLoading, setVideosLoading] = useState<boolean>(false);
   const [videosError, setVideosError] = useState<string | null>(null);
   const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
+  const sentinelRef = useRef(null);
 
-  const { state: { isLoggedIn } } = useUser();
 
-   const MAX_LIMIT:  number = 50
+  const MAX_LIMIT:  number = 50
 
   NProgress.configure({ showSpinner: false });
+
+const {state:{isLoggedIn}} = useUser()
+
+  // const  {data} = useQuery<ViewerQuery>(VIEWER_QUERY,{
+  //   fetchPolicy: 'cache-only',
+  // })
+
+
+  // const loadMoreVideos = async () => {
+  //   if (!videosNextPageToken) return;
+  //   await fetchVideos({pageToken:videosNextPageToken})
+  // }
+  //
+  // const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
+  //
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
@@ -40,7 +54,7 @@ export default function useYoutubeVideos(
     setVideosError(null);
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=1&regionCode=US`;
 
       const response = await axios.get(url);
 
@@ -108,44 +122,21 @@ export default function useYoutubeVideos(
     }
   },[apiKey])
 
-  const loadMoreVideos = async () => {
-    if (!videosNextPageToken) return;
-    await fetchVideos({pageToken:videosNextPageToken})
-  }
 
-  const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
+  // useEffect(() => {
+  //   console.log('isLoggedIn', isLoggedIn);
+  // }, [isLoggedIn]);
 
 
   useEffect(() => {
-    const loadVideos = async  ()=>{
-      if (!isLoggedIn) return
-        try{
-          const videosCache = await loadFromDB("homeVideosScroll");
-          if (videosCache) {
-            setVideos(videosCache.videos);
-            setVideosNextPageToken(videosCache.nextPageToken ?? null);
-            setVideosLoading(false)
-            return
-          }
-        }catch(e){
-          setVideosError(e instanceof Error ? e.message : 'An error occurred')
-        }
-
+    if (!isLoggedIn) return
+    const load = async () => {
+      if (location.pathname === '/') {
+        await fetchVideos({})
+      }
     }
-    loadVideos()
-
+    load()
   }, [isLoggedIn]);
-
-
-  // useEffect(() => {
-  //   if (!isLoggedIn ) return;
-  //   if (videos.length === 0){
-  //     NProgress.start()
-  //   }
-  //   return()=>{
-  //     NProgress.done()
-  //   }
-  // }, [videos.length]);
 
 
   return {

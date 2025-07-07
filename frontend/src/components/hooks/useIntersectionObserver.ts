@@ -14,6 +14,7 @@ export const useIntersectionObserver = (callBack: () => Promise<void>, loading: 
         if (dataLength >= limit) return;
         if (target.isIntersecting && !loading) {
           if (sentinelRef.current) {
+            console.log('called');
             observerRef.current?.unobserve(sentinelRef.current);
             await callBack();
           }

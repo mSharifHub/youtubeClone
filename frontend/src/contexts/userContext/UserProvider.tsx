@@ -19,6 +19,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialUserState);
   const location = useLocation();
 
+  // Make a network request to always check if user is logged in before querying the user data on graphql
   const [fetchViewer, { data, error, loading, called }] = useLazyQuery<ViewerQuery>(VIEWER_QUERY, { fetchPolicy: 'network-only' });
 
   useEffect(() => {
@@ -34,5 +35,5 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_USER', payload: data.viewer });
   }, [called, data, error, loading]);
 
-  return <UserContext.Provider value={{ state, dispatch }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ state, dispatch, loadingQuery: loading, errorQuery: error ? error.message : null }}>{children}</UserContext.Provider>;
 };

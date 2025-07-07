@@ -9,9 +9,6 @@ import IconSearch from '../forms/IconSearch.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
 import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
-import { useQuery } from '@apollo/client';
-import { ViewerQuery } from '../../graphql/types.ts';
-import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 import { UserAvatar } from '../userComponent/UserAvatar.tsx';
 import { UserLoadingAvatar } from '../userComponent/UserLoadingAvatar.tsx';
 import { CreateVideoComponent } from './CreateVideoComponent.tsx';
@@ -24,17 +21,17 @@ import { LoginComponent } from '../authenticationComponent/LoginComponent.tsx';
 export default function NavigationBar() {
   const {
     state: { isLoggedIn },
+    loadingQuery,
   } = useUser();
 
   const { dispatch: settingModalDispatch } = useSettingsModal();
 
   const { dispatch: menuBarDispatch } = useMenuBar();
 
-  const { loading } = useQuery<ViewerQuery>(VIEWER_QUERY, {});
+
 
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    console.log('clicked', event);
     settingModalDispatch({ type: 'OPEN_SETTINGS_MODAL' });
   };
 
@@ -101,7 +98,7 @@ export default function NavigationBar() {
             <Microphone />
           </div>
 
-          {loading ? (
+          {loadingQuery ? (
             <>
               <CreateVideoLoading />
               <NotificationIconLoading />
@@ -116,7 +113,7 @@ export default function NavigationBar() {
           )}
 
           {/* profile component content */}
-          {loading ? (
+          {loadingQuery ? (
             <UserLoadingAvatar />
           ) : isLoggedIn ? (
             <UserAvatar handleCloseSettingModal={handleCloseSettingModal} handleCloseSubModel={handleCloseSubModel} handleShowSettingModal={handleShowSettingModal} />

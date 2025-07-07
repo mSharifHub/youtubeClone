@@ -8,9 +8,6 @@ import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import { useQuery } from '@apollo/client';
-import { ViewerQuery } from '../../graphql/types.ts';
-import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 export const Home: React.FC = () => {
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -24,9 +21,8 @@ export const Home: React.FC = () => {
 
   const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
 
-  const {state:{isLoggedIn}} = useUser()
+  const {state:{isLoggedIn}, loadingQuery} = useUser()
 
-  const {loading} = useQuery<ViewerQuery>(VIEWER_QUERY,{})
 
   useEffect(() => {
     if (containerRef.current) {
@@ -37,7 +33,7 @@ export const Home: React.FC = () => {
     }
   }, []);
 
-  if (loading) return null;
+  if (loadingQuery) return null;
 
   return(
 

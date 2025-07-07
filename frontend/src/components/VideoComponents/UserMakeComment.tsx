@@ -11,7 +11,7 @@ export const UserMakeComment = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
+    const value = e.target.value;
     setInput(value);
   };
 

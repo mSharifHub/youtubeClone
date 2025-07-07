@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
 import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';

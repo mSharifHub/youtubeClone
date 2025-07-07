@@ -4,6 +4,8 @@ import { UserState, UserAction } from './userReducer.ts';
 interface UserContextType {
   state: UserState;
   dispatch: Dispatch<UserAction>;
+  loadingQuery: boolean;
+  errorQuery: null | string;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);

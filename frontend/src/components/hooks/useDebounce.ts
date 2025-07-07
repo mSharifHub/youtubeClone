@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export const useDebounce = <T extends (...args: number[]) => ReturnType<T> | undefined>(callBack: T, delay: number) => {
+export const useDebounce = <T extends (...args: any[]) => ReturnType<T> | undefined>(callBack: T, delay: number) => {
   const intervalId = useRef<NodeJS.Timeout | null>(null);
 
   // to allow the first render after call to be executed and delay n + 1 call to be executed after

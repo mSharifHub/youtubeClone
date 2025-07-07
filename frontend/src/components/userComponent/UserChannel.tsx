@@ -4,10 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
+import { useDebounce } from '../hooks/useDebounce.ts';
 
 type ImagePreviews = {
   file: File;
   url: string;
+};
+
+type Post = {
+  id: string;
+  input: string;
+  pictures: FileList | File[];
+  timePosted: Date;
 };
 
 export default function UserChannel() {
@@ -18,8 +26,15 @@ export default function UserChannel() {
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
   const [isDraggingDropZone, setIsDraggingDropZone] = useState<boolean>(false);
   const [imagePreviews, setImagePreviews] = useState<ImagePreviews[]>([]);
+  const [userInput, setUserInput] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [userPost, setUserPost] = useState<Post>({
+    id: Math.random().toString(16).substring(2),
+    input: '',
+    pictures: [],
+    timePosted: new Date(),
+  });
 
   const MAX_MB = 10 * 1024 * 1024;
 
@@ -96,6 +111,16 @@ export default function UserChannel() {
     });
   };
 
+  const debouncedInput = useDebounce((value: string) => {
+    setUserInput(value);
+  }, 500);
+
+  // const handleOnPostSubumit = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   if (imagePreviews && imagePreviews.length > 0) {
+  //     const files = [...imagePreviews];
+  //   }
+  // };
+
   const clearPost = () => {
     setImagePreviews([]);
     setShowUploadModal(false);
@@ -128,9 +153,14 @@ export default function UserChannel() {
           </div>
           <input
             type="text"
+            value={userInput}
+            onChange={(e) => debouncedInput(e.target.value)}
             placeholder="Share something with your fans..."
             className="w-full h-12 bg-transparent border-b border-neutral-300 dark:border-neutral-600 focus:outline-none text-base placeholder-neutral-400 dark:placeholder-neutral-500"
           />
+
+          <p>Live value: {liveValue}</p>
+          <p>Debounced value: {userInput}</p>
 
           {!showUploadModal && (
             <section className="flex  flex-row h-10  gap-5 justify-start items-center">
