@@ -1,11 +1,11 @@
-import { ViewerQuery } from '../../graphql/types.ts';
+import { CreatePostMutation, ViewerQuery } from '../../graphql/types.ts';
 
 export interface UserState {
   user: ViewerQuery['viewer'] | null;
   isLoggedIn: undefined | boolean;
 }
 
-export type UserAction = { type: 'SET_USER'; payload: ViewerQuery['viewer'] } | { type: 'CLEAR_USER' };
+export type UserAction = { type: 'SET_USER'; payload: ViewerQuery['viewer'] } | { type: 'CLEAR_USER' } | { type: 'CREATE_POST'; payload: CreatePostMutation['createPost']['post'] };
 
 export const userReducer = (state: UserState, action: UserAction): UserState => {
   switch (action.type) {
@@ -19,6 +19,16 @@ export const userReducer = (state: UserState, action: UserAction): UserState => 
       return {
         user: null,
         isLoggedIn: false,
+      };
+
+    case 'CREATE_POST':
+      if (!state.user) return state;
+      return {
+        ...state,
+        user: {
+          ...state.user!,
+          posts: [action.payload, ...state.user.posts],
+        },
       };
 
     default:

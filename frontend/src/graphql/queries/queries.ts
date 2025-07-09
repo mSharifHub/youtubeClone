@@ -14,6 +14,33 @@ export const VIEWER_QUERY = gql`
         username
         email
       }
+      posts {
+        content
+        createdAt
+        author {
+          youtubeHandler
+        }
+        images {
+          image
+        }
+      }
+    }
+  }
+`;
+
+export const VIEWER_POSTS_QUERY = gql`
+  query ViewerPosts {
+    viewerPosts {
+      id
+      content
+      createdAt
+      author {
+        youtubeHandler
+      }
+      profilePicture
+      images {
+        image
+      }
     }
   }
 `;

@@ -1,6 +1,8 @@
 overwrite: true
 schema: 'http://localhost:8000/graphql/'
-documents: 'src/graphql/queries/**/*.ts'
+documents:
+  - 'src/graphql/queries/**/*.ts'
+  - 'src/graphql/mutations/**/*.ts'
 generates:
   src/graphql/types.ts:
     plugins:
@@ -11,3 +13,10 @@ generates:
       withHooks: true
       withHOC: false
       withComponent: false
+  ./schema.json:
+    plugins:
+      - 'introspection'
+    config:
+      minify: false
+
+

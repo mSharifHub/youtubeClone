@@ -28,8 +28,6 @@ export default function NavigationBar() {
 
   const { dispatch: menuBarDispatch } = useMenuBar();
 
-
-
   const handleShowSettingModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     settingModalDispatch({ type: 'OPEN_SETTINGS_MODAL' });
@@ -44,7 +42,8 @@ export default function NavigationBar() {
   };
 
   // function to change context state based on the screen size
-  const handleMenu = () => {
+  const handleMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     const isLargeScreen = window.matchMedia('(min-width: 1280px)').matches;
     const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;
 

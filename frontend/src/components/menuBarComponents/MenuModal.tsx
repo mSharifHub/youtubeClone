@@ -76,7 +76,7 @@ export const MenuModal: React.FC = () => {
         dispatch({ type: 'HANDLE_MENU' });
       }}
       closeTimeoutMS={200}
-      overlayClassName={`fixed inset-0  bg-neutral-950  transition duration-500 ease-in-out ${state.menu ? 'bg-opacity-50' : 'bg-opacity-0'}  z-10 `}
+      overlayClassName={`fixed inset-0  bg-neutral-950  transition duration-500 ease-in-out ${state.menu ? 'bg-opacity-50' : 'bg-opacity-0'}  z-50 `}
       style={{ content: { outline: 'none' } }}
       className={`h-screen w-56  grid-flow-row   bg-white  dark:bg-darkTheme rounded-sm shadow-lg ${state.menu ? 'animate-slide-right' : 'animate-slide-left'}`}
     >

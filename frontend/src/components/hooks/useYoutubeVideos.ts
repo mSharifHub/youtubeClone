@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
@@ -24,23 +24,21 @@ export default function useYoutubeVideos(
   const [videosLoading, setVideosLoading] = useState<boolean>(false);
   const [videosError, setVideosError] = useState<string | null>(null);
   const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
-  const sentinelRef = useRef(null);
 
 
-  const MAX_LIMIT:  number = 50
-
+  const MAX_LIMIT:  number = 20
   NProgress.configure({ showSpinner: false });
 
-const {state:{isLoggedIn}} = useUser()
+  const {state:{isLoggedIn}} = useUser()
 
 
-  // const loadMoreVideos = async () => {
-  //   if (!videosNextPageToken) return;
-  //   await fetchVideos({pageToken:videosNextPageToken})
-  // }
-  //
-  // const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
-  //
+  const loadMoreVideos = async () => {
+    if (!videosNextPageToken) return;
+    await fetchVideos({pageToken:videosNextPageToken})
+  }
+
+  const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
+
 
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
@@ -50,7 +48,7 @@ const {state:{isLoggedIn}} = useUser()
     setVideosError(null);
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=1&regionCode=US`;
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=5&regionCode=US`;
 
       const response = await axios.get(url);
 
@@ -126,15 +124,11 @@ const {state:{isLoggedIn}} = useUser()
       try{
         setVideos([])
         setVideosNextPageToken(null)
-
         const cachedData = await loadFromDB('homeVideosScroll')
-
         if (cachedData &&  Array.isArray(cachedData.videos) && cachedData.videos.length > 0 ) {
-            console.log("loading from cache")
             setVideos(cachedData.videos)
             setVideosNextPageToken(cachedData.nextPageToken || null)
         }else{
-          console.log("loading from api")
           await fetchVideos({})
         }
 
