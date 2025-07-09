@@ -1,9 +1,5 @@
 
-import base64
-import json
-import requests
 from django.conf import settings
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -133,50 +129,7 @@ class GoogleAuthCallBackView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-
-        if not request.user.is_authenticated:
-            return Response({'success': False, 'error': 'Unauthorized or invalid request'},
-                            status=status.HTTP_401_UNAUTHORIZED)
-
-        google_access_token = request.COOKIES.get('google_access_token')
-        google_refresh_token = request.COOKIES.get('google_refresh_token')
-
-        if not google_access_token or not google_refresh_token:
-            return Response({'success': False, 'error': 'Unauthorized or invalid request'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        # message = {
-        #     "access_token": google_access_token,
-        #     "refresh_token": google_refresh_token,
-        #     "user_id": request.user.google_sub
-        # }
-        #
-        # message_str = json.dumps(message)
-        #
-        # byte_message = message_str.encode('utf-8')
-        #
-
-        try:
-            # publisher = pubsub_v1.PublisherClient()
-            # topic_path = publisher.topic_path(settings.GOOGLE_CLOUD_PROJECT_ID, settings.GOOGLE_CLOUD_PUB_SUB_TOPIC_ID)
-            # future = publisher.publish(topic_path, byte_message)
-            # print(future.result())
-            response = Response({'success': True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
-
-            for cookie in request.COOKIES:
-                response.delete_cookie(cookie)
-
-            return response
-
-        except exceptions.JSONWebTokenExpired:
-            return Response({'success': False, 'error': 'Token is expired'},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        except (InvalidTokenError, InvalidIssuerError) as err:
-            return Response({'success': False, 'error': f'Invalid token: {err}'},
-                            status=status.HTTP_401_UNAUTHORIZED)
-
-        except exceptions.JSONWebTokenError as err:
-            return Response({'success': False, 'error': f'authentication failed {err}'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        pass
 
 
 

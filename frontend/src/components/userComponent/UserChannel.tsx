@@ -5,6 +5,7 @@ import { faImage } from '@fortawesome/free-regular-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCreatePost } from '../hooks/useCreatePost.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
+import { useUserViewerPosts } from '../hooks/useUserViewerPosts.ts';
 
 type ImagePreviews = {
   file: File;
@@ -26,7 +27,7 @@ export default function UserChannel() {
 
   const { createPost, loading: creatingPost, error: createPostError } = useCreatePost();
 
-  // const { data, loading: loadingViewerPosts, error: errorViwerPosts } = useUserViewerPosts();
+  const { data, loading: userPostsLoading, error: userPostsError } = useUserViewerPosts();
 
   const MAX_MB = 10 * 1024 * 1024;
 
@@ -187,6 +188,12 @@ export default function UserChannel() {
       if (parent) parent.removeEventListener('mousedown', handleClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
 
   return (
     <div ref={mainDivRef} className="h-screen  relative  flex flex-col justify-start items-center p-8 gap-12 overflow-y-scroll overflow-hidden scroll-smooth">

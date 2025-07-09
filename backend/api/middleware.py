@@ -1,4 +1,4 @@
-from django.middleware.csrf import get_token as get_csrf_token
+
 from django.utils.deprecation import MiddlewareMixin
 from django.contrib.auth import authenticate
 from google.oauth2 import id_token

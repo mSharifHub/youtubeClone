@@ -13,7 +13,11 @@ urlpatterns = [
 
 
     path('api/auth/logout/', LogoutView.as_view(), name='logout'),
+
+
     # Graphql
-    path("graphql/", csrf_protect(FileUploadGraphQLView.as_view(graphiql=True)))
+    #path("graphql/", csrf_protect(FileUploadGraphQLView.as_view(graphiql=True)))
+    path('graphql/', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True)))
+
 
 ]

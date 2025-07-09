@@ -1,5 +1,4 @@
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.models import AnonymousUser
 from google.oauth2 import  id_token
 from google.auth.transport import requests as google_requests
 from django.contrib.auth import get_user_model

@@ -12,3 +12,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+
+class Post(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    content = models.TextField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        snippet = (self.content[:50] + '..') if len(self.content) > 30 else self.content
+        return f"Post {self.pk}  by {self.author.username}: {snippet}"
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='post_images/')
+
+    def __str__(self):
+        return f"{self.pk} for Post {self.post.pk}"
