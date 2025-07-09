@@ -102,7 +102,7 @@ DATABASES = {
 AUTH_USER_MODEL = 'api.User'
 
 GRAPHENE = {
-    'SCHEMA': 'api.schema.schema',
+    'SCHEMA': 'api.graphql.schema.schema',
     "MIDDLEWARE": [
 
     ],

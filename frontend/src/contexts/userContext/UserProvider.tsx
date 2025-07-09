@@ -1,7 +1,9 @@
 import React, { useReducer, ReactNode, useEffect } from 'react';
 import { UserContext } from './UserContext.tsx';
 import { userReducer } from './userReducer.ts';
-import { useViewerLazyQuery } from '../../graphql/types.ts';
+import { ViewerQuery } from '../../graphql/types.ts';
+import { useLazyQuery } from '@apollo/client';
+import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 import { useLocation } from 'react-router-dom';
 
 interface UserProviderProps {
@@ -17,15 +19,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialUserState);
   const location = useLocation();
 
-  const [fetchViewer, { data, error, loading, called }] = useViewerLazyQuery({ fetchPolicy: 'network-only' });
+  // Make a network request to always check if user is logged in before querying the user data on graphql
+  const [fetchViewer, { data, error, loading, called }] = useLazyQuery<ViewerQuery>(VIEWER_QUERY, { fetchPolicy: 'network-only' });
 
   useEffect(() => {
     fetchViewer();
   }, [fetchViewer, location.pathname]);
 
   useEffect(() => {
-    if (loading) return;
-    if (error || !data?.viewer) {
+    if (!called || loading) return;
+    if (error || !data || !data.viewer) {
       dispatch({ type: 'CLEAR_USER' });
       return;
     }

@@ -4,7 +4,7 @@ from api.serializers import UserSerializer
 from  graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from api.models import  Post, PostImage
-from api.graphQl.types import  PostType
+from api.graphql.types import  PostType
 
 MAX_TOTAL_SIZE = 10* 1024 * 1024   # 1MB total size allowed
 

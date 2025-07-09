@@ -2,8 +2,8 @@ import graphene
 from graphql_auth.schema import MeQuery
 from api.models import User, Post
 from graphql import GraphQLError
-from api.graphQl.mutations import UserSerializerMutation, CreatePost
-from api.graphQl.types import UserType, PostType
+from api.graphql.mutations import UserSerializerMutation, CreatePost
+from api.graphql.types import UserType, PostType
 
 
 class Query(MeQuery, graphene.ObjectType):
