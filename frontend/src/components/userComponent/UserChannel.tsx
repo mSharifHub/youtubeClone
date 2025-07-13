@@ -6,6 +6,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCreatePost } from '../hooks/useCreatePost.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUserViewerPosts } from '../hooks/useUserViewerPosts.ts';
+import { PostCard } from './PostCard.tsx';
+import { PostNode } from '../../graphql/types.ts';
 
 type ImagePreviews = {
   file: File;
@@ -27,7 +29,12 @@ export default function UserChannel() {
 
   const { createPost, loading: creatingPost, error: createPostError } = useCreatePost();
 
-  const { data, loading: userPostsLoading, error: userPostsError } = useUserViewerPosts();
+  const { data, loading: userPostsLoading, error: userPostsError, loadMore } = useUserViewerPosts();
+
+
+
+
+  const posts = data?.viewerPosts?.edges?.map((edge) => edge?.node).filter((node): node is PostNode => !!node) || [];
 
   const MAX_MB = 10 * 1024 * 1024;
 
@@ -189,12 +196,6 @@ export default function UserChannel() {
     };
   }, []);
 
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-    }
-  }, [data]);
-
   return (
     <div ref={mainDivRef} className="h-screen  relative  flex flex-col justify-start items-center p-8 gap-12 overflow-y-scroll overflow-hidden scroll-smooth">
       <UserProfileCard />
@@ -202,7 +203,7 @@ export default function UserChannel() {
         ref={communityPostRef}
         onClick={() => setClickedInput(true)}
         onSubmit={handlePost}
-        className={`flex flex-col  h-fit w-[80vw] max-w-[800px] p-4 gap-4 rounded-lg border  dark:border-neutral-600  ${clickedInput ? 'bg-neutral-50 dark:bg-neutral-700 ' : 'dark:bg-neutral-900'}`}
+        className={`flex flex-col   h-fit w-[80vw] max-w-[800px] p-4 gap-4 rounded-lg border  dark:border-neutral-600  ${clickedInput ? 'bg-neutral-50 dark:bg-neutral-700 ' : 'dark:bg-neutral-900'}`}
       >
         {!creatingPost ? (
           <>
@@ -311,16 +312,12 @@ export default function UserChannel() {
         )}
       </form>
 
-      {/*<div className="flex flex-col h-fit  w-full  items-start gap-8   ">*/}
-      {/*  {loadingViewerPosts && <SpinningCircle />}*/}
-      {/*  {data?.viewerPosts &&*/}
-      {/*    data?.viewerPosts.length > 0 &&*/}
-      {/*    data?.viewerPosts.map((post) => (*/}
-      {/*      <div key={`${post?.id}-${post?.__typename}`} className="min-h-24 w-full  border dark:border-neutral-600 rounded-xl ">*/}
-      {/*        <p className="w-full break-words whitespace-pre-wrap">{post?.content}</p>*/}
-      {/*      </div>*/}
-      {/*    ))}*/}
-      {/*</div>*/}
+      <div className="flex flex-col h-fit w-[80vw] max-w-[800px] items-start gap-8 ">
+        {posts.map((node) => (
+          <PostCard key={`${node?.id}-${node?.__typename}`} post={node} />
+        ))}
+        {userPostsLoading && <SpinningCircle />}
+      </div>
     </div>
   );
 }

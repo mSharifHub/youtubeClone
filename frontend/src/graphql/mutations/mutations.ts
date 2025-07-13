@@ -7,6 +7,7 @@ export const CREATE_POST = gql`
         id
         content
         createdAt
+        profilePicture
         author {
           youtubeHandler
         }

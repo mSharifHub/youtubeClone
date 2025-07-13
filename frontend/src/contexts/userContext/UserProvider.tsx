@@ -1,7 +1,7 @@
 import React, { useReducer, ReactNode, useEffect } from 'react';
 import { UserContext } from './UserContext.tsx';
 import { userReducer } from './userReducer.ts';
-import { ViewerQuery } from '../../graphql/types.ts';
+import { PostNode, ViewerQuery } from '../../graphql/types.ts';
 import { useLazyQuery } from '@apollo/client';
 import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
 import { useLocation } from 'react-router-dom';
@@ -13,6 +13,7 @@ interface UserProviderProps {
 const initialUserState = {
   user: null,
   isLoggedIn: undefined,
+  posts: [] as PostNode[],
 };
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {

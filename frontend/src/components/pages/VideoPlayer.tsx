@@ -10,8 +10,6 @@ import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import CommentLoading from '../VideoComponents/CommentLoading.tsx';
-import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
-import NProgress from 'nprogress';
 import { useSearchParams } from 'react-router-dom';
 
 export const VideoPlayer: React.FC = () => {
@@ -26,14 +24,12 @@ export const VideoPlayer: React.FC = () => {
   const [subscribed, setSubscribed] = useState<boolean>(false); // refactor as context dispatch state
   const [animateRing, setAnimateRing] = useState<boolean>(false);
 
-  const { selectedVideo } = useSelectedVideo();
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
 
   const [searchParams] = useSearchParams();
 
   const videoId = searchParams.get('v');
 
-  NProgress.configure({ showSpinner: false });
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -105,7 +101,6 @@ export const VideoPlayer: React.FC = () => {
     }
     setSubscribed((prev) => !prev);
   };
-
 
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">

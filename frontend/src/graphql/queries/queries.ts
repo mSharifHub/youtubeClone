@@ -14,32 +14,31 @@ export const VIEWER_QUERY = gql`
         username
         email
       }
-      posts {
-        content
-        createdAt
-        author {
-          youtubeHandler
-        }
-        images {
-          image
-        }
-      }
     }
   }
 `;
-
 export const VIEWER_POSTS_QUERY = gql`
-  query ViewerPosts {
-    viewerPosts {
-      id
-      content
-      createdAt
-      author {
-        youtubeHandler
+  query ViewerPosts($first: Int, $after: String, $orderBy: String) {
+    viewerPosts(first: $first, after: $after, orderBy: $orderBy) {
+      edges {
+        node {
+          id
+          content
+          createdAt
+          profilePicture
+          author {
+            youtubeHandler
+          }
+          images {
+            image
+          }
+        }
+        cursor
       }
-      profilePicture
-      images {
-        image
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
       }
     }
   }

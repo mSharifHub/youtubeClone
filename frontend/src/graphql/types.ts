@@ -10,18 +10,19 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
-  Upload: { input: any; output: any; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
+  Upload: { input: any; output: any };
 };
 
 export type CreatePost = {
   __typename?: 'CreatePost';
-  post?: Maybe<PostType>;
+  cursor?: Maybe<Scalars['String']['output']>;
+  post?: Maybe<PostNode>;
 };
 
 export type ErrorType = {
@@ -36,12 +37,10 @@ export type Mutation = {
   userUpdate?: Maybe<UserSerializerMutationPayload>;
 };
 
-
 export type MutationCreatePostArgs = {
   content?: InputMaybe<Scalars['String']['input']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['Upload']['input']>>>;
 };
-
 
 export type MutationUserUpdateArgs = {
   input: UserSerializerMutationInput;
@@ -53,29 +52,88 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type PostImageType = {
-  __typename?: 'PostImageType';
+/** The Relay compliant `PageInfo` type, containing data necessary to paginate this connection. */
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  /** When paginating forwards, the cursor to continue. */
+  endCursor?: Maybe<Scalars['String']['output']>;
+  /** When paginating forwards, are there more items? */
+  hasNextPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, the cursor to continue. */
+  startCursor?: Maybe<Scalars['String']['output']>;
+};
+
+export type PostImageTypes = {
+  __typename?: 'PostImageTypes';
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
 };
 
-export type PostType = {
-  __typename?: 'PostType';
-  author: UserType;
+export type PostNode = Node & {
+  __typename?: 'PostNode';
+  author: UserTypes;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  /** The ID of the object. */
   id: Scalars['ID']['output'];
-  images?: Maybe<Array<Maybe<PostImageType>>>;
+  images: Array<PostImageTypes>;
   profilePicture?: Maybe<Scalars['String']['output']>;
+};
+
+export type PostNodeConnection = {
+  __typename?: 'PostNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<PostNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `PostNode` and its cursor. */
+export type PostNodeEdge = {
+  __typename?: 'PostNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<PostNode>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  allPosts?: Maybe<Array<Maybe<PostType>>>;
-  allUsers?: Maybe<Array<Maybe<UserType>>>;
+  allPosts?: Maybe<PostNodeConnection>;
+  allUsers?: Maybe<Array<Maybe<UserTypes>>>;
   me?: Maybe<UserNode>;
-  viewer?: Maybe<UserType>;
-  viewerPosts?: Maybe<Array<Maybe<PostType>>>;
+  viewer?: Maybe<UserTypes>;
+  viewerPosts?: Maybe<PostNodeConnection>;
+};
+
+export type QueryAllPostsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  content_Icontains?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryViewerPostsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  content_Icontains?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UserNode = Node & {
@@ -96,15 +154,29 @@ export type UserNode = Node & {
   lastLogin?: Maybe<Scalars['DateTime']['output']>;
   lastName: Scalars['String']['output'];
   pk?: Maybe<Scalars['Int']['output']>;
-  posts: Array<PostType>;
+  posts: PostNodeConnection;
   profilePicture?: Maybe<Scalars['String']['output']>;
   secondaryEmail?: Maybe<Scalars['String']['output']>;
-  subscribedTo: Array<UserType>;
-  subscribers: Array<UserType>;
+  subscribedTo: Array<UserTypes>;
+  subscribers: Array<UserTypes>;
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username: Scalars['String']['output'];
   verified?: Maybe<Scalars['Boolean']['output']>;
   youtubeHandler: Scalars['String']['output'];
+};
+
+export type UserNodePostsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  content_Icontains?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UserSerializerMutationInput = {
@@ -142,8 +214,8 @@ export type UserSerializerMutationPayload = {
   youtubeHandler?: Maybe<Scalars['String']['output']>;
 };
 
-export type UserType = {
-  __typename?: 'UserType';
+export type UserTypes = {
+  __typename?: 'UserTypes';
   bio: Scalars['String']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
@@ -154,12 +226,26 @@ export type UserType = {
   isStaff: Scalars['Boolean']['output'];
   isVerified: Scalars['Boolean']['output'];
   lastName: Scalars['String']['output'];
-  posts: Array<PostType>;
+  posts: PostNodeConnection;
   profilePicture?: Maybe<Scalars['String']['output']>;
-  subscribers: Array<UserType>;
+  subscribers: Array<UserTypes>;
   /** Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
   username: Scalars['String']['output'];
   youtubeHandler: Scalars['String']['output'];
+};
+
+export type UserTypesPostsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  content_Icontains?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePostMutationVariables = Exact<{
@@ -167,36 +253,83 @@ export type CreatePostMutationVariables = Exact<{
   images?: InputMaybe<Array<Scalars['Upload']['input']> | Scalars['Upload']['input']>;
 }>;
 
-
-export type CreatePostMutation = { __typename?: 'Mutation', createPost?: { __typename?: 'CreatePost', post?: { __typename?: 'PostType', id: string, content: string, createdAt: any, author: { __typename?: 'UserType', youtubeHandler: string }, images?: Array<{ __typename?: 'PostImageType', image?: string | null } | null> | null } | null } | null };
+export type CreatePostMutation = {
+  __typename?: 'Mutation';
+  createPost?: {
+    __typename?: 'CreatePost';
+    post?: {
+      __typename?: 'PostNode';
+      id: string;
+      content: string;
+      createdAt: any;
+      profilePicture?: string | null;
+      author: { __typename?: 'UserTypes'; youtubeHandler: string };
+      images: Array<{ __typename?: 'PostImageTypes'; image?: string | null }>;
+    } | null;
+  } | null;
+};
 
 export type ViewerQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserType', firstName: string, lastName: string, username: string, youtubeHandler: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserType', username: string, email: string }>, posts: Array<{ __typename?: 'PostType', content: string, createdAt: any, author: { __typename?: 'UserType', youtubeHandler: string }, images?: Array<{ __typename?: 'PostImageType', image?: string | null } | null> | null }> } | null };
+export type ViewerQuery = {
+  __typename?: 'Query';
+  viewer?: {
+    __typename?: 'UserTypes';
+    firstName: string;
+    lastName: string;
+    username: string;
+    youtubeHandler: string;
+    email: string;
+    profilePicture?: string | null;
+    bio: string;
+    subscribers: Array<{ __typename?: 'UserTypes'; username: string; email: string }>;
+  } | null;
+};
 
-export type ViewerPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type ViewerPostsQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+}>;
 
-
-export type ViewerPostsQuery = { __typename?: 'Query', viewerPosts?: Array<{ __typename?: 'PostType', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserType', youtubeHandler: string }, images?: Array<{ __typename?: 'PostImageType', image?: string | null } | null> | null } | null> | null };
-
+export type ViewerPostsQuery = {
+  __typename?: 'Query';
+  viewerPosts?: {
+    __typename?: 'PostNodeConnection';
+    edges: Array<{
+      __typename?: 'PostNodeEdge';
+      cursor: string;
+      node?: {
+        __typename?: 'PostNode';
+        id: string;
+        content: string;
+        createdAt: any;
+        author: { __typename?: 'UserTypes'; youtubeHandler: string; profilePicture?: string | null };
+        images: Array<{ __typename?: 'PostImageTypes'; image?: string | null }>;
+      } | null;
+    } | null>;
+    pageInfo: { __typename?: 'PageInfo'; endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean };
+  } | null;
+};
 
 export const CreatePostDocument = gql`
-    mutation CreatePost($content: String!, $images: [Upload!]) {
-  createPost(content: $content, images: $images) {
-    post {
-      id
-      content
-      createdAt
-      author {
-        youtubeHandler
-      }
-      images {
-        image
+  mutation CreatePost($content: String!, $images: [Upload!]) {
+    createPost(content: $content, images: $images) {
+      post {
+        id
+        content
+        createdAt
+        profilePicture
+        author {
+          youtubeHandler
+        }
+        images {
+          image
+        }
       }
     }
   }
-}
-    `;
+`;
 export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
 
 /**
@@ -218,39 +351,29 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * });
  */
 export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+}
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const ViewerDocument = gql`
-    query Viewer {
-  viewer {
-    firstName
-    lastName
-    username
-    youtubeHandler
-    email
-    profilePicture
-    bio
-    subscribers {
+  query Viewer {
+    viewer {
+      firstName
+      lastName
       username
+      youtubeHandler
       email
-    }
-    posts {
-      content
-      createdAt
-      author {
-        youtubeHandler
-      }
-      images {
-        image
+      profilePicture
+      bio
+      subscribers {
+        username
+        email
       }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerQuery__
@@ -268,37 +391,47 @@ export const ViewerDocument = gql`
  * });
  */
 export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export function useViewerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
 export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export const ViewerPostsDocument = gql`
-    query ViewerPosts {
-  viewerPosts {
-    id
-    content
-    createdAt
-    author {
-      youtubeHandler
-    }
-    profilePicture
-    images {
-      image
+  query ViewerPosts($first: Int, $after: String, $orderBy: String) {
+    viewerPosts(first: $first, after: $after, orderBy: $orderBy) {
+      edges {
+        node {
+          id
+          content
+          createdAt
+          author {
+            youtubeHandler
+            profilePicture
+          }
+          images {
+            image
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerPostsQuery__
@@ -312,21 +445,24 @@ export const ViewerPostsDocument = gql`
  * @example
  * const { data, loading, error } = useViewerPostsQuery({
  *   variables: {
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *      orderBy: // value for 'orderBy'
  *   },
  * });
  */
 export function useViewerPostsQuery(baseOptions?: Apollo.QueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export function useViewerPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export function useViewerPostsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export type ViewerPostsQueryHookResult = ReturnType<typeof useViewerPostsQuery>;
 export type ViewerPostsLazyQueryHookResult = ReturnType<typeof useViewerPostsLazyQuery>;
 export type ViewerPostsSuspenseQueryHookResult = ReturnType<typeof useViewerPostsSuspenseQuery>;
