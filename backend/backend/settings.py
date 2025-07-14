@@ -90,6 +90,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "backend.wsgi.application"
 
 
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -101,7 +103,9 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'api.User'
 
+
 GRAPHENE = {
+    "DJANGO_CHOICE_FIELD_ENUM_V3_NAMING": True,
     'SCHEMA': 'api.graphql.schema.schema',
     "MIDDLEWARE": [
 

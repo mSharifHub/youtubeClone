@@ -1,9 +1,12 @@
 import graphene
+from graphene import relay
 from graphene_django import DjangoObjectType
+
+from api.graphql.filters import PostFilter
 from api.models import User, Post, PostImage
 
 
-class UserType(DjangoObjectType):
+class UserTypes(DjangoObjectType):
     class Meta:
         model = User
         fields = (
@@ -30,13 +33,11 @@ class UserType(DjangoObjectType):
             return picture_url
 
 
-class PostImageType(DjangoObjectType):
+class PostImageTypes(DjangoObjectType):
     image = graphene.String()
     class Meta:
         model = PostImage
         fields = ('id',)
-
-
 
     def resolve_image(self, info):
         if  self.image and hasattr(self.image, "url"):
@@ -45,25 +46,23 @@ class PostImageType(DjangoObjectType):
         return None
 
 
-class PostType(DjangoObjectType):
-
-    images = graphene.List(PostImageType)
+class PostNode(DjangoObjectType):
     profile_picture = graphene.String()
 
     class Meta:
         model = Post
-        fields = (
-            'id',
-            'content',
-            'created_at',
-            'author'
-        )
+        interfaces = (relay.Node,)
+        fields = '__all__'
+        filterset_class = PostFilter
 
 
     def resolve_images(self,info):
-        return self.images.all()
+        return  self.images.all()
+
 
     def resolve_profile_picture(self:Post,info):
         if self.author and self.author.profile_picture:
             return info.context.build_absolute_uri(self.author.profile_picture.url)
-        return None
+        return  None
+
+

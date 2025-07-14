@@ -14,12 +14,10 @@ class User(AbstractUser):
         return self.username
 
 
-
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     content = models.TextField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
     def __str__(self):
         snippet = (self.content[:50] + '..') if len(self.content) > 30 else self.content

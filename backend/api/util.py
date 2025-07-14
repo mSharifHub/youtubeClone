@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from api.models import User
 import random
 
-
 def get_google_id_token(code):
     #google end point to get the token
     token_url = 'https://oauth2.googleapis.com/token'

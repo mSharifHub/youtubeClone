@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from graphene_file_upload.django import FileUploadGraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
+
 from api.views import GoogleLoginView, GoogleAuthCallBackView, LogoutView
 
 urlpatterns = [
@@ -17,7 +18,7 @@ urlpatterns = [
 
     # Graphql
     #path("graphql/", csrf_protect(FileUploadGraphQLView.as_view(graphiql=True)))
-    path('graphql/', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True)))
+    path('graphql/', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True))),
 
 
 ]

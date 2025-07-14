@@ -1,17 +1,18 @@
 import graphene
 from graphql_auth.schema import MeQuery
+from graphene_django.filter import DjangoFilterConnectionField
 from api.models import User, Post
 from graphql import GraphQLError
 from api.graphql.mutations import UserSerializerMutation, CreatePost
-from api.graphql.types import UserType, PostType
+from api.graphql.types import UserTypes, PostNode
+
 
 
 class Query(MeQuery, graphene.ObjectType):
-    all_users = graphene.List(UserType)
-    viewer = graphene.Field(UserType)
-
-    viewer_posts = graphene.List(PostType)
-    all_posts = graphene.List(PostType)
+    all_users = graphene.List(UserTypes)
+    viewer = graphene.Field(UserTypes)
+    viewer_posts = DjangoFilterConnectionField(PostNode)
+    all_posts = DjangoFilterConnectionField(PostNode)
 
     def resolve_viewer(self, info, **kwargs):
         user = info.context.user

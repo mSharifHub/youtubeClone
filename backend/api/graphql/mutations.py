@@ -4,7 +4,7 @@ from api.serializers import UserSerializer
 from  graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from api.models import  Post, PostImage
-from api.graphql.types import  PostType
+from api.graphql.types import  PostNode
 
 MAX_TOTAL_SIZE = 10* 1024 * 1024   # 1MB total size allowed
 
@@ -15,7 +15,8 @@ class UserSerializerMutation(SerializerMutation):
 
 
 class CreatePost(graphene.Mutation):
-    post = graphene.Field(PostType)
+    post = graphene.Field(PostNode)
+    cursor = graphene.String()
 
     class Arguments:
         content = graphene.String(required=False)
@@ -45,5 +46,9 @@ class CreatePost(graphene.Mutation):
                     raise GraphQLError("Total size of images exceeds the limit")
 
             PostImage.objects.create(post=post, image=image)
+
+
+
+
 
         return CreatePost(post=post)
