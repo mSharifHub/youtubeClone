@@ -257,6 +257,7 @@ export type CreatePostMutation = {
   __typename?: 'Mutation';
   createPost?: {
     __typename?: 'CreatePost';
+    cursor?: string | null;
     post?: {
       __typename?: 'PostNode';
       id: string;
@@ -289,7 +290,6 @@ export type ViewerQuery = {
 export type ViewerPostsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type ViewerPostsQuery = {
@@ -304,7 +304,8 @@ export type ViewerPostsQuery = {
         id: string;
         content: string;
         createdAt: any;
-        author: { __typename?: 'UserTypes'; youtubeHandler: string; profilePicture?: string | null };
+        profilePicture?: string | null;
+        author: { __typename?: 'UserTypes'; youtubeHandler: string };
         images: Array<{ __typename?: 'PostImageTypes'; image?: string | null }>;
       } | null;
     } | null>;
@@ -327,6 +328,7 @@ export const CreatePostDocument = gql`
           image
         }
       }
+      cursor
     }
   }
 `;
@@ -407,16 +409,16 @@ export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
 export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export const ViewerPostsDocument = gql`
-  query ViewerPosts($first: Int, $after: String, $orderBy: String) {
-    viewerPosts(first: $first, after: $after, orderBy: $orderBy) {
+  query ViewerPosts($first: Int, $after: String) {
+    viewerPosts(first: $first, after: $after) {
       edges {
         node {
           id
           content
           createdAt
+          profilePicture
           author {
             youtubeHandler
-            profilePicture
           }
           images {
             image
@@ -447,7 +449,6 @@ export const ViewerPostsDocument = gql`
  *   variables: {
  *      first: // value for 'first'
  *      after: // value for 'after'
- *      orderBy: // value for 'orderBy'
  *   },
  * });
  */

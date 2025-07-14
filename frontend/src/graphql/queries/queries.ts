@@ -18,8 +18,8 @@ export const VIEWER_QUERY = gql`
   }
 `;
 export const VIEWER_POSTS_QUERY = gql`
-  query ViewerPosts($first: Int, $after: String, $orderBy: String) {
-    viewerPosts(first: $first, after: $after, orderBy: $orderBy) {
+  query ViewerPosts($first: Int, $after: String) {
+    viewerPosts(first: $first, after: $after) {
       edges {
         node {
           id

@@ -4,7 +4,6 @@ import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
-import NProgress from 'nprogress';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 
@@ -25,10 +24,7 @@ export default function useYoutubeVideos(
   const [videosError, setVideosError] = useState<string | null>(null);
   const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
 
-
   const MAX_LIMIT:  number = 20
-  NProgress.configure({ showSpinner: false });
-
   const {state:{isLoggedIn}} = useUser()
 
 

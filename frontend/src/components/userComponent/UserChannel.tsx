@@ -29,10 +29,7 @@ export default function UserChannel() {
 
   const { createPost, loading: creatingPost, error: createPostError } = useCreatePost();
 
-  const { data, loading: userPostsLoading, error: userPostsError, loadMore } = useUserViewerPosts();
-
-
-
+  const { data, loading: userPostsLoading, sentinelRef } = useUserViewerPosts();
 
   const posts = data?.viewerPosts?.edges?.map((edge) => edge?.node).filter((node): node is PostNode => !!node) || [];
 
@@ -316,6 +313,8 @@ export default function UserChannel() {
         {posts.map((node) => (
           <PostCard key={`${node?.id}-${node?.__typename}`} post={node} />
         ))}
+        {/* sentinel Ref*/}
+        <div ref={sentinelRef} />
         {userPostsLoading && <SpinningCircle />}
       </div>
     </div>

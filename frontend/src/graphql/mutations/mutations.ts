@@ -15,6 +15,7 @@ export const CREATE_POST = gql`
           image
         }
       }
+      cursor
     }
   }
 `;

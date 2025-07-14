@@ -3,9 +3,9 @@ import { ViewerPostsQuery } from '../../graphql/types.ts';
 import { VIEWER_POSTS_QUERY } from '../../graphql/queries/queries.ts';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
-export const useUserViewerPosts = (first: number = 10, orderBy?: string) => {
+export const useUserViewerPosts = (first: number = 10) => {
   const { data, loading, error, fetchMore } = useQuery<ViewerPostsQuery>(VIEWER_POSTS_QUERY, {
-    variables: { first, orderBy },
+    variables: { first },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
   });
@@ -15,18 +15,32 @@ export const useUserViewerPosts = (first: number = 10, orderBy?: string) => {
 
     if (!data?.viewerPosts?.pageInfo || !data?.viewerPosts?.pageInfo.endCursor) return;
     await fetchMore({
-      variables: {
-        first,
-        after: data?.viewerPosts?.pageInfo.endCursor,
-        orderBy,
+      variables: { first, after: data?.viewerPosts?.pageInfo.endCursor },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult?.viewerPosts) return prev;
+
+        const previousEdges = prev?.viewerPosts?.edges ?? [];
+
+        return {
+          viewerPosts: {
+            ...fetchMoreResult.viewerPosts,
+            edges: [...previousEdges, ...fetchMoreResult.viewerPosts.edges],
+            pageInfo: fetchMoreResult.viewerPosts.pageInfo,
+          },
+        };
       },
     });
   };
+
+  const postsLen = data?.viewerPosts?.edges?.length ?? 0;
+
+  const sentinelRef = useIntersectionObserver(loadMore, loading, postsLen);
 
   return {
     data,
     loading,
     error,
     loadMore,
+    sentinelRef,
   };
 };
