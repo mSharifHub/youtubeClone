@@ -3,9 +3,8 @@ from graphql_auth.schema import MeQuery
 from graphene_django.filter import DjangoFilterConnectionField
 from api.models import User, Post
 from graphql import GraphQLError
-from api.graphql.mutations import UserSerializerMutation, CreatePost
+from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost,DeletePost
 from api.graphql.types import UserTypes, PostNode
-
 
 
 class Query(MeQuery, graphene.ObjectType):
@@ -36,6 +35,8 @@ class Query(MeQuery, graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     user_update = UserSerializerMutation.Field()
     create_post = CreatePost.Field()
+    edit_post = EditPost.Field()
+    delete_post = DeletePost.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

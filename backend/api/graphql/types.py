@@ -6,6 +6,7 @@ from api.graphql.filters import PostFilter
 from api.models import User, Post, PostImage
 
 
+
 class UserTypes(DjangoObjectType):
     class Meta:
         model = User
