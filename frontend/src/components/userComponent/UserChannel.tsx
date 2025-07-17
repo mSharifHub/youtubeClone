@@ -194,13 +194,13 @@ export default function UserChannel() {
   }, []);
 
   return (
-    <div ref={mainDivRef} className="h-screen  relative  flex flex-col justify-start items-center p-8 gap-12 overflow-y-scroll overflow-hidden scroll-smooth">
+    <div ref={mainDivRef} className="h-screen  w-full relative  flex flex-col justify-start items-center p-8 gap-12 overflow-y-scroll overflow-hidden scroll-smooth ">
       <UserProfileCard />
       <form
         ref={communityPostRef}
         onClick={() => setClickedInput(true)}
         onSubmit={handlePost}
-        className={`flex flex-col   h-fit w-[80vw] max-w-[800px] p-4 gap-4 rounded-lg border  dark:border-neutral-600  ${clickedInput ? 'bg-neutral-50 dark:bg-neutral-700 ' : 'dark:bg-neutral-900'}`}
+        className={`flex flex-col   h-fit  w-full  max-w-[800px] p-4 gap-4 rounded-lg border  dark:border-neutral-600  ${clickedInput ? 'bg-neutral-50 dark:bg-neutral-700 ' : 'dark:bg-neutral-900'}`}
       >
         {!creatingPost ? (
           <>
@@ -309,7 +309,7 @@ export default function UserChannel() {
         )}
       </form>
 
-      <div className="flex flex-col h-fit w-[80vw] max-w-[800px] items-start gap-8 ">
+      <div className="flex flex-col h-fit w-full max-w-[800px] items-start gap-8  ">
         {posts.map((node) => (
           <PostCard key={`${node?.id}-${node?.__typename}`} post={node} />
         ))}

@@ -3,7 +3,9 @@ import { gql } from '@apollo/client';
 export const CREATE_POST = gql`
   mutation CreatePost($content: String!, $images: [Upload!]) {
     createPost(content: $content, images: $images) {
+      cursor
       post {
+        __typename
         id
         content
         createdAt
@@ -12,10 +14,34 @@ export const CREATE_POST = gql`
           youtubeHandler
         }
         images {
+          __typename
           image
         }
       }
-      cursor
+    }
+  }
+`;
+
+export const EDIT_POST = gql`
+  mutation EditPost($postId: ID!, $content: String!) {
+    editPost(postId: $postId, content: $content) {
+      post {
+        __typename
+        id
+        content
+      }
+    }
+  }
+`;
+
+export const DELETE_POST = gql`
+  mutation DeletePost($postId: ID!) {
+    deletePost(postId: $postId) {
+      post {
+        __typename
+        id
+      }
+      success
     }
   }
 `;

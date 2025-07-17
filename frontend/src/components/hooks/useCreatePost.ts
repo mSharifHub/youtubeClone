@@ -6,7 +6,7 @@ export const useCreatePost = () => {
     update(cache, { data }) {
       const payLoad = data?.createPost;
 
-      if (!payLoad?.post || payLoad?.cursor) return;
+      if (!payLoad?.post) return;
 
       const existing = cache.readQuery<ViewerPostsQuery>({
         query: VIEWER_POSTS_QUERY,
@@ -16,11 +16,13 @@ export const useCreatePost = () => {
       if (!existing?.viewerPosts) return;
 
       const newEdge = {
+        __typename: 'PostNodeEdge',
         cursor: payLoad.cursor,
         node: {
           ...payLoad.post,
         },
       };
+
 
       cache.writeQuery<ViewerPostsQuery>({
         query: VIEWER_POSTS_QUERY,
@@ -31,6 +33,7 @@ export const useCreatePost = () => {
             edges: [newEdge as PostNodeEdge, ...existing.viewerPosts.edges],
           },
         },
+
       });
     },
   });
