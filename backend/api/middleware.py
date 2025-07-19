@@ -6,8 +6,8 @@ from google.auth.transport import requests as google_requests
 
 from api.helpers import Helpers
 from backend import settings
-import logging
-logger = logging.getLogger(__name__)
+from graphql import GraphQLError
+
 
 class GoogleAuthMiddleWare(MiddlewareMixin):
     def process_request(self, request):
@@ -25,9 +25,8 @@ class GoogleAuthMiddleWare(MiddlewareMixin):
                 user = authenticate(request, google_id_token=google_id_token)
                 token_valid = True
             except ValueError as value_error:
-                logger.warning(f"Error validating Google token: {value_error}")
-            except Exception as e:
-                logger.error(f"Token verification failed: {str(e)}")
+                raise GraphQLError(f"Error validating Google token: {value_error}")
+
 
 
         if not token_valid and google_refresh_token:
@@ -39,7 +38,7 @@ class GoogleAuthMiddleWare(MiddlewareMixin):
                     user = authenticate(request, google_id_token=new_id_token)
                     request.new_id_token = (new_id_token, expires_in)
             except Exception as e:
-                logger.error(f"Error refreshing google token: {e}")
+                raise GraphQLError(f"Error refreshing google token: {e}")
         if user:
             request.user = user
 

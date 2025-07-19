@@ -1,7 +1,8 @@
 
 from django_filters  import FilterSet, OrderingFilter
 
-from api.models import Post
+from api.models import Post, VideoHistory
+
 
 class PostFilter(FilterSet):
     order_by = OrderingFilter(fields=('created_at','created_at'),)
@@ -15,3 +16,8 @@ class PostFilter(FilterSet):
             'created_at': ['exact', 'gt', 'lt'],
         }
 
+
+class VideoHistoryFilter(FilterSet):
+    class Meta:
+        model = VideoHistory
+        fields = '__all__'

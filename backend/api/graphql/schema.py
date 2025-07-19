@@ -1,10 +1,25 @@
+from functools import wraps
+
 import graphene
 from graphql_auth.schema import MeQuery
 from graphene_django.filter import DjangoFilterConnectionField
-from api.models import User, Post
+from api.models import User, Post, VideoHistory
 from graphql import GraphQLError
-from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost,DeletePost
-from api.graphql.types import UserTypes, PostNode
+from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost, DeletePost, SaveVideoHistory
+from api.graphql.types import UserTypes, PostNode, VideoHistoryNode
+
+DEFAULT_POST_ORDERING= '-created_at'
+DEFAULT_VIDEO_HISTORY_ORDERING = '-watched_at'
+
+def require_auth(func):
+    @wraps(func)
+    def wrapper(self,info,**kwargs):
+        user = info.context.user
+        if not user or not user.is_authenticated:
+            raise GraphQLError("Not Authenticated")
+        return func(self,info,**kwargs)
+    return  wrapper
+
 
 
 class Query(MeQuery, graphene.ObjectType):
@@ -12,24 +27,25 @@ class Query(MeQuery, graphene.ObjectType):
     viewer = graphene.Field(UserTypes)
     viewer_posts = DjangoFilterConnectionField(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
+    viewer_video_history = DjangoFilterConnectionField(VideoHistoryNode)
 
+    @require_auth
     def resolve_viewer(self, info, **kwargs):
-        user = info.context.user
-        if not user or not user.is_authenticated:
-            raise GraphQLError('Not Authenticated')
-        return user
+        return info.context.user
 
     def resolve_all_users(self, info, **kwargs):
         return User.objects.all()
 
+    @require_auth
     def resolve_viewer_posts(self, info, **kwargs):
-        user = info.context.user
-        if not user or not user.is_authenticated:
-           raise GraphQLError('Not Authenticated')
-        return  Post.objects.filter(author=user).order_by('-created_at')
+        return  Post.objects.filter(author=info.context.user).order_by(DEFAULT_POST_ORDERING)
 
     def resolve_all_posts(self,info,**kwargs):
-        return Post.objects.all().order_by('-created_at')
+        return Post.objects.all().order_by(DEFAULT_POST_ORDERING)
+
+    @require_auth
+    def resolve_viewer_video_history(self,info,**kwargs):
+        return VideoHistory.objects.filter(user=info.context.user).order_by(DEFAULT_VIDEO_HISTORY_ORDERING)
 
 
 class Mutation(graphene.ObjectType):
@@ -37,6 +53,7 @@ class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     edit_post = EditPost.Field()
     delete_post = DeletePost.Field()
+    save_video_history = SaveVideoHistory.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

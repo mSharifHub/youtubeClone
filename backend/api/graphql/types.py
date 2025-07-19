@@ -2,9 +2,8 @@ import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
-from api.graphql.filters import PostFilter
-from api.models import User, Post, PostImage
-
+from api.graphql.filters import PostFilter, VideoHistoryFilter
+from api.models import User, Post, PostImage, VideoHistory
 
 
 class UserTypes(DjangoObjectType):
@@ -32,6 +31,7 @@ class UserTypes(DjangoObjectType):
         if self.profile_picture:
             picture_url = info.context.build_absolute_uri(self.profile_picture.url)
             return picture_url
+        return None
 
 
 class PostImageTypes(DjangoObjectType):
@@ -46,6 +46,13 @@ class PostImageTypes(DjangoObjectType):
 
         return None
 
+
+class VideoHistoryNode(DjangoObjectType):
+    class Meta:
+        model = VideoHistory
+        interfaces = (relay.Node,)
+        fields = '__all__'
+        filterset_class =  VideoHistoryFilter
 
 class PostNode(DjangoObjectType):
     profile_picture = graphene.String()

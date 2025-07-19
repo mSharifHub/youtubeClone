@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -12,6 +14,22 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+class VideoHistory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user= models.ForeignKey(User, on_delete=models.CASCADE, related_name='video_history')
+    video_id = models.CharField(max_length=240)
+    title = models.CharField(max_length=500, blank=True,null=True)
+    thumbnail_default = models.URLField(blank=True, null=True)
+    watched_at = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        ordering = ['-watched_at']
+        unique_together = ('user', 'video_id')
+
+    def __str__(self):
+        return f"{self.title or "video"} watched by {self.user.username or "user"}"
 
 
 class Post(models.Model):
