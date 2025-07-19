@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
                 </div>
                 <div className="flex justify-start items-center ">@{user?.youtubeHandler}</div>
 
-                <NavLink to={`/@${user?.youtubeHandler}`}  className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
+                <NavLink to={`/user/@${user?.youtubeHandler}`}  className="flex justify-start items-start text-blue-400 text-sm mt-3 cursor-pointer hover:text-blue-300 ">
                   View your channel
                 </NavLink>
               </div>

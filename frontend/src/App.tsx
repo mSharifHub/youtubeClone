@@ -8,10 +8,10 @@ import { VideoPlayer } from './components/pages/VideoPlayer.tsx';
 import { useEffect } from 'react';
 config.autoAddCss = false;
 import 'nprogress/nprogress.css';
-import You from './components/pages/You.tsx';
 import { ProtectedUserRoute } from './routerProtectors/ProtectedUserRoute.tsx';
 import { useUser } from './contexts/userContext/UserContext.tsx';
 import UserChannel from './components/userComponent/UserChannel.tsx';
+import { RedirectToOwnChannel } from './routerProtectors/RedirectToOwnChannel.tsx';
 
 function App() {
   const {
@@ -30,22 +30,18 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="watch" element={<VideoPlayer />} />
-          <Route
-            path="you"
-            element={
-              <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loadingQuery}>
-                <You />
-              </ProtectedUserRoute>
-            }
-          />
-          <Route
-            path=":youtubeHandler"
-            element={
-              <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loadingQuery}>
-                <UserChannel />
-              </ProtectedUserRoute>
-            }
-          />
+
+          <Route path="/user">
+            <Route index element={<RedirectToOwnChannel isLoggedIn={isLoggedIn} loading={loadingQuery} />} />
+            <Route
+              path=":youtubeHandler"
+              element={
+                <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loadingQuery}>
+                  <UserChannel />
+                </ProtectedUserRoute>
+              }
+            />
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFound />} />
