@@ -14,6 +14,7 @@ export const PostCard = ({ post }: { post: PostNode }) => {
   const [userInput, setUserInput] = useState<string>('');
 
   const { editPost } = useEditPost();
+
   const { deletePost } = useDeletePost();
 
   const handleShowEditModal = (event: React.MouseEvent<HTMLDivElement>) => {

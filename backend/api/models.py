@@ -1,5 +1,4 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -15,21 +14,51 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-class VideoHistory(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user= models.ForeignKey(User, on_delete=models.CASCADE, related_name='video_history')
-    video_id = models.CharField(max_length=240)
+
+class Video(models.Model):
+    video_id = models.UUIDField(primary_key=True, editable=False)
     title = models.CharField(max_length=500, blank=True,null=True)
     thumbnail_default = models.URLField(blank=True, null=True)
-    watched_at = models.DateTimeField(auto_now_add=True)
+    thumbnail_medium = models.URLField(blank=True, null=True)
 
+    channel_id = models.CharField(max_length=240)
+    channel_title = models.CharField(max_length=240)
+    channel_description = models.TextField(blank=True, null=True)
+    channel_logo = models.URLField(blank=True, null=True)
 
-    class Meta:
-        ordering = ['-watched_at']
-        unique_together = ('user', 'video_id')
+    published_at = models.DateTimeField()
+    subscriber_count = models.BigIntegerField(blank=True, null= True)
+    category_id = models.CharField(max_length=10)
+
+    view_count = models.BigIntegerField(blank=True, null= True)
+    like_count = models.BigIntegerField(blank=True, null= True)
+    comment_count = models.BigIntegerField(blank=True, null= True)
+    duration= models.CharField(max_length=10, blank= True, null=True)
 
     def __str__(self):
-        return f"{self.title or "video"} watched by {self.user.username or "user"}"
+        return self.video_id
+
+
+class VideoPlaylist(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='video_playlist_history')
+    videos = models.ManyToManyField(Video, through="VideoPlaylistEntries")
+
+    def __str__(self):
+        return f" {self.user.username}'s video playlist history"
+
+
+class VideoPlaylistEntries(models.Model):
+    video_playlist = models.ForeignKey(VideoPlaylist, on_delete=models.CASCADE, related_name='entries')
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    watched_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = ('video_playlist', 'video')
+        ordering = ['-watched_at']
+
+    def __str__(self):
+        return f"{self.video.title} watched by {self.video_playlist.user.username}"
+
 
 
 class Post(models.Model):

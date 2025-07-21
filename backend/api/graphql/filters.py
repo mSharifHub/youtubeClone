@@ -1,11 +1,10 @@
+from django_filters import FilterSet, OrderingFilter, DateTimeFromToRangeFilter
 
-from django_filters  import FilterSet, OrderingFilter
-
-from api.models import Post, VideoHistory
+from api.models import Post, VideoPlaylistEntries
 
 
 class PostFilter(FilterSet):
-    order_by = OrderingFilter(fields=('created_at','created_at'),)
+    order_by = OrderingFilter(fields=('created_at', 'created_at'), )
 
     class Meta:
         model = Post
@@ -18,6 +17,9 @@ class PostFilter(FilterSet):
 
 
 class VideoHistoryFilter(FilterSet):
+    watched_at = DateTimeFromToRangeFilter()
+    order_by = OrderingFilter(fields=('watched_at', 'watched_at'), )
+
     class Meta:
-        model = VideoHistory
-        fields = '__all__'
+        model = VideoPlaylistEntries
+        fields = [ 'video', 'watched_at']

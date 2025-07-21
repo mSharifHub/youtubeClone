@@ -1,14 +1,16 @@
 from datetime import datetime
+from enum import nonmember
 from typing import Optional, Dict, Any
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import now
 from graphene_django.rest_framework.mutation import SerializerMutation
 from api.serializers import UserSerializer
 from  graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
-from api.models import  Post, PostImage, VideoHistory
-from api.graphql.types import  PostNode, VideoHistoryNode
+from api.models import Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
+from api.graphql.types import  PostNode, VideoPlaylistEntryNode
 from graphql_relay import from_global_id
 from dateutil.parser import parse as parse_date
 
@@ -75,36 +77,72 @@ class EditPost (graphene.Mutation):
         return EditPost(post=post)
 
 
-class SaveVideoHistory(graphene.Mutation):
-    video_history = graphene.Field(VideoHistoryNode)
+class SaveVideoPlaylist(graphene.Mutation):
+    video_entry = graphene.Field(VideoPlaylistEntryNode)
+
+
     cursor = graphene.String()
 
     class Arguments:
         video_id = graphene.ID(required=True)
         title = graphene.String(required=False)
+        description = graphene.String(required=False)
         thumbnail_default = graphene.String(required=False)
+        thumbnail_medium = graphene.String(required=False)
+        channel_id = graphene.String(required=False)
+        channel_title = graphene.String(required=False)
+        channel_description = graphene.String(required=False)
+        channel_logo = graphene.String(required=False)
+        published_at = graphene.DateTime(required=False)
+        subscriber_count = graphene.String(required=False)
+        category_id = graphene.String(required=False)
+        view_count = graphene.String(required=False)
+        like_count = graphene.String(required=False)
+        comment_count = graphene.String(required=False)
+        duration = graphene.String(required=False)
 
 
     @classmethod
-    def mutate (cls, root, info, **kwargs)-> 'SaveVideoHistory':
+    def mutate (cls, root, info, **kwargs)-> 'SaveVideoPlaylist':
         user = info.context.user
         if not user or not user.is_authenticated:
             raise GraphQLError("Authentication required")
 
         try:
-            defaults = {
-                'title': kwargs['title'],
-                'thumbnail_default': kwargs['thumbnail_default'],
-                'watched_at':datetime.now()
-            }
 
-            video_history, _ = VideoHistory.objects.update_or_create(
-                user = user,
-                video_id = kwargs['video_id'],
-                defaults = defaults
+            video_object, _ = Video.objects.update_or_create(
+                video_id=kwargs['video_id'],
+                defaults={
+                    'title': kwargs.get('title'),
+                    'description': kwargs.get('description'),
+                    'thumbnail_default': kwargs.get('thumbnail_default'),
+                    'thumbnail_medium': kwargs.get('thumbnail_medium'),
+                    'channel_id': kwargs.get('channel_id'),
+                    'channel_title': kwargs.get('channel_title'),
+                    'channel_description': kwargs.get('channel_description'),
+                    'channel_logo': kwargs.get('channel_logo'),
+                    'published_at': kwargs.get('published_at'),
+                    'subscriber_count': kwargs.get('subscriber_count'),
+                    'category_id': kwargs.get('category_id'),
+                    'view_count': kwargs.get('view_count'),
+                    'like_count': kwargs.get('like_count'),
+                    'comment_count': kwargs.get('comment_count'),
+                    'duration': kwargs.get('duration'),
+                }
+
             )
 
-            return SaveVideoHistory(video_history=video_history)
+            playlist,_ = VideoPlaylist.objects.get_or_create(user=user)
+
+            entry, _ = VideoPlaylistEntries.objects.update_or_create(
+                video_playlist=playlist,
+                video=video_object,
+                defaults={"watched_at": now()}
+
+            )
+
+            return SaveVideoPlaylist(video_entry=entry)
+
 
         except Exception as err:
             raise GraphQLError(f"an error occurred: {str(err)}")

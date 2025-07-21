@@ -1,9 +1,10 @@
 import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
 from api.graphql.filters import PostFilter, VideoHistoryFilter
-from api.models import User, Post, PostImage, VideoHistory
+from api.models import User, Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
 
 
 class UserTypes(DjangoObjectType):
@@ -47,12 +48,30 @@ class PostImageTypes(DjangoObjectType):
         return None
 
 
-class VideoHistoryNode(DjangoObjectType):
+class VideoNode(DjangoObjectType):
     class Meta:
-        model = VideoHistory
+        model = Video
         interfaces = (relay.Node,)
         fields = '__all__'
-        filterset_class =  VideoHistoryFilter
+
+
+class VideoPlaylistEntryNode(DjangoObjectType):
+    cursor = graphene.String()
+    class Meta:
+        model = VideoPlaylistEntries
+        interfaces = (relay.Node,)
+        fields = '__all__'
+        filterset_class = VideoHistoryFilter
+
+
+class VideoPlaylistNode(DjangoObjectType):
+    entries = DjangoFilterConnectionField(VideoPlaylistEntryNode)
+    class Meta:
+        model = VideoPlaylist
+        interfaces = (relay.Node,)
+        fields = '__all__'
+
+
 
 class PostNode(DjangoObjectType):
     profile_picture = graphene.String()
