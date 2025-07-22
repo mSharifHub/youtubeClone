@@ -47,9 +47,14 @@ const client = new ApolloClient({
               };
             },
           },
-          viewerVideoPlaylist: {
+        },
+      },
+
+      viewerVideoPlaylist: {
+        fields: {
+          videoEntries: {
             keyArgs: false,
-            merge(existing = { edges: [], pageInfo: {} }, incoming) {
+            merge(existing = { edges: [] }, incoming) {
               return {
                 ...incoming,
                 edges: [...(existing.edges || []), ...incoming.edges],
@@ -60,6 +65,7 @@ const client = new ApolloClient({
       },
     },
   }),
+
   connectToDevTools: true,
 });
 
