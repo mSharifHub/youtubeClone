@@ -8,5 +8,5 @@ export const RedirectToOwnChannel = ({ isLoggedIn, loading }: { isLoggedIn: bool
 
   if (loading || isLoggedIn === undefined) return null;
 
-  if (isLoggedIn && user) return <Navigate to={`/user/@${user.youtubeHandler}`} replace={true} />;
+  if (isLoggedIn && user) return <Navigate to={`/you/@${user.youtubeHandler}`} replace={true} />;
 };

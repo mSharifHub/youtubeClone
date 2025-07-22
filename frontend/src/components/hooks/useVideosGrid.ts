@@ -32,7 +32,7 @@ export const useVideoGrid = (props: VideoGridProps): number => {
     setVideosPerRow(getVideosPerRowFromWidth(props, window.innerWidth));
   };
 
-  const throttleVideosToShowPerRow = useThrottle(determineVideosToShow, 100);
+  const throttleVideosToShowPerRow = useThrottle(determineVideosToShow, 50);
 
   useEffect(() => {
     const handleVideosToShow = () => {

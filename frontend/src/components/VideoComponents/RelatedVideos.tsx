@@ -1,7 +1,7 @@
 import { VideoCardLoading } from './VideoCardLoading.tsx';
 import { VideoCard } from './VideoCard.tsx';
 import React from 'react';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 
 interface RelatedVideosProps {
   relatedVideos: Video[] | [];

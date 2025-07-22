@@ -34,7 +34,32 @@ const link = ApolloLink.from([errorLink, csrfLink, httpLink]);
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          viewerPosts: {
+            keyArgs: false,
+            merge(existing = { edges: [], pageInfo: {} }, incoming) {
+              return {
+                ...incoming,
+                edges: [...(existing.edges || []), ...incoming.edges],
+              };
+            },
+          },
+          viewerVideoPlaylist: {
+            keyArgs: false,
+            merge(existing = { edges: [], pageInfo: {} }, incoming) {
+              return {
+                ...incoming,
+                edges: [...(existing.edges || []), ...incoming.edges],
+              };
+            },
+          },
+        },
+      },
+    },
+  }),
   connectToDevTools: true,
 });
 

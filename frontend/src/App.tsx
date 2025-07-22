@@ -10,8 +10,8 @@ config.autoAddCss = false;
 import 'nprogress/nprogress.css';
 import { ProtectedUserRoute } from './routerProtectors/ProtectedUserRoute.tsx';
 import { useUser } from './contexts/userContext/UserContext.tsx';
-import UserChannel from './components/userComponent/UserChannel.tsx';
-import { RedirectToOwnChannel } from './routerProtectors/RedirectToOwnChannel.tsx';
+import UserChannel from './components/userComponents/UserChannel.tsx';
+import { You } from './components/userComponents/You.tsx';
 
 function App() {
   const {
@@ -19,7 +19,7 @@ function App() {
     loadingQuery,
   } = useUser();
 
-  // fetch the csrf on start of the application from Django backend
+  //TODO change to be handled in the back end
   useEffect(() => {
     fetch('http://localhost:8000/api/csrf/', { credentials: 'include' });
   }, []);
@@ -30,20 +30,18 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="watch" element={<VideoPlayer />} />
-
-          <Route path="/user">
-            <Route index element={<RedirectToOwnChannel isLoggedIn={isLoggedIn} loading={loadingQuery} />} />
-            <Route
-              path=":youtubeHandler"
-              element={
-                <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loadingQuery}>
-                  <UserChannel />
-                </ProtectedUserRoute>
-              }
-            />
-          </Route>
         </Route>
 
+        <Route path="/you" element={<You />} />
+
+        <Route
+          path=":youtubeHandler"
+          element={
+            <ProtectedUserRoute isLoggedIn={isLoggedIn} loading={loadingQuery}>
+              <UserChannel />
+            </ProtectedUserRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

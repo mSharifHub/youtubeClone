@@ -45,3 +45,33 @@ export const DELETE_POST = gql`
     }
   }
 `;
+
+export const SAVE_VIDEO_PLAYLIST = gql`
+  mutation saveVideoPlaylist($video: VideoInput!) {
+    saveVideoPlaylist(video: $video) {
+      cursor
+      videoEntry {
+        id
+        __typename
+        watchedAt
+        video {
+          title
+          description
+          thumbnailDefault
+          thumbnailMedium
+          channelId
+          channelTitle
+          channelDescription
+          channelLogo
+          publishedAt
+          subscriberCount
+          categoryId
+          viewCount
+          likeCount
+          commentCount
+          duration
+        }
+      }
+    }
+  }
+`;

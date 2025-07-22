@@ -1,4 +1,4 @@
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { useCallback, useState } from 'react';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';

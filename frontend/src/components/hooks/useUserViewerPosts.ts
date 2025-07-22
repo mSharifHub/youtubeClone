@@ -14,20 +14,11 @@ export const useUserViewerPosts = (first: number = 10) => {
     if (loading) return;
 
     if (!data?.viewerPosts?.pageInfo || !data?.viewerPosts?.pageInfo.endCursor) return;
+
     await fetchMore({
-      variables: { first, after: data?.viewerPosts?.pageInfo.endCursor },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.viewerPosts) return prev;
-
-        const previousEdges = prev?.viewerPosts?.edges ?? [];
-
-        return {
-          viewerPosts: {
-            ...fetchMoreResult.viewerPosts,
-            edges: [...previousEdges, ...fetchMoreResult.viewerPosts.edges],
-            pageInfo: fetchMoreResult.viewerPosts.pageInfo,
-          },
-        };
+      variables: {
+        first,
+        after: data?.viewerPosts?.pageInfo.endCursor,
       },
     });
   };
@@ -40,7 +31,6 @@ export const useUserViewerPosts = (first: number = 10) => {
     data,
     loading,
     error,
-    loadMore,
     sentinelRef,
   };
 };

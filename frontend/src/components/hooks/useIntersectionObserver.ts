@@ -1,4 +1,4 @@
-import { UseinfiniteScrollOptions } from '../../helpers/youtubeVideoInterfaces.ts';
+import { UseinfiniteScrollOptions } from '../../types/youtubeVideoInterfaces.ts';
 import { useEffect, useRef } from 'react';
 
 export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, dataLength: number, limit?: number, options?: UseinfiniteScrollOptions) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SelectedVideoContext } from './SelectedVideoContext.ts';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import useFetchSingleVideo from '../../components/hooks/useFetchSingleVideo.ts';
 
 interface SelectedVideoProviderProps {

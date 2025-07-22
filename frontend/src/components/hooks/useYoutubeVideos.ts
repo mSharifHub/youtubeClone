@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';

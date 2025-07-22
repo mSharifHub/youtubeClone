@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import { useUser } from '../contexts/userContext/UserContext.tsx';
+import NotFound from '../components/pages/NotFound.tsx';
 
 type ProtectedUserRouteProps = {
   isLoggedIn: undefined | boolean;
@@ -21,7 +22,7 @@ export const ProtectedUserRoute = ({ children, isLoggedIn, loading }: ProtectedU
     return <Navigate to="/" replace />;
   }
 
-  if (youtubeHandler !== `@${user?.youtubeHandler}`) return <Navigate to={`@${user?.youtubeHandler}`} replace />;
+  if (youtubeHandler !== `@${user?.youtubeHandler}`) return <NotFound />;
 
   return <>{children}</>;
 };

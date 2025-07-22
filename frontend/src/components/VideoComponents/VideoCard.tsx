@@ -3,7 +3,7 @@ import { sliceText } from '../../helpers/sliceText.ts';
 import timeSince from '../../helpers/timeSince.ts';
 import { convertISO } from '../../helpers/convertISO.ts';
 import decrementTime from '../../helpers/decrementTime.ts';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 
 interface VideoCardProps {
   video: Video;

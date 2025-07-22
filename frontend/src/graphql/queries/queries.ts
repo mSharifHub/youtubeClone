@@ -43,3 +43,29 @@ export const VIEWER_POSTS_QUERY = gql`
     }
   }
 `;
+
+export const VIEWER_VIDEO_PLAYLIST = gql`
+  query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
+    viewerVideoPlaylist {
+      videoEntries(first: $first, after: $after, watchedAt_Gt: $watcheAt_Gt, watchedAt_Lt: $watchedAt_Lt, orderBy: $orderBy) {
+        edges {
+          node {
+            video {
+              videoId
+              title
+              duration
+              thumbnailDefault
+              thumbnailMedium
+            }
+            watchedAt
+          }
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+`;

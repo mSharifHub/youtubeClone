@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { useNavigationType, useSearchParams } from 'react-router-dom';
 
 interface UseFetchSingleVideoOptions {

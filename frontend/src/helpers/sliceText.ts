@@ -1,6 +1,8 @@
+import { Maybe } from '../graphql/types.ts';
+
 interface SliceTextProps {
   isDescription?: boolean;
-  s?: string | null;
+  s?: Maybe<string> | string | undefined;
 }
 
 export function sliceText({ isDescription, s }: SliceTextProps): string {

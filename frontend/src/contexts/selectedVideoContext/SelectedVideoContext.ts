@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Video } from '../../helpers/youtubeVideoInterfaces.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 
 interface VideoContextType {
   selectedVideo: Video | null;
