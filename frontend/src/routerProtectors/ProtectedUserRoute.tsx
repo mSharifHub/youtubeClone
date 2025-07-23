@@ -9,6 +9,7 @@ type ProtectedUserRouteProps = {
   loading: boolean;
 };
 
+//TODO change the component to be reusable to all use cases
 export const ProtectedUserRoute = ({ children, isLoggedIn, loading }: ProtectedUserRouteProps) => {
   const {
     state: { user },

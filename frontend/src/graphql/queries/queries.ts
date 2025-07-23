@@ -53,9 +53,20 @@ export const VIEWER_VIDEO_PLAYLIST = gql`
             video {
               videoId
               title
-              duration
+              description
               thumbnailDefault
               thumbnailMedium
+              channelId
+              channelTitle
+              channelDescription
+              channelLogo
+              publishedAt
+              subscriberCount
+              categoryId
+              viewCount
+              likeCount
+              commentCount
+              duration
             }
             watchedAt
           }

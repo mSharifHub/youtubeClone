@@ -1,7 +1,7 @@
-import { UseinfiniteScrollOptions } from '../../types/youtubeVideoInterfaces.ts';
+import { InfiniteScrollOptions } from '../../types/youtubeVideoInterfaces.ts';
 import { useEffect, useRef } from 'react';
 
-export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, dataLength: number, limit?: number, options?: UseinfiniteScrollOptions) => {
+export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, dataLength: number, limit?: number, options?: InfiniteScrollOptions) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -16,7 +16,6 @@ export const useIntersectionObserver = (callBack: () => Promise<void>, loading: 
 
         if (target.isIntersecting && !loading) {
           if (sentinelRef.current) {
-            console.log('called');
             observerRef.current?.unobserve(sentinelRef.current);
             await callBack();
           }

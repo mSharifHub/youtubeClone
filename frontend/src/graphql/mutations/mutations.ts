@@ -51,10 +51,12 @@ export const SAVE_VIDEO_PLAYLIST = gql`
     saveVideoPlaylist(video: $video) {
       cursor
       videoEntry {
-        id
         __typename
+        id
         watchedAt
         video {
+          id
+          videoId
           title
           description
           thumbnailDefault

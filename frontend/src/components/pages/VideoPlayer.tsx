@@ -12,6 +12,7 @@ import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import CommentLoading from '../VideoComponents/CommentLoading.tsx';
 import { useSearchParams } from 'react-router-dom';
 
+
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -29,7 +30,6 @@ export const VideoPlayer: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   const videoId = searchParams.get('v');
-
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {

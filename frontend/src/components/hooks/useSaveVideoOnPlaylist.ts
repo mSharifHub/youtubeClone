@@ -8,6 +8,7 @@ export const useSaveVideoOnPlaylist = () => {
 
       if (!videoEnty) return;
 
+
       cache.modify({
         fields: {
           viewerVideoPlaylist(existing = { edges: [] }) {
@@ -27,6 +28,7 @@ export const useSaveVideoOnPlaylist = () => {
           },
         },
       });
+
     },
   });
 

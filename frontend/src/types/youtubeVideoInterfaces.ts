@@ -27,25 +27,19 @@ export interface VideoStatistics {
   dislikeCount?: string;
   commentCount: string;
   duration?: string;
-  categoryId?: string;
 }
 
 export interface VideoId {
   videoId: string;
 }
 
-export interface VideoContentDetails {
-  duration: string;
-}
-
 export interface Video {
   id: VideoId;
   snippet: VideoSnippet;
   statistics?: VideoStatistics;
-  contentDetails?: VideoContentDetails;
 }
 
-export interface UseinfiniteScrollOptions {
+export interface InfiniteScrollOptions {
   root?: HTMLElement | null;
   rootMargin?: string;
   threshold?: number;

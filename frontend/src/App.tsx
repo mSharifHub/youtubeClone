@@ -32,8 +32,8 @@ function App() {
           <Route path="watch" element={<VideoPlayer />} />
         </Route>
 
+        {/**  //TODO ADD router protector */}
         <Route path="/you" element={<You />} />
-
         <Route
           path=":youtubeHandler"
           element={

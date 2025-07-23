@@ -10,14 +10,13 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
-  UUID: { input: any; output: any; }
-  Upload: { input: any; output: any; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
+  Upload: { input: any; output: any };
 };
 
 export type CreatePost = {
@@ -53,28 +52,23 @@ export type Mutation = {
   userUpdate?: Maybe<UserSerializerMutationPayload>;
 };
 
-
 export type MutationCreatePostArgs = {
   content?: InputMaybe<Scalars['String']['input']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['Upload']['input']>>>;
 };
 
-
 export type MutationDeletePostArgs = {
   postId: Scalars['ID']['input'];
 };
-
 
 export type MutationEditPostArgs = {
   content: Scalars['String']['input'];
   postId: Scalars['ID']['input'];
 };
 
-
 export type MutationSaveVideoPlaylistArgs = {
   video: VideoInput;
 };
-
 
 export type MutationUserUpdateArgs = {
   input: UserSerializerMutationInput;
@@ -143,7 +137,6 @@ export type Query = {
   viewerVideoPlaylist?: Maybe<VideoPlaylistNode>;
 };
 
-
 export type QueryAllPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   author?: InputMaybe<Scalars['ID']['input']>;
@@ -157,7 +150,6 @@ export type QueryAllPostsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
 };
-
 
 export type QueryViewerPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -177,6 +169,16 @@ export type SaveVideoPlaylist = {
   __typename?: 'SaveVideoPlaylist';
   cursor?: Maybe<Scalars['String']['output']>;
   videoEntry?: Maybe<VideoPlaylistEntryNode>;
+};
+
+export type ThumbnailInput = {
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ThumbnailsInput = {
+  default?: InputMaybe<ThumbnailInput>;
+  high?: InputMaybe<ThumbnailInput>;
+  medium?: InputMaybe<ThumbnailInput>;
 };
 
 export type UserNode = Node & {
@@ -208,7 +210,6 @@ export type UserNode = Node & {
   videoPlaylistHistory?: Maybe<VideoPlaylistNode>;
   youtubeHandler: Scalars['String']['output'];
 };
-
 
 export type UserNodePostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -279,7 +280,6 @@ export type UserTypes = {
   youtubeHandler: Scalars['String']['output'];
 };
 
-
 export type UserTypesPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   author?: InputMaybe<Scalars['ID']['input']>;
@@ -294,23 +294,14 @@ export type UserTypesPostsArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type VideoIdInput = {
+  videoId: Scalars['String']['input'];
+};
+
 export type VideoInput = {
-  categoryId?: InputMaybe<Scalars['String']['input']>;
-  channelDescription?: InputMaybe<Scalars['String']['input']>;
-  channelId?: InputMaybe<Scalars['String']['input']>;
-  channelLogo?: InputMaybe<Scalars['String']['input']>;
-  channelTitle?: InputMaybe<Scalars['String']['input']>;
-  commentCount?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  duration?: InputMaybe<Scalars['String']['input']>;
-  likeCount?: InputMaybe<Scalars['String']['input']>;
-  publishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  subscriberCount?: InputMaybe<Scalars['String']['input']>;
-  thumbnailDefault?: InputMaybe<Scalars['String']['input']>;
-  thumbnailMedium?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  videoId: Scalars['ID']['input'];
-  viewCount?: InputMaybe<Scalars['String']['input']>;
+  id: VideoIdInput;
+  snippet: VideoSnippetInput;
+  statistics: VideoStatisticsInput;
 };
 
 export type VideoNode = Node & {
@@ -331,12 +322,11 @@ export type VideoNode = Node & {
   thumbnailDefault?: Maybe<Scalars['String']['output']>;
   thumbnailMedium?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  videoId: Scalars['UUID']['output'];
+  videoId: Scalars['String']['output'];
   videoplaylistSet: VideoPlaylistNodeConnection;
   videoplaylistentriesSet: VideoPlaylistEntryNodeConnection;
   viewCount?: Maybe<Scalars['Int']['output']>;
 };
-
 
 export type VideoNodeVideoplaylistSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -345,7 +335,6 @@ export type VideoNodeVideoplaylistSetArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
-
 
 export type VideoNodeVideoplaylistentriesSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -407,7 +396,6 @@ export type VideoPlaylistNode = Node & {
   videos: VideoNodeConnection;
 };
 
-
 export type VideoPlaylistNodeVideoEntriesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -420,7 +408,6 @@ export type VideoPlaylistNodeVideoEntriesArgs = {
   watchedAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
   watchedAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
 };
-
 
 export type VideoPlaylistNodeVideosArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -447,48 +434,144 @@ export type VideoPlaylistNodeEdge = {
   node?: Maybe<VideoPlaylistNode>;
 };
 
+export type VideoSnippetInput = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  channelDescription?: InputMaybe<Scalars['String']['input']>;
+  channelId?: InputMaybe<Scalars['String']['input']>;
+  channelLogo?: InputMaybe<Scalars['String']['input']>;
+  channelTitle?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  publishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  subscriberCount?: InputMaybe<Scalars['String']['input']>;
+  thumbnails?: InputMaybe<ThumbnailsInput>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoStatisticsInput = {
+  commentCount?: InputMaybe<Scalars['String']['input']>;
+  dislikeCount?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['String']['input']>;
+  likeCount?: InputMaybe<Scalars['String']['input']>;
+  viewCount?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatePostMutationVariables = Exact<{
   content: Scalars['String']['input'];
   images?: InputMaybe<Array<Scalars['Upload']['input']> | Scalars['Upload']['input']>;
 }>;
 
-
-export type CreatePostMutation = { __typename?: 'Mutation', createPost?: { __typename?: 'CreatePost', cursor?: string | null, post?: { __typename: 'PostNode', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserTypes', youtubeHandler: string }, images: Array<{ __typename: 'PostImageTypes', image?: string | null }> } | null } | null };
+export type CreatePostMutation = {
+  __typename?: 'Mutation';
+  createPost?: {
+    __typename?: 'CreatePost';
+    cursor?: string | null;
+    post?: {
+      __typename: 'PostNode';
+      id: string;
+      content: string;
+      createdAt: any;
+      profilePicture?: string | null;
+      author: { __typename?: 'UserTypes'; youtubeHandler: string };
+      images: Array<{ __typename: 'PostImageTypes'; image?: string | null }>;
+    } | null;
+  } | null;
+};
 
 export type EditPostMutationVariables = Exact<{
   postId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
 }>;
 
-
-export type EditPostMutation = { __typename?: 'Mutation', editPost?: { __typename?: 'EditPost', post?: { __typename: 'PostNode', id: string, content: string } | null } | null };
+export type EditPostMutation = { __typename?: 'Mutation'; editPost?: { __typename?: 'EditPost'; post?: { __typename: 'PostNode'; id: string; content: string } | null } | null };
 
 export type DeletePostMutationVariables = Exact<{
   postId: Scalars['ID']['input'];
 }>;
 
-
-export type DeletePostMutation = { __typename?: 'Mutation', deletePost?: { __typename?: 'DeletePost', success?: boolean | null, post?: { __typename: 'PostNode', id: string } | null } | null };
+export type DeletePostMutation = {
+  __typename?: 'Mutation';
+  deletePost?: { __typename?: 'DeletePost'; success?: boolean | null; post?: { __typename: 'PostNode'; id: string } | null } | null;
+};
 
 export type SaveVideoPlaylistMutationVariables = Exact<{
   video: VideoInput;
 }>;
 
+export type SaveVideoPlaylistMutation = {
+  __typename?: 'Mutation';
+  saveVideoPlaylist?: {
+    __typename?: 'SaveVideoPlaylist';
+    cursor?: string | null;
+    videoEntry?: {
+      __typename: 'VideoPlaylistEntryNode';
+      id: string;
+      watchedAt: any;
+      video: {
+        __typename?: 'VideoNode';
+        id: string;
+        videoId: string;
+        title?: string | null;
+        description?: string | null;
+        thumbnailDefault?: string | null;
+        thumbnailMedium?: string | null;
+        channelId: string;
+        channelTitle: string;
+        channelDescription?: string | null;
+        channelLogo?: string | null;
+        publishedAt: any;
+        subscriberCount?: number | null;
+        categoryId: string;
+        viewCount?: number | null;
+        likeCount?: number | null;
+        commentCount?: number | null;
+        duration?: string | null;
+      };
+    } | null;
+  } | null;
+};
 
-export type SaveVideoPlaylistMutation = { __typename?: 'Mutation', saveVideoPlaylist?: { __typename?: 'SaveVideoPlaylist', cursor?: string | null, videoEntry?: { __typename: 'VideoPlaylistEntryNode', id: string, watchedAt: any, video: { __typename?: 'VideoNode', title?: string | null, description?: string | null, thumbnailDefault?: string | null, thumbnailMedium?: string | null, channelId: string, channelTitle: string, channelDescription?: string | null, channelLogo?: string | null, publishedAt: any, subscriberCount?: number | null, categoryId: string, viewCount?: number | null, likeCount?: number | null, commentCount?: number | null, duration?: string | null } } | null } | null };
+export type ViewerQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserTypes', firstName: string, lastName: string, username: string, youtubeHandler: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserTypes', username: string, email: string }> } | null };
+export type ViewerQuery = {
+  __typename?: 'Query';
+  viewer?: {
+    __typename?: 'UserTypes';
+    firstName: string;
+    lastName: string;
+    username: string;
+    youtubeHandler: string;
+    email: string;
+    profilePicture?: string | null;
+    bio: string;
+    subscribers: Array<{ __typename?: 'UserTypes'; username: string; email: string }>;
+  } | null;
+};
 
 export type ViewerPostsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-
-export type ViewerPostsQuery = { __typename?: 'Query', viewerPosts?: { __typename?: 'PostNodeConnection', edges: Array<{ __typename?: 'PostNodeEdge', cursor: string, node?: { __typename?: 'PostNode', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserTypes', youtubeHandler: string }, images: Array<{ __typename?: 'PostImageTypes', image?: string | null }> } | null } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, startCursor?: string | null, hasNextPage: boolean } } | null };
+export type ViewerPostsQuery = {
+  __typename?: 'Query';
+  viewerPosts?: {
+    __typename?: 'PostNodeConnection';
+    edges: Array<{
+      __typename?: 'PostNodeEdge';
+      cursor: string;
+      node?: {
+        __typename?: 'PostNode';
+        id: string;
+        content: string;
+        createdAt: any;
+        profilePicture?: string | null;
+        author: { __typename?: 'UserTypes'; youtubeHandler: string };
+        images: Array<{ __typename?: 'PostImageTypes'; image?: string | null }>;
+      } | null;
+    } | null>;
+    pageInfo: { __typename?: 'PageInfo'; endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean };
+  } | null;
+};
 
 export type ViewerVideoPlayListQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -498,31 +581,64 @@ export type ViewerVideoPlayListQueryVariables = Exact<{
   orderBy?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-
-export type ViewerVideoPlayListQuery = { __typename?: 'Query', viewerVideoPlaylist?: { __typename?: 'VideoPlaylistNode', videoEntries?: { __typename?: 'VideoPlaylistEntryNodeConnection', edges: Array<{ __typename?: 'VideoPlaylistEntryNodeEdge', node?: { __typename?: 'VideoPlaylistEntryNode', watchedAt: any, video: { __typename?: 'VideoNode', videoId: any, title?: string | null, duration?: string | null, thumbnailDefault?: string | null, thumbnailMedium?: string | null } } | null } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, startCursor?: string | null, hasNextPage: boolean } } | null } | null };
-
+export type ViewerVideoPlayListQuery = {
+  __typename?: 'Query';
+  viewerVideoPlaylist?: {
+    __typename?: 'VideoPlaylistNode';
+    videoEntries?: {
+      __typename?: 'VideoPlaylistEntryNodeConnection';
+      edges: Array<{
+        __typename?: 'VideoPlaylistEntryNodeEdge';
+        node?: {
+          __typename?: 'VideoPlaylistEntryNode';
+          watchedAt: any;
+          video: {
+            __typename?: 'VideoNode';
+            videoId: string;
+            title?: string | null;
+            description?: string | null;
+            thumbnailDefault?: string | null;
+            thumbnailMedium?: string | null;
+            channelId: string;
+            channelTitle: string;
+            channelDescription?: string | null;
+            channelLogo?: string | null;
+            publishedAt: any;
+            subscriberCount?: number | null;
+            categoryId: string;
+            viewCount?: number | null;
+            likeCount?: number | null;
+            commentCount?: number | null;
+            duration?: string | null;
+          };
+        } | null;
+      } | null>;
+      pageInfo: { __typename?: 'PageInfo'; endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean };
+    } | null;
+  } | null;
+};
 
 export const CreatePostDocument = gql`
-    mutation CreatePost($content: String!, $images: [Upload!]) {
-  createPost(content: $content, images: $images) {
-    cursor
-    post {
-      __typename
-      id
-      content
-      createdAt
-      profilePicture
-      author {
-        youtubeHandler
-      }
-      images {
+  mutation CreatePost($content: String!, $images: [Upload!]) {
+    createPost(content: $content, images: $images) {
+      cursor
+      post {
         __typename
-        image
+        id
+        content
+        createdAt
+        profilePicture
+        author {
+          youtubeHandler
+        }
+        images {
+          __typename
+          image
+        }
       }
     }
   }
-}
-    `;
+`;
 export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
 
 /**
@@ -544,23 +660,23 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * });
  */
 export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+}
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const EditPostDocument = gql`
-    mutation EditPost($postId: ID!, $content: String!) {
-  editPost(postId: $postId, content: $content) {
-    post {
-      __typename
-      id
-      content
+  mutation EditPost($postId: ID!, $content: String!) {
+    editPost(postId: $postId, content: $content) {
+      post {
+        __typename
+        id
+        content
+      }
     }
   }
-}
-    `;
+`;
 export type EditPostMutationFn = Apollo.MutationFunction<EditPostMutation, EditPostMutationVariables>;
 
 /**
@@ -582,23 +698,23 @@ export type EditPostMutationFn = Apollo.MutationFunction<EditPostMutation, EditP
  * });
  */
 export function useEditPostMutation(baseOptions?: Apollo.MutationHookOptions<EditPostMutation, EditPostMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<EditPostMutation, EditPostMutationVariables>(EditPostDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<EditPostMutation, EditPostMutationVariables>(EditPostDocument, options);
+}
 export type EditPostMutationHookResult = ReturnType<typeof useEditPostMutation>;
 export type EditPostMutationResult = Apollo.MutationResult<EditPostMutation>;
 export type EditPostMutationOptions = Apollo.BaseMutationOptions<EditPostMutation, EditPostMutationVariables>;
 export const DeletePostDocument = gql`
-    mutation DeletePost($postId: ID!) {
-  deletePost(postId: $postId) {
-    post {
-      __typename
-      id
+  mutation DeletePost($postId: ID!) {
+    deletePost(postId: $postId) {
+      post {
+        __typename
+        id
+      }
+      success
     }
-    success
   }
-}
-    `;
+`;
 export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
 
 /**
@@ -619,41 +735,43 @@ export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, D
  * });
  */
 export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+}
 export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
 export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
 export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
 export const SaveVideoPlaylistDocument = gql`
-    mutation saveVideoPlaylist($video: VideoInput!) {
-  saveVideoPlaylist(video: $video) {
-    cursor
-    videoEntry {
-      id
-      __typename
-      watchedAt
-      video {
-        title
-        description
-        thumbnailDefault
-        thumbnailMedium
-        channelId
-        channelTitle
-        channelDescription
-        channelLogo
-        publishedAt
-        subscriberCount
-        categoryId
-        viewCount
-        likeCount
-        commentCount
-        duration
+  mutation saveVideoPlaylist($video: VideoInput!) {
+    saveVideoPlaylist(video: $video) {
+      cursor
+      videoEntry {
+        __typename
+        id
+        watchedAt
+        video {
+          id
+          videoId
+          title
+          description
+          thumbnailDefault
+          thumbnailMedium
+          channelId
+          channelTitle
+          channelDescription
+          channelLogo
+          publishedAt
+          subscriberCount
+          categoryId
+          viewCount
+          likeCount
+          commentCount
+          duration
+        }
       }
     }
   }
-}
-    `;
+`;
 export type SaveVideoPlaylistMutationFn = Apollo.MutationFunction<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>;
 
 /**
@@ -674,29 +792,29 @@ export type SaveVideoPlaylistMutationFn = Apollo.MutationFunction<SaveVideoPlayl
  * });
  */
 export function useSaveVideoPlaylistMutation(baseOptions?: Apollo.MutationHookOptions<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>(SaveVideoPlaylistDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>(SaveVideoPlaylistDocument, options);
+}
 export type SaveVideoPlaylistMutationHookResult = ReturnType<typeof useSaveVideoPlaylistMutation>;
 export type SaveVideoPlaylistMutationResult = Apollo.MutationResult<SaveVideoPlaylistMutation>;
 export type SaveVideoPlaylistMutationOptions = Apollo.BaseMutationOptions<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>;
 export const ViewerDocument = gql`
-    query Viewer {
-  viewer {
-    firstName
-    lastName
-    username
-    youtubeHandler
-    email
-    profilePicture
-    bio
-    subscribers {
+  query Viewer {
+    viewer {
+      firstName
+      lastName
       username
+      youtubeHandler
       email
+      profilePicture
+      bio
+      subscribers {
+        username
+        email
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerQuery__
@@ -714,47 +832,47 @@ export const ViewerDocument = gql`
  * });
  */
 export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export function useViewerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+}
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
 export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export const ViewerPostsDocument = gql`
-    query ViewerPosts($first: Int, $after: String) {
-  viewerPosts(first: $first, after: $after) {
-    edges {
-      node {
-        id
-        content
-        createdAt
-        profilePicture
-        author {
-          youtubeHandler
+  query ViewerPosts($first: Int, $after: String) {
+    viewerPosts(first: $first, after: $after) {
+      edges {
+        node {
+          id
+          content
+          createdAt
+          profilePicture
+          author {
+            youtubeHandler
+          }
+          images {
+            image
+          }
         }
-        images {
-          image
-        }
+        cursor
       }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      startCursor
-      hasNextPage
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerPostsQuery__
@@ -774,52 +892,57 @@ export const ViewerPostsDocument = gql`
  * });
  */
 export function useViewerPostsQuery(baseOptions?: Apollo.QueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export function useViewerPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export function useViewerPostsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+}
 export type ViewerPostsQueryHookResult = ReturnType<typeof useViewerPostsQuery>;
 export type ViewerPostsLazyQueryHookResult = ReturnType<typeof useViewerPostsLazyQuery>;
 export type ViewerPostsSuspenseQueryHookResult = ReturnType<typeof useViewerPostsSuspenseQuery>;
 export type ViewerPostsQueryResult = Apollo.QueryResult<ViewerPostsQuery, ViewerPostsQueryVariables>;
 export const ViewerVideoPlayListDocument = gql`
-    query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
-  viewerVideoPlaylist {
-    videoEntries(
-      first: $first
-      after: $after
-      watchedAt_Gt: $watcheAt_Gt
-      watchedAt_Lt: $watchedAt_Lt
-      orderBy: $orderBy
-    ) {
-      edges {
-        node {
-          video {
-            videoId
-            title
-            duration
-            thumbnailDefault
-            thumbnailMedium
+  query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
+    viewerVideoPlaylist {
+      videoEntries(first: $first, after: $after, watchedAt_Gt: $watcheAt_Gt, watchedAt_Lt: $watchedAt_Lt, orderBy: $orderBy) {
+        edges {
+          node {
+            video {
+              videoId
+              title
+              description
+              thumbnailDefault
+              thumbnailMedium
+              channelId
+              channelTitle
+              channelDescription
+              channelLogo
+              publishedAt
+              subscriberCount
+              categoryId
+              viewCount
+              likeCount
+              commentCount
+              duration
+            }
+            watchedAt
           }
-          watchedAt
         }
-      }
-      pageInfo {
-        endCursor
-        startCursor
-        hasNextPage
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
+        }
       }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useViewerVideoPlayListQuery__
@@ -842,17 +965,17 @@ export const ViewerVideoPlayListDocument = gql`
  * });
  */
 export function useViewerVideoPlayListQuery(baseOptions?: Apollo.QueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+}
 export function useViewerVideoPlayListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+}
 export function useViewerVideoPlayListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+}
 export type ViewerVideoPlayListQueryHookResult = ReturnType<typeof useViewerVideoPlayListQuery>;
 export type ViewerVideoPlayListLazyQueryHookResult = ReturnType<typeof useViewerVideoPlayListLazyQuery>;
 export type ViewerVideoPlayListSuspenseQueryHookResult = ReturnType<typeof useViewerVideoPlayListSuspenseQuery>;

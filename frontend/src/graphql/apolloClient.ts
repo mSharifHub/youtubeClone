@@ -36,25 +36,24 @@ const client = new ApolloClient({
   link,
   cache: new InMemoryCache({
     typePolicies: {
-      Query: {
+      VideoPlayListNode: {
         fields: {
-          viewerPosts: {
+          videoEntries: {
             keyArgs: false,
             merge(existing = { edges: [], pageInfo: {} }, incoming) {
               return {
                 ...incoming,
-                edges: [...(existing.edges || []), ...incoming.edges],
+                edges: [...existing.edges, ...incoming.edges],
               };
             },
           },
         },
       },
-
-      viewerVideoPlaylist: {
+      Query: {
         fields: {
-          videoEntries: {
+          viewerPosts: {
             keyArgs: false,
-            merge(existing = { edges: [] }, incoming) {
+            merge(existing = { edges: [], pageInfo: {} }, incoming) {
               return {
                 ...incoming,
                 edges: [...(existing.edges || []), ...incoming.edges],

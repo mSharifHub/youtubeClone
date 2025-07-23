@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
 
-export const fetchChannelDetails = async (channelIds: string[]): Promise<ChannelMap> => {
+export const fetchChannelDetails = async (channelIds: string[]) => {
   try {
     const idsString = channelIds.join(',');
     const response = await axios.get(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${idsString}&part=snippet,statistics`);

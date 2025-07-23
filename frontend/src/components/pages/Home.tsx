@@ -52,7 +52,7 @@ export const Home: React.FC = () => {
                 }
               </ul>
 
-            {/*Sentinel Observer*/}
+            {/*/!*Sentinel Observer*!/*/}
               <div className="h-4" ref={sentinelRef}/>
 
               {videosLoading && (

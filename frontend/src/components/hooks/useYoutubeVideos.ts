@@ -4,8 +4,8 @@ import { loadFromDB, saveToDB } from '../../utils/videoCacheDb/videoCacheDB.ts';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
-import { useIntersectionObserver } from './useIntersectionObserver.ts';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
+import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
@@ -24,8 +24,8 @@ export default function useYoutubeVideos(
   const [videosError, setVideosError] = useState<string | null>(null);
   const [videosNextPageToken, setVideosNextPageToken] = useState<string | null>(null);
 
-  const MAX_LIMIT:  number = 20
-  const {state:{isLoggedIn}} = useUser()
+  const MAX_LIMIT:  number = 50
+  const {state:{isLoggedIn},loadingQuery} = useUser()
 
 
   const loadMoreVideos = async () => {
@@ -35,7 +35,6 @@ export default function useYoutubeVideos(
 
   const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
 
-
   const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
     if (videosLoading) return;
@@ -44,7 +43,7 @@ export default function useYoutubeVideos(
     setVideosError(null);
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=5&regionCode=US`;
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
 
       const response = await axios.get(url);
 
@@ -90,6 +89,7 @@ export default function useYoutubeVideos(
           },
         }))
 
+
       setVideos ((previous)=>{
         const existingIds = new Set(previous.map(v=>v.id.videoId))
         const newVideos = videos.filter(video=> !existingIds.has(video.id.videoId))
@@ -114,7 +114,7 @@ export default function useYoutubeVideos(
 
 
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn && loadingQuery) return
 
     const load = async () => {
       try{
@@ -125,6 +125,7 @@ export default function useYoutubeVideos(
             setVideos(cachedData.videos)
             setVideosNextPageToken(cachedData.nextPageToken || null)
         }else{
+
           await fetchVideos({})
         }
 
