@@ -7,13 +7,14 @@ import { useSaveVideoOnPlaylist } from './useSaveVideoOnPlaylist.ts';
 export const useHandleSelectedVideo = () => {
   const navigate = useNavigate();
 
-  const { saveVideoPlaylist, loading, error } = useSaveVideoOnPlaylist();
+  const { saveVideoPlaylist,loading, error } = useSaveVideoOnPlaylist();
 
   const { setSelectedVideo } = useSelectedVideo();
 
   return useCallback(
     async (video: Video | null) => {
       if (!video) return;
+
 
       setSelectedVideo(video);
 

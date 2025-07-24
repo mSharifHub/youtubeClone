@@ -3,6 +3,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
+import { VideoPlaylistNodeEdge } from './types.ts';
 
 const httpLink = createUploadLink({
   uri: 'http://localhost:8000/graphql/',
@@ -36,14 +37,14 @@ const client = new ApolloClient({
   link,
   cache: new InMemoryCache({
     typePolicies: {
-      VideoPlayListNode: {
+      VideoPlaylistNode: {
         fields: {
           videoEntries: {
             keyArgs: false,
-            merge(existing = { edges: [], pageInfo: {} }, incoming) {
+            merge(existing = { edges: [] }, incoming) {
               return {
                 ...incoming,
-                edges: [...existing.edges, ...incoming.edges],
+                edges: [...(existing.edges || []), ...incoming.edges],
               };
             },
           },

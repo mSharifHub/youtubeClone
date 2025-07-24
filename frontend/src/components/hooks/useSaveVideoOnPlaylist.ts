@@ -4,31 +4,32 @@ export const useSaveVideoOnPlaylist = () => {
   const [saveVideoPlaylist, { data, loading, error }] = useSaveVideoPlaylistMutation({
     update(cache, { data }) {
       const payload = data?.saveVideoPlaylist;
-      const videoEnty = payload?.videoEntry;
+      const videoEntry = payload?.videoEntry;
 
-      if (!videoEnty) return;
-
+      if (!videoEntry) return;
 
       cache.modify({
         fields: {
-          viewerVideoPlaylist(existing = { edges: [] }) {
+          viewerVideoPlaylist(existing = { videoEntries: { edges: [] } }) {
             const newEdge = {
               __typename: 'VideoPlaylistEntryNodeEdge',
               cursor: payload.cursor,
               node: {
-                ...videoEnty,
+                ...videoEntry,
                 __typename: 'VideoPlaylistEntryNode',
               },
             };
 
             return {
               ...existing,
-              edges: [newEdge as VideoPlaylistEntryNodeEdge, ...existing.edges],
+              videoEntries: {
+                ...existing.videoEntries,
+                edges: [newEdge, ...(existing.videoEntries.edges || []).filter((edge: VideoPlaylistEntryNodeEdge) => edge.node?.video?.videoId !== videoEntry.video?.videoId)],
+              },
             };
           },
         },
       });
-
     },
   });
 

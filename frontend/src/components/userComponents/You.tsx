@@ -4,7 +4,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { useViewerVideoPlayListQuery, VideoPlaylistEntryNode } from '../../graphql/types.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
-import {  useState } from 'react';
+import { useEffect, useState } from 'react';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { sliceText } from '../../helpers/sliceText.ts';
 import timeSince from '../../helpers/timeSince.ts';
