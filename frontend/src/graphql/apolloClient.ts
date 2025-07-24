@@ -3,7 +3,6 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
-import { VideoPlaylistNodeEdge } from './types.ts';
 
 const httpLink = createUploadLink({
   uri: 'http://localhost:8000/graphql/',

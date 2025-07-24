@@ -30,10 +30,11 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="watch" element={<VideoPlayer />} />
+          <Route path="/you" element={<You />} />
         </Route>
 
         {/**  //TODO ADD router protector */}
-        <Route path="/you" element={<You />} />
+
         <Route
           path=":youtubeHandler"
           element={

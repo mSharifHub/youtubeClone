@@ -4,7 +4,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { useViewerVideoPlayListQuery, VideoPlaylistEntryNode } from '../../graphql/types.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { sliceText } from '../../helpers/sliceText.ts';
 import timeSince from '../../helpers/timeSince.ts';
@@ -15,25 +15,49 @@ import { mapVideoNodeToVideo } from '../../helpers/mapVideoNodeToVideo.ts';
 export const You = () => {
   const { data, loading, error } = useViewerVideoPlayListQuery();
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues);
-  const [startIndex, setStartIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const playlist = (data?.viewerVideoPlaylist?.videoEntries?.edges ?? []).filter((edge): edge is { node: VideoPlaylistEntryNode } => !!edge?.node && !!edge.node.video);
 
   const HandleSelectedVideo = useHandleSelectedVideo();
 
   const handleScrollUp = () => {
-    if (startIndex + videosPerRow >= playlist.length) return;
+    if (currentIndex >= playlist.length - 1) return;
 
-    setStartIndex(startIndex + videosPerRow);
+    const newIndex = currentIndex + 1;
+    setCurrentIndex(newIndex);
+
+    if (!scrollRef.current) return;
+    const containerWidth = scrollRef.current.clientWidth;
+    const videoWidth = containerWidth / videosPerRow;
+    const scrollAmount = videoWidth + 16;
+
+    scrollRef.current.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth',
+    });
   };
 
   const handleScrollDown = () => {
-    if (startIndex - videosPerRow < 0) return;
-    setStartIndex(startIndex - videosPerRow);
+    if (currentIndex <= 0) return;
+
+    const newIndex = currentIndex - 1;
+    setCurrentIndex(newIndex);
+
+    if (!scrollRef.current) return;
+    const containerWidth = scrollRef.current.clientWidth;
+    const videoWidth = containerWidth / videosPerRow;
+    const scrollAmount = videoWidth + 16;
+
+    scrollRef.current.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth',
+    });
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-y-scroll scroll-smooth  p-8 gap-8 ">
+    <div className="h-full w-full flex flex-col overflow-y-scroll scroll-smooth  p-8 gap-8  ">
       <UserProfileCard />
       <div className="w-full flex flex-col gap-2 p-2 ">
         <h1 className="text-2xl font-medium ">History</h1>
@@ -53,11 +77,18 @@ export const You = () => {
           </div>
         </div>
         {loading && <SpinningCircle />}
-        <div className="grid grid-flow-col  gap-4 " style={{ gridTemplateColumns: `repeat(${videosPerRow}, 1fr)` }}>
+        <div
+          ref={scrollRef}
+          className="grid grid-flow-col  gap-4 overflow-hidden  overflow-x-scroll scroll-smooth  no-scrollbar"
+          style={{
+            gridTemplateColumns: `repeat(${playlist.length}, minmax(${100 / videosPerRow}%, 1fr))`,
+            pointerEvents: 'none',
+          }}
+        >
           {playlist.length > 0 &&
             !loading &&
             !error &&
-            playlist.slice(startIndex, startIndex + videosPerRow).map(({ node }) => (
+            playlist.map(({ node }) => (
               <div
                 key={`${node.id}-${node.video.videoId}`}
                 className="flex flex-col w-full cursor-pointer overflow-hidden"
