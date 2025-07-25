@@ -16,10 +16,12 @@ class User(AbstractUser):
 
 
 class Video(models.Model):
-    video_id = models.UUIDField(primary_key=True, editable=False)
+    video_id = models.CharField(max_length=500,primary_key=True, editable=False)
     title = models.CharField(max_length=500, blank=True,null=True)
+    description = models.TextField(blank=True, null=True)
     thumbnail_default = models.URLField(blank=True, null=True)
     thumbnail_medium = models.URLField(blank=True, null=True)
+
 
     channel_id = models.CharField(max_length=240)
     channel_title = models.CharField(max_length=240)
@@ -49,7 +51,7 @@ class VideoPlaylist(models.Model):
 
 
 class VideoPlaylistEntries(models.Model):
-    video_playlist = models.ForeignKey(VideoPlaylist, on_delete=models.CASCADE, related_name='entries')
+    video_playlist = models.ForeignKey(VideoPlaylist, on_delete=models.CASCADE, related_name='video_entries')
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     watched_at = models.DateTimeField(auto_now_add=True)
     class Meta:

@@ -1,5 +1,4 @@
 from functools import wraps
-
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
 from graphql_auth.schema import MeQuery
@@ -10,7 +9,7 @@ from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost, 
 from api.graphql.types import UserTypes, PostNode, VideoPlaylistNode
 
 DEFAULT_POST_ORDERING= '-created_at'
-DEFAULT_VIDEO_HISTORY_ORDERING = '-watched_at'
+
 
 def require_auth(func):
     @wraps(func)
@@ -22,13 +21,12 @@ def require_auth(func):
     return  wrapper
 
 
-
 class Query(MeQuery, graphene.ObjectType):
     all_users = graphene.List(UserTypes)
     viewer = graphene.Field(UserTypes)
     viewer_posts = DjangoFilterConnectionField(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
-    viewer_video_playlist = DjangoFilterConnectionField( VideoPlaylistNode)
+    viewer_video_playlist = graphene.Field(VideoPlaylistNode)
 
     @require_auth
     def resolve_viewer(self, info, **kwargs):
@@ -49,7 +47,7 @@ class Query(MeQuery, graphene.ObjectType):
         try:
             return info.context.user.video_playlist_history
         except ObjectDoesNotExist:
-            return  None
+            return  VideoPlaylist.objects.create(user=info.context.user)
 
 
 class Mutation(graphene.ObjectType):
@@ -57,7 +55,7 @@ class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     edit_post = EditPost.Field()
     delete_post = DeletePost.Field()
-    save_video_history = SaveVideoPlaylist.Field()
+    save_video_playlist = SaveVideoPlaylist.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -2,10 +2,8 @@ import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-
 from api.graphql.filters import PostFilter, VideoHistoryFilter
 from api.models import User, Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
-
 
 class UserTypes(DjangoObjectType):
     class Meta:
@@ -56,21 +54,58 @@ class VideoNode(DjangoObjectType):
 
 
 class VideoPlaylistEntryNode(DjangoObjectType):
-    cursor = graphene.String()
     class Meta:
         model = VideoPlaylistEntries
         interfaces = (relay.Node,)
         fields = '__all__'
-        filterset_class = VideoHistoryFilter
+
 
 
 class VideoPlaylistNode(DjangoObjectType):
-    entries = DjangoFilterConnectionField(VideoPlaylistEntryNode)
+    video_entries = DjangoFilterConnectionField(VideoPlaylistEntryNode,filterset_class= VideoHistoryFilter)
     class Meta:
         model = VideoPlaylist
         interfaces = (relay.Node,)
         fields = '__all__'
 
+
+class ThumbnailInput(graphene.InputObjectType):
+    url = graphene.String()
+
+class ThumbnailsInput(graphene.InputObjectType):
+    default = graphene.Field(ThumbnailInput)
+    medium = graphene.Field(ThumbnailInput)
+    high = graphene.Field(ThumbnailInput)
+
+class VideoSnippetInput(graphene.InputObjectType):
+    title = graphene.String()
+    description = graphene.String()
+    thumbnails = graphene.Field(ThumbnailsInput)
+    channel_id = graphene.String()
+    channel_title = graphene.String()
+    channel_description = graphene.String()
+    channel_logo = graphene.String()
+    published_at = graphene.DateTime()
+    subscriber_count = graphene.String()
+    category_id = graphene.String()
+
+
+class VideoStatisticsInput(graphene.InputObjectType):
+    view_count = graphene.String()
+    like_count = graphene.String()
+    dislike_count = graphene.String()
+    comment_count = graphene.String()
+    duration = graphene.String()
+
+
+class VideoIdInput(graphene.InputObjectType):
+    video_id = graphene.String(required=True)
+
+
+class VideoInput(graphene.InputObjectType):
+     id = graphene.InputField(VideoIdInput, required=True)
+     snippet = graphene.InputField(VideoSnippetInput, required=True)
+     statistics = graphene.InputField(VideoStatisticsInput, required=True)
 
 
 class PostNode(DjangoObjectType):

@@ -17,9 +17,11 @@ class PostFilter(FilterSet):
 
 
 class VideoHistoryFilter(FilterSet):
-    watched_at = DateTimeFromToRangeFilter()
     order_by = OrderingFilter(fields=('watched_at', 'watched_at'), )
 
     class Meta:
         model = VideoPlaylistEntries
-        fields = [ 'video', 'watched_at']
+        fields = {
+            'video': ['exact'],
+            'watched_at': ['exact', 'gt', 'lt'],
+        }

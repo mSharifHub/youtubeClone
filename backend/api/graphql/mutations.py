@@ -1,6 +1,3 @@
-from datetime import datetime
-from enum import nonmember
-from typing import Optional, Dict, Any
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,9 +7,9 @@ from api.serializers import UserSerializer
 from  graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from api.models import Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
-from api.graphql.types import  PostNode, VideoPlaylistEntryNode
+from api.graphql.types import  PostNode, VideoPlaylistEntryNode, VideoInput
 from graphql_relay import from_global_id
-from dateutil.parser import parse as parse_date
+
 
 MAX_TOTAL_SIZE = 10* 1024 * 1024   # 1MB total size allowed
 
@@ -71,7 +68,6 @@ class EditPost (graphene.Mutation):
         except ObjectDoesNotExist:
             raise GraphQLError("Post not found")
 
-
         post.content = content
         post.save()
         return EditPost(post=post)
@@ -79,28 +75,10 @@ class EditPost (graphene.Mutation):
 
 class SaveVideoPlaylist(graphene.Mutation):
     video_entry = graphene.Field(VideoPlaylistEntryNode)
-
-
     cursor = graphene.String()
 
     class Arguments:
-        video_id = graphene.ID(required=True)
-        title = graphene.String(required=False)
-        description = graphene.String(required=False)
-        thumbnail_default = graphene.String(required=False)
-        thumbnail_medium = graphene.String(required=False)
-        channel_id = graphene.String(required=False)
-        channel_title = graphene.String(required=False)
-        channel_description = graphene.String(required=False)
-        channel_logo = graphene.String(required=False)
-        published_at = graphene.DateTime(required=False)
-        subscriber_count = graphene.String(required=False)
-        category_id = graphene.String(required=False)
-        view_count = graphene.String(required=False)
-        like_count = graphene.String(required=False)
-        comment_count = graphene.String(required=False)
-        duration = graphene.String(required=False)
-
+        video =  VideoInput(required=True)
 
     @classmethod
     def mutate (cls, root, info, **kwargs)-> 'SaveVideoPlaylist':
@@ -109,40 +87,42 @@ class SaveVideoPlaylist(graphene.Mutation):
             raise GraphQLError("Authentication required")
 
         try:
+            video_data = kwargs['video']
+            snippet = video_data.snippet
+            statistics = video_data.statistics
 
-            video_object, _ = Video.objects.update_or_create(
-                video_id=kwargs['video_id'],
-                defaults={
-                    'title': kwargs.get('title'),
-                    'description': kwargs.get('description'),
-                    'thumbnail_default': kwargs.get('thumbnail_default'),
-                    'thumbnail_medium': kwargs.get('thumbnail_medium'),
-                    'channel_id': kwargs.get('channel_id'),
-                    'channel_title': kwargs.get('channel_title'),
-                    'channel_description': kwargs.get('channel_description'),
-                    'channel_logo': kwargs.get('channel_logo'),
-                    'published_at': kwargs.get('published_at'),
-                    'subscriber_count': kwargs.get('subscriber_count'),
-                    'category_id': kwargs.get('category_id'),
-                    'view_count': kwargs.get('view_count'),
-                    'like_count': kwargs.get('like_count'),
-                    'comment_count': kwargs.get('comment_count'),
-                    'duration': kwargs.get('duration'),
-                }
+            thumbnails_default = snippet.thumbnails.default.url if snippet.thumbnails.default else None
+            thumbnails_medium = snippet.thumbnails.medium.url if snippet.thumbnails.medium else None
 
-            )
+            defaults = {
+                'title': snippet.title,
+                'description': snippet.description,
+                'thumbnail_default': thumbnails_default,
+                'thumbnail_medium': thumbnails_medium,
+                'channel_id': snippet.channel_id,
+                'channel_title': snippet.channel_title,
+                'channel_description': snippet.channel_description,
+                'channel_logo': snippet.channel_logo,
+                'published_at': snippet.published_at,
+                'subscriber_count': snippet.subscriber_count,
+                'category_id': snippet.category_id,
+                'view_count': statistics.view_count,
+                'like_count': statistics.like_count,
+                'comment_count': statistics.comment_count,
+                'duration': statistics.duration,
+            }
 
+            video_object, _ = Video.objects.update_or_create(video_id= video_data.id.video_id,defaults=defaults)
             playlist,_ = VideoPlaylist.objects.get_or_create(user=user)
 
-            entry, _ = VideoPlaylistEntries.objects.update_or_create(
+            video_entry, _ = VideoPlaylistEntries.objects.update_or_create(
                 video_playlist=playlist,
                 video=video_object,
                 defaults={"watched_at": now()}
 
             )
 
-            return SaveVideoPlaylist(video_entry=entry)
-
+            return SaveVideoPlaylist(video_entry=video_entry)
 
         except Exception as err:
             raise GraphQLError(f"an error occurred: {str(err)}")
