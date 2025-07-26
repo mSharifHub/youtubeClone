@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { useCreatePost } from '../hooks/useCreatePost.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUserViewerPosts } from '../hooks/useUserViewerPosts.ts';
 import { PostCard } from './PostCard.tsx';
-import { PostNode } from '../../graphql/types.ts';
+import { PostNode, PostNodeEdge, useCreatePostMutation } from '../../graphql/types.ts';
 
 type ImagePreviews = {
   file: File;
@@ -27,7 +26,32 @@ export default function UserChannel() {
   const userInputRef = useRef<HTMLInputElement | null>(null);
   const communityPostRef = useRef<HTMLFormElement>(null);
 
-  const { createPost, loading: creatingPost, error: createPostError } = useCreatePost();
+  const [createPost] = useCreatePostMutation({
+    update(cache, { data }) {
+      const payload = data?.createPost;
+      if (!payload?.post) return;
+
+      cache.modify({
+        fields: {
+          viewerPosts(existing = { edges: [] }) {
+            const newEdge = {
+              __typename: 'PostNodeEdge',
+              cursor: payload.cursor,
+              node: {
+                ...payload.post,
+                __typename: 'PostNode',
+              },
+            };
+
+            return {
+              ...existing,
+              edges: [newEdge as PostNodeEdge, ...existing.edges],
+            };
+          },
+        },
+      });
+    },
+  });
 
   const { data, loading: userPostsLoading, sentinelRef } = useUserViewerPosts();
 

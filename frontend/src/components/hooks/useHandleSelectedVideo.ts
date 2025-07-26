@@ -2,19 +2,48 @@ import { useNavigate } from 'react-router-dom';
 import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useCallback } from 'react';
-import { useSaveVideoOnPlaylist } from './useSaveVideoOnPlaylist.ts';
+import { useSaveVideoPlaylistMutation, VideoPlaylistEntryNodeEdge } from '../../graphql/types.ts';
 
 export const useHandleSelectedVideo = () => {
   const navigate = useNavigate();
 
-  const { saveVideoPlaylist,loading, error } = useSaveVideoOnPlaylist();
+  const [saveVideoPlaylist, { loading, error }] = useSaveVideoPlaylistMutation({
+    update(cache, { data }) {
+      const payload = data?.saveVideoPlaylist;
+      const videoEntry = payload?.videoEntry;
+
+      if (!videoEntry) return;
+
+      cache.modify({
+        fields: {
+          viewerVideoPlaylist(existing = { videoEntries: { edges: [] } }) {
+            const newEdge = {
+              __typename: 'VideoPlaylistEntryNodeEdge',
+              cursor: payload.cursor,
+              node: {
+                ...videoEntry,
+                __typename: 'VideoPlaylistEntryNode',
+              },
+            };
+
+            return {
+              ...existing,
+              videoEntries: {
+                ...existing.videoEntries,
+                edges: [newEdge, ...(existing.videoEntries.edges || []).filter((edge: VideoPlaylistEntryNodeEdge) => edge.node?.video.videoId !== videoEntry.video.videoId)],
+              },
+            };
+          },
+        },
+      });
+    },
+  });
 
   const { setSelectedVideo } = useSelectedVideo();
 
   return useCallback(
     async (video: Video | null) => {
       if (!video) return;
-
 
       setSelectedVideo(video);
 
