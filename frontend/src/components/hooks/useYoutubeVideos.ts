@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 
+
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
   videosError: string | null;
@@ -28,7 +29,7 @@ export default function useYoutubeVideos(
   const {state:{isLoggedIn},loadingQuery} = useUser()
 
 
-  const loadMoreVideos = async () => {
+  const loadMoreVideos =  async () => {
     if (!videosNextPageToken) return;
     await fetchVideos({pageToken:videosNextPageToken})
   }
@@ -62,9 +63,11 @@ export default function useYoutubeVideos(
 
       const channelIds: string[] = [...new Set(videoItems.map((video: Video) => video.snippet.channelId))];
 
+
       const statisticsMap = await fetchVideoStatistics(videoIds);
 
       const channelMap = await fetchChannelDetails(channelIds);
+
 
       const videos = videoItems.map((video: Video) => ({
           ...video,
@@ -85,9 +88,11 @@ export default function useYoutubeVideos(
             subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
             channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
             description: video.snippet.description,
-            categoryId: statisticsMap[video.id.videoId]?.categoryId || '',
+            categoryId: video.snippet.categoryId,
           },
         }))
+
+
 
 
       setVideos ((previous)=>{
@@ -111,6 +116,9 @@ export default function useYoutubeVideos(
       setVideosLoading(false);
     }
   },[apiKey])
+
+
+
 
 
   useEffect(() => {

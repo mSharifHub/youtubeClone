@@ -1,10 +1,8 @@
-import { PostNode } from '../../graphql/types.ts';
+import { PostNode, PostNodeEdge, useDeletePostMutation, useEditPostMutation } from '../../graphql/types.ts';
 import timeSince from '../../helpers/timeSince.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { useEditPost } from '../hooks/useEditPost.ts';
-import { useDeletePost } from '../hooks/useDeletePost.ts';
 
 export const PostCard = ({ post }: { post: PostNode }) => {
   const editModalRef = useRef<HTMLDivElement>(null);
@@ -13,9 +11,38 @@ export const PostCard = ({ post }: { post: PostNode }) => {
   const [showEditInput, setShowEditInput] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string>('');
 
-  const { editPost } = useEditPost();
+  const [editPost] = useEditPostMutation();
 
-  const { deletePost } = useDeletePost();
+  const [deletePost] = useDeletePostMutation({
+    update(cache, { data }) {
+      const postId = data?.deletePost?.post?.id;
+
+      if (!postId) return;
+
+      const cacheId = cache.identify({ __typename: 'PostNode', id: postId });
+
+      if (cacheId) cache.evict({ id: cacheId });
+
+      cache.modify({
+        fields: {
+          viewerPosts(existingConnections = {}, { readField }) {
+            const newEdges = existingConnections.edges?.filter((edge: PostNodeEdge) => {
+              if (edge.node) {
+                const nodeId = readField('id', edge.node);
+                return nodeId !== postId;
+              }
+            });
+
+            return {
+              ...existingConnections,
+              edges: newEdges,
+            };
+          },
+        },
+      });
+      cache.gc();
+    },
+  });
 
   const handleShowEditModal = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();

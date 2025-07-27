@@ -13,7 +13,7 @@ export const Home: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-  const { videos, videosLoading,sentinelRef} = useYoutubeVideos(apiKey, 10)
+  const { videos, videosLoading, sentinelRef} = useYoutubeVideos(apiKey, 10)
 
   const handleSelectedVideo = useHandleSelectedVideo()
 

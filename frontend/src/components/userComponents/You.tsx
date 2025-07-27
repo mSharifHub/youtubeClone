@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { sliceText } from '../../helpers/sliceText.ts';
 import timeSince from '../../helpers/timeSince.ts';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';

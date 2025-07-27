@@ -67,7 +67,7 @@ export const useHandleSelectedVideo = () => {
                 publishedAt: video.snippet.publishedAt ?? '',
                 categoryId: video.snippet.categoryId ?? '',
                 channelDescription: video.snippet.channelDescription ?? '',
-                subscriberCount: video.snippet.subscriberCount ?? '',
+                subscriberCount:  video.snippet.subscriberCount ?? '',
                 channelLogo: video.snippet.channelLogo ?? '',
               },
               statistics: {

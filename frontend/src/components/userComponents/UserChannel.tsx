@@ -26,7 +26,7 @@ export default function UserChannel() {
   const userInputRef = useRef<HTMLInputElement | null>(null);
   const communityPostRef = useRef<HTMLFormElement>(null);
 
-  const [createPost] = useCreatePostMutation({
+  const [createPost, { error: createPostError }] = useCreatePostMutation({
     update(cache, { data }) {
       const payload = data?.createPost;
       if (!payload?.post) return;
@@ -45,7 +45,7 @@ export default function UserChannel() {
 
             return {
               ...existing,
-              edges: [newEdge as PostNodeEdge, ...existing.edges],
+              edges: [newEdge as PostNodeEdge, ...existing.edges.filter((edge: PostNodeEdge) => edge?.node?.id !== payload.post?.id)],
             };
           },
         },
@@ -145,7 +145,7 @@ export default function UserChannel() {
     if (rejectedFiles.length > 0) {
       setError(`Rejected ${rejectedFiles.length} file${rejectedFiles.length > 1 ? 's' : ''}: ${rejectedFiles.join('\n ')}`);
     } else {
-      setError(null);
+      setError(undefined);
     }
 
     setImagePreviews([...previews, ...acceptedFiles]);

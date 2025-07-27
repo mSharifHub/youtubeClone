@@ -12,27 +12,17 @@ export const fetchChannelDetails = async (channelIds: string[]) => {
       return {};
     }
 
-    const { items } = response.data;
-
-    const channelMap = items.reduce((map, item) => {
-      const channelId = item.id || '';
-      const channelTitle = item.snippet?.title || '';
-      const channelLogo = item.snippet.thumbnails?.default?.url || '';
-      const subscriberCount = item.statistics?.subscriberCount || '0';
-      const channelDescription = item.snippet?.description || '';
-
-      map[channelId] = {
-        channelId,
-        channelTitle,
-        logo: channelLogo,
-        subscriberCount,
-        channelDescription,
+    return response.data.items.reduce((map: Record<string, any>, item) => {
+      map[item.id] = {
+        channelId: item.id,
+        channelTitle: item.snippet?.title,
+        logo: item.snippet.thumbnails?.default?.url,
+        subscriberCount: item.statistics?.subscriberCount,
+        channelDescription: item.snippet?.description,
+        categoryId: item.snippet?.categoryId,
       };
-
       return map;
     }, {});
-
-    return channelMap;
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to fetch video Details.');
   }
