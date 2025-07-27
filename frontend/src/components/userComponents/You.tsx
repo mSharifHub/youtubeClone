@@ -2,13 +2,12 @@ import { UserProfileCard } from './UserProfileCard.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import { mapVideoNodeToVideo } from '../../helpers/mapVideoNodeToVideo.ts';
 import { useViewerVideoPlayListQuery, VideoPlaylistEntryNode } from '../../graphql/types.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { NavigationControls } from '../playlistComponents/NavigationControls.tsx';
 import { useNavigationControlsOptions } from '../hooks/useNavigationControlsOptions.ts';
+import { PlayListContainer } from '../playlistComponents/playListContainer.tsx';
 
 export const You = () => {
   const { data, loading, fetchMore } = useViewerVideoPlayListQuery({
@@ -23,7 +22,7 @@ export const You = () => {
 
   const HandleSelectedVideo = useHandleSelectedVideo();
 
-  const handleLoadMore = async () => {
+  const handleLoadMorePlaylistHist = async () => {
     if (loading) return;
 
     if (!data?.viewerVideoPlaylist?.videoEntries?.pageInfo || !data?.viewerVideoPlaylist?.videoEntries.pageInfo.endCursor) return;
@@ -36,7 +35,7 @@ export const You = () => {
     });
   };
 
-  const sentinelRefHist = useIntersectionObserver(handleLoadMore, loading, playlist.length);
+  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, loading, playlist.length);
 
   const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playlist.length });
 
@@ -59,27 +58,15 @@ export const You = () => {
           }}
         />
 
-        <div
+        <PlayListContainer
           ref={historyControls.scrollRef}
-          className={` ${historyControls.viewAll ? 'grid grid-flow-row  gap-y-8' : 'flex  overflow-x-scroll scroll-smooth no-scrollbar'}  overflow-hidden   `}
-          style={{
-            ...(historyControls.viewAll && { gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))` }),
-          }}
-        >
-          {playlist.length > 0 &&
-            playlist.map(({ node }) => (
-              <div
-                key={`${node.id}-${node.video.videoId}`}
-                className="flex flex-col w-full cursor-pointer overflow-hidden flex-shrink-0 px-2"
-                style={{
-                  ...(!historyControls.viewAll && { width: `${100 / videosPerRow}%` }),
-                }}
-                onClick={() => HandleSelectedVideo(mapVideoNodeToVideo(node.video))}
-              >
-                <VideoCard video={mapVideoNodeToVideo(node.video)} />
-              </div>
-            ))}
-        </div>
+          viewAll={historyControls.viewAll}
+          videosPerRow={videosPerRow}
+          playListLength={playlist.length}
+          playlist={playlist}
+          HandleSelectedVideo={HandleSelectedVideo}
+        />
+
         {loading && <SpinningCircle />}
         {historyControls.viewAll && <div ref={sentinelRefHist} />}
       </div>
