@@ -3,6 +3,7 @@ import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useCallback } from 'react';
 import { useSaveVideoPlaylistMutation, VideoPlaylistEntryNodeEdge } from '../../graphql/types.ts';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export const useHandleSelectedVideo = () => {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export const useHandleSelectedVideo = () => {
           variables: {
             video: {
               id: {
-                videoId: video.id.videoId,
+                videoId: getVideoId(video.id),
               },
               snippet: {
                 title: video.snippet.title ?? '',
@@ -67,7 +68,7 @@ export const useHandleSelectedVideo = () => {
                 publishedAt: video.snippet.publishedAt ?? '',
                 categoryId: video.snippet.categoryId ?? '',
                 channelDescription: video.snippet.channelDescription ?? '',
-                subscriberCount:  video.snippet.subscriberCount ?? '',
+                subscriberCount: video.snippet.subscriberCount ?? '',
                 channelLogo: video.snippet.channelLogo ?? '',
               },
               statistics: {
@@ -80,7 +81,7 @@ export const useHandleSelectedVideo = () => {
           },
         });
       }
-      navigate(`/watch?v=${video.id.videoId}`);
+      navigate(`/watch?v=${getVideoId(video.id)}`);
     },
     [navigate, setSelectedVideo],
   );

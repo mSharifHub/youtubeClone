@@ -19,14 +19,14 @@ export default function UserChannel() {
   const [imagePreviews, setImagePreviews] = useState<ImagePreviews[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const [clickedInput, setClickedInput] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const mainDivRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const userInputRef = useRef<HTMLInputElement | null>(null);
   const communityPostRef = useRef<HTMLFormElement>(null);
 
-  const [createPost, { error: createPostError }] = useCreatePostMutation({
+  const [createPost, { error: createPostError, loading: creatingPost }] = useCreatePostMutation({
     update(cache, { data }) {
       const payload = data?.createPost;
       if (!payload?.post) return;

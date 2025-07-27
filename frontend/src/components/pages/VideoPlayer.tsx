@@ -11,7 +11,7 @@ import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import CommentLoading from '../VideoComponents/CommentLoading.tsx';
 import { useSearchParams } from 'react-router-dom';
-
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export const VideoPlayer: React.FC = () => {
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -68,7 +68,7 @@ export const VideoPlayer: React.FC = () => {
 
   const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
 
-  const filteredSelectedVideosList = relatedVideos.filter((video) => video.id.videoId !== videoId);
+  const filteredSelectedVideosList = relatedVideos.filter((video) => getVideoId(video.id) !== videoId);
 
   const handleLike = () => {
     if (!liked) {

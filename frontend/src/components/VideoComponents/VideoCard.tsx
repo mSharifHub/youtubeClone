@@ -4,6 +4,8 @@ import timeSince from '../../helpers/timeSince.ts';
 import { convertISO } from '../../helpers/convertISO.ts';
 import decrementTime from '../../helpers/decrementTime.ts';
 import { Video } from '../../types/youtubeVideoInterfaces.ts';
+import { getVideoId } from '../../helpers/getVideoId.ts';
+import { formatNumber } from '../../helpers/formatNumber.ts';
 
 interface VideoCardProps {
   video: Video;
@@ -27,7 +29,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video }) =>
   const timerRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
-  const videoURL = `https://www.youtube.com/embed/${video.id.videoId}?autoplay=1&mute=1&controls=0`;
+  const videoURL = `https://www.youtube.com/embed/${getVideoId(video.id)}?autoplay=1&mute=1&controls=0`;
 
   const videoTitle = sliceText({ s: video.snippet.title });
 
@@ -84,7 +86,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video }) =>
       <div className=" relative aspect-video rounded-xl overflow-hidden bg-black" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {!hover ? (
           <img
-            src={video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.default?.url}
+            src={video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.medium?.url}
             alt={video.snippet.title}
             className="w-full h-full object-cover rounded-xl"
             draggable={false}
@@ -113,7 +115,7 @@ export const VideoCard: React.FunctionComponent<VideoCardProps> = ({ video }) =>
             <h3> {video.snippet.channelTitle}</h3>
             <div className=" flex flex-row  space-x-2">
               <h3>
-                {video.statistics?.viewCount} {video.statistics?.viewCount && parseInt(video.statistics.viewCount, 10) > 1 ? <span> views</span> : <span>view</span>}
+                {formatNumber(video.statistics?.viewCount)} {video.statistics?.viewCount && parseInt(video.statistics.viewCount, 10) > 1 ? <span> views</span> : <span>view</span>}
               </h3>
               <h3>
                 <span className="font-bold">&#8226;</span>

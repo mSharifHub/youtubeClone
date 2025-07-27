@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { fetchVideoStatistics } from '../../helpers/fetchVideoStatistics.ts';
 import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 interface useYoutubeRelatedVideosOptions {
   relatedVideos: Video[] | [];
@@ -16,8 +17,6 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
   const [relatedVideos, setRelatedVideos] = useState<Video[]>([]);
   const [relatedVideosLoading, setRelatedVideosLoading] = useState(false);
   const [relatedVideosError, setRelatedVideosError] = useState<string | null>(null);
-
-
 
   const fetchRelatedVideos = useCallback(
     async (categoryId: string) => {
@@ -38,38 +37,44 @@ export default function useYoutubeRelatedVideos(apiKey: string): useYoutubeRelat
         }
 
         const videoItems: Video[] = data.items;
-        const videoIds: string[] = videoItems.map((video: Video) => video.id.videoId);
+        const videoIds: string[] = videoItems.map((video: Video) => getVideoId(video.id));
         const channelIds: string[] = [...new Set(videoItems.map((video: Video) => video.snippet.channelId))];
 
         const statisticsMap = await fetchVideoStatistics(videoIds);
         const channelMap = await fetchChannelDetails(channelIds);
 
-        const fetchedVideoData: Video[] = videoItems.map((video) => ({
-          ...video,
-          statistics: {
-            ...video.statistics,
-            viewCount: statisticsMap[video.id.videoId]?.viewCount,
-            likeCount: statisticsMap[video.id.videoId]?.likeCount,
-            dislikeCount: statisticsMap[video.id.videoId]?.dislikeCount,
-            commentCount: statisticsMap[video.id.videoId]?.commentCount,
-            duration: statisticsMap[video.id.videoId]?.duration,
-          },
-          snippet: {
-            ...video.snippet,
-            title: video.snippet.title,
-            channelTitle: channelMap[video.snippet.channelId]?.channelTitle,
-            channelLogo: channelMap[video.snippet.channelId]?.logo,
-            publishedAt: video.snippet.publishedAt,
-            subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
-            channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
-            description: video.snippet.description,
-            categoryId: statisticsMap[video.id.videoId]?.categoryId || '',
-          },
-        }));
+        const fetchedVideoData: Video[] = videoItems.map((video) => {
+          const _videoId = getVideoId(video.id);
+          return {
+            ...video,
+            id: {
+              videoId: _videoId,
+            },
+            statistics: {
+              ...video.statistics,
+              viewCount: statisticsMap[_videoId]?.viewCount,
+              likeCount: statisticsMap[_videoId]?.likeCount,
+              dislikeCount: statisticsMap[_videoId]?.dislikeCount,
+              commentCount: statisticsMap[_videoId]?.commentCount,
+              duration: statisticsMap[_videoId]?.duration,
+            },
+            snippet: {
+              ...video.snippet,
+              title: video.snippet.title,
+              channelTitle: channelMap[video.snippet.channelId]?.channelTitle,
+              channelLogo: channelMap[video.snippet.channelId]?.logo,
+              publishedAt: video.snippet.publishedAt,
+              subscriberCount: channelMap[video.snippet.channelId]?.subscriberCount,
+              channelDescription: channelMap[video.snippet.channelId]?.channelDescription,
+              description: video.snippet.description,
+              categoryId: video.snippet.categoryId,
+            },
+          };
+        });
 
         setRelatedVideos((previous) => {
-          const existingIds = new Set(previous.map((v) => v.id.videoId));
-          const newVideos = fetchedVideoData.filter((video) => !existingIds.has(video.id.videoId));
+          const existingIds = new Set(previous.map((v) => getVideoId(v.id)));
+          const newVideos = fetchedVideoData.filter((video) => !existingIds.has(getVideoId(video.id)));
           return [...previous, ...newVideos];
         });
       } catch (error) {

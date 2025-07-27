@@ -8,6 +8,7 @@ import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 export const Home: React.FC = () => {
 
   const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
@@ -47,7 +48,7 @@ export const Home: React.FC = () => {
               >
                 {
                   videos.slice(0,fullRowCount).map((video) => (
-                    <li key={video.id.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
+                    <li key={getVideoId(video.id)}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
                   ))
                 }
               </ul>

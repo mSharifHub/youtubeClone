@@ -2,6 +2,7 @@ import { VideoCardLoading } from './VideoCardLoading.tsx';
 import { VideoCard } from './VideoCard.tsx';
 import React from 'react';
 import { Video } from '../../types/youtubeVideoInterfaces.ts';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 interface RelatedVideosProps {
   relatedVideos: Video[] | [];
@@ -23,7 +24,7 @@ export const RelatedVideos: React.FC<RelatedVideosProps> = ({ relatedVideos, rel
         </div>
       ) : (
         relatedVideos.map((video) => (
-          <div key={`${video.id.videoId}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
+          <div key={`${getVideoId(video.id)}-${video.snippet.title}`} onClick={() => handleSelectedVideo(video)}>
             <VideoCard video={video} />
           </div>
         ))

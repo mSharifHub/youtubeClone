@@ -29,9 +29,7 @@ export interface VideoStatistics {
   duration?: string;
 }
 
-export interface VideoId {
-  videoId: string;
-}
+export type VideoId = string | { videoId: string };
 
 export interface Video {
   id: VideoId;

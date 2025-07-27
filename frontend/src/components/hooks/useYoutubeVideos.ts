@@ -6,6 +6,7 @@ import { fetchChannelDetails } from '../../helpers/fetchChannelDetails.ts';
 import axios from 'axios';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 
 interface UseYoutubeVideoOptions {
@@ -18,6 +19,7 @@ interface UseYoutubeVideoOptions {
 export default function useYoutubeVideos(
   apiKey?: string,
   maxResult?: number,
+  myRating?: boolean,
 
 ): UseYoutubeVideoOptions {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -31,12 +33,12 @@ export default function useYoutubeVideos(
 
   const loadMoreVideos =  async () => {
     if (!videosNextPageToken) return;
-    await fetchVideos({pageToken:videosNextPageToken})
+    await fetchVideos({pageToken:videosNextPageToken, myRating})
   }
 
   const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
 
-  const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
+  const fetchVideos = useCallback(async ({pageToken, query="trending", myRating}:{pageToken?:string, query?:string, myRating?:boolean}) => {
 
     if (videosLoading) return;
 
@@ -44,7 +46,16 @@ export default function useYoutubeVideos(
     setVideosError(null);
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
+
+      let url: string;
+
+      if (myRating) {
+
+        url = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=snippet&myRating=like${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
+      } else {
+
+        url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
+      }
 
       const response = await axios.get(url);
 
@@ -59,7 +70,10 @@ export default function useYoutubeVideos(
       setVideosNextPageToken(response.data.nextPageToken?? null);
 
       const videoItems: Video[] = response.data.items;
-      const videoIds: string[] = videoItems.map((video: Video) => video.id.videoId);
+
+
+      const videoIds: string[]  = videoItems.map(video=>getVideoId(video.id))
+
 
       const channelIds: string[] = [...new Set(videoItems.map((video: Video) => video.snippet.channelId))];
 
@@ -69,15 +83,22 @@ export default function useYoutubeVideos(
       const channelMap = await fetchChannelDetails(channelIds);
 
 
-      const videos = videoItems.map((video: Video) => ({
+      const videos = videoItems.map((video: Video) => {
+
+        const _videoId = getVideoId(video.id)
+
+        return{
           ...video,
+          id:{
+            videoId: _videoId
+          },
           statistics: {
             ...video.statistics,
-            viewCount: statisticsMap[video.id.videoId]?.viewCount,
-            likeCount: statisticsMap[video.id.videoId]?.likeCount,
-            dislikeCount: statisticsMap[video.id.videoId]?.dislikeCount,
-            commentCount: statisticsMap[video.id.videoId]?.commentCount,
-            duration: statisticsMap[video.id.videoId]?.duration,
+            viewCount: statisticsMap[_videoId]?.viewCount,
+            likeCount: statisticsMap[_videoId]?.likeCount,
+            dislikeCount: statisticsMap[_videoId]?.dislikeCount,
+            commentCount: statisticsMap[_videoId]?.commentCount,
+            duration: statisticsMap[_videoId]?.duration,
           },
           snippet: {
             ...video.snippet,
@@ -90,13 +111,12 @@ export default function useYoutubeVideos(
             description: video.snippet.description,
             categoryId: video.snippet.categoryId,
           },
-        }))
-
-
+        }
+      })
 
 
       setVideos ((previous)=>{
-        const existingIds = new Set(previous.map(v=>v.id.videoId))
+        const existingIds = new Set(previous.map(v=> getVideoId(v.id)))
         const newVideos = videos.filter(video=> !existingIds.has(video.id.videoId))
         if ( newVideos.length === 0) return previous
         const updatedList = [...previous,...newVideos]
@@ -120,7 +140,6 @@ export default function useYoutubeVideos(
 
 
 
-
   useEffect(() => {
     if (!isLoggedIn && loadingQuery) return
 
@@ -134,7 +153,7 @@ export default function useYoutubeVideos(
             setVideosNextPageToken(cachedData.nextPageToken || null)
         }else{
 
-          await fetchVideos({})
+          await fetchVideos({myRating})
         }
 
       }catch (err){

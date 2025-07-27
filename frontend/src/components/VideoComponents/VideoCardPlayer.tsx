@@ -7,6 +7,7 @@ import { faBell as faBellSolid, faShare } from '@fortawesome/free-solid-svg-icon
 import { faBell as faBellRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownRegular, faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
+import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export default function VideoCardPlayer({
   YoutubeComponent,
@@ -47,7 +48,7 @@ export default function VideoCardPlayer({
     <div className="min-h-fit h-fit w-full flex flex-col justify-start items-start gap-8   rounded-lg">
       <div className="relative flex  flex-none w-full  min-h-[250px]   aspect-video ">
         {selectedVideo ? (
-          <YoutubeComponent videoId={selectedVideo.id.videoId} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
+          <YoutubeComponent videoId={getVideoId(selectedVideo.id)} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
         ) : (
           <div className="h-full  w-full bg-neutral-200 dark:dark-modal  animate-wave-opacity rounded-lg" />
         )}
