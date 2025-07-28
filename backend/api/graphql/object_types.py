@@ -69,28 +69,22 @@ class VideoPlaylistNode(DjangoObjectType):
         fields = '__all__'
 
 
-class ThumbnailInput(graphene.InputObjectType):
+class BaseThumbnailFields:
     url = graphene.String()
+    width = graphene.Int()
+    height = graphene.Int()
 
-class ThumbnailsInput(graphene.InputObjectType):
-    default = graphene.Field(ThumbnailInput)
-    medium = graphene.Field(ThumbnailInput)
-    high = graphene.Field(ThumbnailInput)
-
-class VideoSnippetInput(graphene.InputObjectType):
+class BaseSnippetFields:
     title = graphene.String()
     description = graphene.String()
-    thumbnails = graphene.Field(ThumbnailsInput)
     channel_id = graphene.String()
     channel_title = graphene.String()
     channel_description = graphene.String()
     channel_logo = graphene.String()
     published_at = graphene.DateTime()
     subscriber_count = graphene.String()
-    category_id = graphene.String()
 
-
-class VideoStatisticsInput(graphene.InputObjectType):
+class BaseStatisticsFields:
     view_count = graphene.String()
     like_count = graphene.String()
     dislike_count = graphene.String()
@@ -98,14 +92,67 @@ class VideoStatisticsInput(graphene.InputObjectType):
     duration = graphene.String()
 
 
-class VideoIdInput(graphene.InputObjectType):
+class BaseIdFields:
+    video_id = graphene.String()
+
+
+class ThumbnailType(graphene.ObjectType, BaseThumbnailFields):
+    pass
+
+class ThumbnailsType(graphene.ObjectType):
+    default = graphene.Field(ThumbnailType)
+    medium = graphene.Field(ThumbnailType)
+    high = graphene.Field(ThumbnailType)
+
+
+class VideoStatisticsType(graphene.ObjectType, BaseStatisticsFields):
+    pass
+
+
+class VideoSnippetType(graphene.ObjectType, BaseSnippetFields):
+    thumbnails = graphene.Field(ThumbnailsType)
+
+class IdType(graphene.ObjectType, BaseIdFields):
+    pass
+
+class VideoType(graphene.ObjectType):
+    id = graphene.Field(IdType)
+    snippet = graphene.Field(VideoSnippetType)
+    statistics = graphene.Field(VideoStatisticsType)
+
+
+class ThumbnailInput(graphene.InputObjectType, BaseThumbnailFields):
+    pass
+
+class ThumbnailsInput(graphene.InputObjectType):
+    default = graphene.Field(ThumbnailInput)
+    medium = graphene.Field(ThumbnailInput)
+    high = graphene.Field(ThumbnailInput)
+
+
+class VideoSnippetInput(graphene.InputObjectType, BaseSnippetFields):
+    thumbnails = graphene.Field(ThumbnailsInput)
+
+
+class VideoStatisticsInput(graphene.InputObjectType, BaseStatisticsFields):
+    pass
+
+class VideoIdInput(graphene.InputObjectType, BaseIdFields):
     video_id = graphene.String(required=True)
 
 
 class VideoInput(graphene.InputObjectType):
-     id = graphene.InputField(VideoIdInput, required=True)
-     snippet = graphene.InputField(VideoSnippetInput, required=True)
-     statistics = graphene.InputField(VideoStatisticsInput, required=True)
+    id = graphene.InputField(VideoIdInput, required=True)
+    snippet = graphene.InputField(VideoSnippetInput, required=True)
+    statistics = graphene.InputField(VideoStatisticsInput, required=True)
+
+
+
+class YoutubeVideoResponse(graphene.ObjectType):
+    videos = graphene.List(VideoType)
+    next_page_token = graphene.String()
+    total_results = graphene.Int()
+    has_next_page = graphene.Boolean()
 
 
 class PostNode(DjangoObjectType):
