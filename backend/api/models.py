@@ -17,28 +17,29 @@ class User(AbstractUser):
 
 class Video(models.Model):
     video_id = models.CharField(max_length=500,primary_key=True, editable=False)
-    title = models.CharField(max_length=500, blank=True,null=True)
-    description = models.TextField(blank=True, null=True)
-    thumbnail_default = models.URLField(blank=True, null=True)
-    thumbnail_medium = models.URLField(blank=True, null=True)
+    title = models.CharField(max_length=500, blank=True, default='')
+    description = models.TextField(blank=True, default='')
+    thumbnail_default = models.URLField(blank=True, default='')
+    thumbnail_medium = models.URLField(blank=True, default='')
+    thumbnail_high = models.URLField(blank=True, default='')
 
 
     channel_id = models.CharField(max_length=240)
-    channel_title = models.CharField(max_length=240)
-    channel_description = models.TextField(blank=True, null=True)
-    channel_logo = models.URLField(blank=True, null=True)
+    channel_title = models.CharField(max_length=240, blank=True, default='')
+    channel_description = models.TextField(blank=True, default='')
+    channel_logo = models.URLField(max_length=500,blank=True, default='')
 
     published_at = models.DateTimeField()
-    subscriber_count = models.BigIntegerField(blank=True, null= True)
-    category_id = models.CharField(max_length=10)
+    subscriber_count = models.BigIntegerField(default=0)
+    category_id = models.CharField(max_length=10, blank=True,default='')
 
-    view_count = models.BigIntegerField(blank=True, null= True)
-    like_count = models.BigIntegerField(blank=True, null= True)
-    comment_count = models.BigIntegerField(blank=True, null= True)
-    duration= models.CharField(max_length=10, blank= True, null=True)
+    view_count = models.BigIntegerField(default=0)
+    like_count = models.BigIntegerField(default=0)
+    comment_count = models.BigIntegerField(default=0)
+    duration= models.CharField(max_length=10, blank= True, default='')
 
     def __str__(self):
-        return self.video_id
+        return self.video_id or self.title
 
 
 class VideoPlaylist(models.Model):

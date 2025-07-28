@@ -3,11 +3,12 @@ import graphene
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 from graphene_django.rest_framework.mutation import SerializerMutation
+from api.graphql.input_types import VideoInput
 from api.serializers import UserSerializer
 from  graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from api.models import Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
-from api.graphql.types import  PostNode, VideoPlaylistEntryNode, VideoInput
+from api.graphql.object_types import  PostNode, VideoPlaylistEntryNode
 from graphql_relay import from_global_id
 
 
@@ -91,25 +92,27 @@ class SaveVideoPlaylist(graphene.Mutation):
             snippet = video_data.snippet
             statistics = video_data.statistics
 
-            thumbnails_default = snippet.thumbnails.default.url if snippet.thumbnails.default else None
-            thumbnails_medium = snippet.thumbnails.medium.url if snippet.thumbnails.medium else None
+            thumbnails_default = snippet.thumbnails.default.url if snippet.thumbnails.default else ''
+            thumbnails_medium = snippet.thumbnails.medium.url if snippet.thumbnails.medium else ''
+            thumbnails_high = snippet.thumbnails.high.url if snippet.thumbnails.high else ''
 
             defaults = {
-                'title': snippet.title,
-                'description': snippet.description,
+                'title': snippet.title or '',
+                'description': snippet.description if snippet.description else '',
                 'thumbnail_default': thumbnails_default,
                 'thumbnail_medium': thumbnails_medium,
+                'thumbnail_high': thumbnails_high,
                 'channel_id': snippet.channel_id,
-                'channel_title': snippet.channel_title,
-                'channel_description': snippet.channel_description,
-                'channel_logo': snippet.channel_logo,
+                'channel_title': snippet.channel_title if snippet.channel_title else '',
+                'channel_description': snippet.channel_description if snippet.channel_description else '',
+                'channel_logo': snippet.channel_logo if snippet.channel_logo else '',
                 'published_at': snippet.published_at,
-                'subscriber_count': snippet.subscriber_count,
-                'category_id': snippet.category_id,
-                'view_count': statistics.view_count,
-                'like_count': statistics.like_count,
-                'comment_count': statistics.comment_count,
-                'duration': statistics.duration,
+                'subscriber_count': snippet.subscriber_count if snippet.subscriber_count else 0,
+                'category_id':snippet.category_id ,
+                'view_count': statistics.view_count if statistics.view_count else 0,
+                'like_count': statistics.like_count if statistics.like_count else 0,
+                'comment_count': statistics.comment_count if statistics.comment_count else 0,
+                'duration': statistics.duration if statistics.duration else ""
             }
 
             video_object, _ = Video.objects.update_or_create(video_id= video_data.id.video_id,defaults=defaults)
@@ -128,7 +131,6 @@ class SaveVideoPlaylist(graphene.Mutation):
             raise GraphQLError(f"an error occurred: {str(err)}")
 
 
-
 class CreatePost(graphene.Mutation):
     post = graphene.Field(PostNode)
     cursor = graphene.String()
@@ -136,7 +138,6 @@ class CreatePost(graphene.Mutation):
     class Arguments:
         content = graphene.String(required=False)
         images = graphene.List(Upload, required=False)
-
 
     def mutate(self,info,content=None, images=None):
         user= info.context.user

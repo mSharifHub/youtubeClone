@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client';
+import { DocumentNode, gql } from '@apollo/client';
 
-export const VIEWER_QUERY = gql`
+export const VIEWER_QUERY: DocumentNode = gql`
   query Viewer {
     viewer {
       firstName
@@ -17,7 +17,7 @@ export const VIEWER_QUERY = gql`
     }
   }
 `;
-export const VIEWER_POSTS_QUERY = gql`
+export const VIEWER_POSTS_QUERY: DocumentNode = gql`
   query ViewerPosts($first: Int, $after: String) {
     viewerPosts(first: $first, after: $after) {
       edges {
@@ -44,7 +44,7 @@ export const VIEWER_POSTS_QUERY = gql`
   }
 `;
 
-export const VIEWER_VIDEO_PLAYLIST = gql`
+export const VIEWER_VIDEO_PLAYLIST: DocumentNode = gql`
   query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
     viewerVideoPlaylist {
       videoEntries(first: $first, after: $after, watchedAt_Gt: $watcheAt_Gt, watchedAt_Lt: $watchedAt_Lt, orderBy: $orderBy) {
@@ -77,6 +77,36 @@ export const VIEWER_VIDEO_PLAYLIST = gql`
           hasNextPage
         }
       }
+    }
+  }
+`;
+
+export const GET_YOUTUBE_LIKED_VIDEOS: DocumentNode = gql`
+  query YoutubeLikedVideos($pageToken: String, $maxResults: Int) {
+    youtubeLikedVideos(pageToken: $pageToken, maxResults: $maxResults) {
+      videos {
+        id
+        videoId
+        title
+        description
+        thumbnailDefault
+        thumbnailMedium
+        thumbnailHigh
+        channelId
+        channelTitle
+        channelDescription
+        channelLogo
+        publishedAt
+        subscriberCount
+        categoryId
+        viewCount
+        likeCount
+        commentCount
+        duration
+      }
+      nextPageToken
+      totalResults
+      hasNextPage
     }
   }
 `;

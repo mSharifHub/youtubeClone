@@ -8,7 +8,6 @@ import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useIntersectionObserver } from './useIntersectionObserver.ts';
 import { getVideoId } from '../../helpers/getVideoId.ts';
 
-
 interface UseYoutubeVideoOptions {
   videosLoading: boolean;
   videosError: string | null;
@@ -19,7 +18,6 @@ interface UseYoutubeVideoOptions {
 export default function useYoutubeVideos(
   apiKey?: string,
   maxResult?: number,
-  myRating?: boolean,
 
 ): UseYoutubeVideoOptions {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -33,12 +31,12 @@ export default function useYoutubeVideos(
 
   const loadMoreVideos =  async () => {
     if (!videosNextPageToken) return;
-    await fetchVideos({pageToken:videosNextPageToken, myRating})
+    await fetchVideos({pageToken:videosNextPageToken})
   }
 
   const sentinelRef = useIntersectionObserver(loadMoreVideos, videosLoading, videos.length,MAX_LIMIT)
 
-  const fetchVideos = useCallback(async ({pageToken, query="trending", myRating}:{pageToken?:string, query?:string, myRating?:boolean}) => {
+  const fetchVideos = useCallback(async ({pageToken, query="trending"}:{pageToken?:string, query?:string}) => {
 
     if (videosLoading) return;
 
@@ -47,15 +45,7 @@ export default function useYoutubeVideos(
 
     try {
 
-      let url: string;
-
-      if (myRating) {
-
-        url = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&part=snippet&myRating=like${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}`;
-      } else {
-
-        url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
-      }
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${query}${pageToken ? `&pageToken=${pageToken}` : ''}&maxResults=${maxResult}&regionCode=US`;
 
       const response = await axios.get(url);
 
@@ -121,7 +111,8 @@ export default function useYoutubeVideos(
         if ( newVideos.length === 0) return previous
         const updatedList = [...previous,...newVideos]
         const updated = [...updatedList]
-        saveToDB("homeVideosScroll",{
+        const cacheKey ='homeVideosScroll'
+        saveToDB(cacheKey,{
           videos: updated,
           nextPageToken:response.data.nextPageToken ?? null,
         })
@@ -138,8 +129,6 @@ export default function useYoutubeVideos(
   },[apiKey])
 
 
-
-
   useEffect(() => {
     if (!isLoggedIn && loadingQuery) return
 
@@ -147,13 +136,14 @@ export default function useYoutubeVideos(
       try{
         setVideos([])
         setVideosNextPageToken(null)
-        const cachedData = await loadFromDB('homeVideosScroll')
+        const cacheKey = 'homeVideosScroll'
+        const cachedData = await loadFromDB(cacheKey)
         if (cachedData &&  Array.isArray(cachedData.videos) && cachedData.videos.length > 0 ) {
             setVideos(cachedData.videos)
             setVideosNextPageToken(cachedData.nextPageToken || null)
         }else{
 
-          await fetchVideos({myRating})
+          await fetchVideos({})
         }
 
       }catch (err){

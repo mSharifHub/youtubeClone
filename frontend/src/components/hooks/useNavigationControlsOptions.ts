@@ -32,7 +32,7 @@ export const useNavigationControlsOptions = ({ videosPerRow, playlistLength }: U
 
   const handleScrollUp = () => {
     if (!scrollRef.current) return;
-    const maxIndex = Math.max(0, playlistLength- videosPerRow);
+    const maxIndex = Math.max(0, playlistLength - videosPerRow);
     const newIndex = Math.min(currentIndex + 1, maxIndex);
     setCurrentIndex(newIndex);
     scrollToPosition(newIndex);

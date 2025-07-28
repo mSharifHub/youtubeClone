@@ -2,40 +2,86 @@ import { UserProfileCard } from './UserProfileCard.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import { useViewerVideoPlayListQuery, VideoPlaylistEntryNode } from '../../graphql/types.ts';
+import {
+  useViewerVideoPlayListQuery,
+  useYoutubeLikedVideosQuery,
+  VideoNode,
+  VideoPlaylistEntryNode,
+} from '../../graphql/types.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { NavigationControls } from '../playlistComponents/NavigationControls.tsx';
 import { useNavigationControlsOptions } from '../hooks/useNavigationControlsOptions.ts';
 import { PlayListContainer } from '../playlistComponents/playListContainer.tsx';
+import { mapVideoNodeToVideo } from '../../helpers/mapVideoNodeToVideo.ts';
+import { Video } from '../../types/youtubeVideoInterfaces.ts';
 
 export const You = () => {
-  const { data, loading, fetchMore } = useViewerVideoPlayListQuery({
+  const {
+    data: playlistHistData,
+    loading: playlistHistLoading,
+    fetchMore: fetchMorePlaylistHist,
+  } = useViewerVideoPlayListQuery({
     variables: { first: 10 },
+    nextFetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const {
+    data: likedVideosData,
+    loading: likedVideosLoading,
+    fetchMore: fetchMoreLikedVideos,
+  } = useYoutubeLikedVideosQuery({
+    variables: {
+      maxResults: 10,
+    },
     nextFetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues);
 
-  const playlist = (data?.viewerVideoPlaylist?.videoEntries?.edges ?? []).filter((edge): edge is { node: VideoPlaylistEntryNode } => !!edge?.node && !!edge.node.video);
+  const playlist: Video[] = (playlistHistData?.viewerVideoPlaylist?.videoEntries?.edges ?? [])
+    .filter((edge): edge is { node: VideoPlaylistEntryNode } => !!edge?.node && !!edge.node.video)
+    .map(({ node }) => mapVideoNodeToVideo(node.video));
+
+  const likedVideos = (likedVideosData?.youtubeLikedVideos?.videos ?? [])
+    .filter((video): video is NonNullable<typeof video> => video !== null)
+    .map((video) => mapVideoNodeToVideo(video as VideoNode));
 
   const HandleSelectedVideo = useHandleSelectedVideo();
 
   const handleLoadMorePlaylistHist = async () => {
-    if (loading) return;
+    if (playlistHistLoading) return;
 
-    if (!data?.viewerVideoPlaylist?.videoEntries?.pageInfo || !data?.viewerVideoPlaylist?.videoEntries.pageInfo.endCursor) return;
+    if (!playlistHistData?.viewerVideoPlaylist?.videoEntries?.pageInfo || !playlistHistData?.viewerVideoPlaylist?.videoEntries.pageInfo.endCursor) return;
 
-    await fetchMore({
+    await fetchMorePlaylistHist({
       variables: {
         first: 10,
-        after: data?.viewerVideoPlaylist?.videoEntries?.pageInfo?.endCursor,
+        after: playlistHistData?.viewerVideoPlaylist?.videoEntries?.pageInfo?.endCursor,
       },
     });
   };
 
-  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, loading, playlist.length);
+  const handleLoadMoreLikedVideos = async () => {
+    if (likedVideosLoading) return;
+
+    const nextPage = likedVideosData?.youtubeLikedVideos?.nextPageToken;
+
+    if (!nextPage) return;
+
+    await fetchMoreLikedVideos({
+      variables: {
+        maxResults: 10,
+        pageToken: nextPage,
+      },
+    });
+  };
+
+  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playlist.length);
+
+  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0);
 
   const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playlist.length });
 
@@ -67,7 +113,7 @@ export const You = () => {
           HandleSelectedVideo={HandleSelectedVideo}
         />
 
-        {loading && <SpinningCircle />}
+        {playlistHistLoading && <SpinningCircle />}
         {historyControls.viewAll && <div ref={sentinelRefHist} />}
       </div>
 
@@ -85,6 +131,17 @@ export const You = () => {
             collapsed: 'view all',
           }}
         />
+
+        <PlayListContainer
+          ref={likeControls.scrollRef}
+          viewAll={likeControls.viewAll}
+          videosPerRow={videosPerRow}
+          playListLength={likedVideos?.length ?? 0}
+          playlist={likedVideos}
+          HandleSelectedVideo={HandleSelectedVideo}
+        />
+        {likedVideosLoading && <SpinningCircle />}
+        {likeControls.viewAll && <div ref={sentinelRefLiked} />}
       </div>
     </div>
   );

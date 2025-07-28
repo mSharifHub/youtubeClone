@@ -3,6 +3,8 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
+import { Video } from '../types/youtubeVideoInterfaces.ts';
+import { getVideoId } from '../helpers/getVideoId.ts';
 
 const httpLink = createUploadLink({
   uri: 'http://localhost:8000/graphql/',
@@ -57,6 +59,21 @@ const client = new ApolloClient({
               return {
                 ...incoming,
                 edges: [...(existing.edges || []), ...incoming.edges],
+              };
+            },
+          },
+          youtubeLikedVideos: {
+            keyArgs: false,
+            merge(existing, incoming) {
+              if (!existing) return incoming;
+              return {
+                ...incoming,
+                videos: [
+                  ...(existing.videos || []),
+                  ...(incoming.videos || []).filter(
+                    (video: Video) => !(existing.videos || []).some((existingVideo: Video) => getVideoId(existingVideo.id) === getVideoId(video.id)),
+                  ),
+                ],
               };
             },
           },

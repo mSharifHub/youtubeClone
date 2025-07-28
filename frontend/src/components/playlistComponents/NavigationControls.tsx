@@ -24,7 +24,6 @@ export const NavigationControls: React.FC<NavigationControls> = ({
   className = '',
   viewAllText = { expanded: 'view less', collapsed: 'view all' },
 }) => {
-
   return (
     <div className={`flex flex-row justify-end gap-4 items-center px-3 mb-4 ${className}`}>
       <div

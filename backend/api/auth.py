@@ -4,7 +4,6 @@ from google.auth.transport import requests as google_requests
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-
 class GoogleTokenAuthentication(BaseBackend):
     def authenticate(self, request, google_id_token=None,  **kwargs):
         if not google_id_token:

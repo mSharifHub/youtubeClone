@@ -22,7 +22,15 @@ class GoogleLoginView(APIView):
     def get(self, request):
         client_id = settings.GOOGLE_CLIENT_ID
         redirect_uri = request.build_absolute_uri(reverse('google-callback'))
-        scope = 'openid%20email%20profile'
+
+        scopes = [
+            "https://www.googleapis.com/auth/youtube",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "openid",
+        ]
+
+        scope_str = " ".join(scopes)
         access_type = "offline"
 
         login_hint = request.query_params.get('login_hint', None)
@@ -30,7 +38,7 @@ class GoogleLoginView(APIView):
         auth_url = (
             f"https://accounts.google.com/o/oauth2/v2/auth?"
             f"response_type=code&access_type={access_type}&"
-            f"redirect_uri={redirect_uri}&scope={scope}&"
+            f"redirect_uri={redirect_uri}&scope={scope_str}&"
             f"client_id={client_id}"
         )
 
@@ -57,6 +65,7 @@ class GoogleAuthCallBackView(APIView):
             id_info = token_details['id_info']
             google_refresh_token = token_details.get('refresh_token',None)
             google_expires_in = token_details['expires_in']
+            google_access_token = token_details['access_token']
             sub = id_info['sub']
             email = id_info['email']
             email_verified = id_info['email_verified']
@@ -102,10 +111,19 @@ class GoogleAuthCallBackView(APIView):
 
             response = redirect(f"{settings.CLIENT_ADDRESS}?success=true")
 
-            # storing google tokens on cookies
             response.set_cookie(
                 'google_id_token',
                 token_details['id_token'],
+                httponly=True,
+                max_age=google_expires_in,
+                samesite='Strict',
+                secure=True
+            )
+
+            # storing google tokens on cookies
+            response.set_cookie(
+                'google_access_token',
+                google_access_token,
                 httponly=True,
                 max_age=google_expires_in,
                 samesite='Strict',
@@ -125,6 +143,116 @@ class GoogleAuthCallBackView(APIView):
             return response
         except Exception as err:
             return Response({'error': f"Token exchanged failed: {err}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class YoutubeLikedVideosView(APIView):
+#     @sensitive_variables('access_token')
+#     def get(self,request):
+#         access_token = request.COOKIES.get('google_access_token')
+#
+#         if not access_token:
+#             refresh_token = request.COOKIES.get('google_refresh_token')
+#             if refresh_token:
+#                 try:
+#                     refreshed_token = Helpers.refresh_google_id_token(refresh_token)
+#                     access_token = refreshed_token['access_token']
+#                 except Exception as err:
+#                     return Response({
+#                         'error': f"Error refreshing google token: {err}",
+#                         'message': 'Please login again'
+#                     }, status=status.HTTP_401_UNAUTHORIZED)
+#             else:
+#                 return Response({
+#                     'error': 'Google token not found',
+#                     'message': 'Please login again'
+#                 },status=status.HTTP_401_UNAUTHORIZED)
+#
+#         page_token = request.query_params.get('page_token','')
+#         max_results = min(int(request.query_params.get('max_results', 10)), 50)
+#
+#         try:
+#             youtube_api_url = 'https://www.googleapis.com/youtube/v3/videos'
+#             params = {
+#                 'part':'snippet,statistics,contentDetails',
+#                 'myRating':'like',
+#                 'maxResults':max_results,
+#                 'key': settings.GOOGLE_CLIENT_ID
+#             }
+#
+#             if page_token:
+#                 params['pageToken'] = page_token
+#
+#             headers = {
+#                 "Authorization": f"Bearer {access_token}",
+#                 'Accept': 'application/json'
+#             }
+#
+#             response = request.get(youtube_api_url, params=params, headers=headers)
+#
+#             if response.status_code == 401:
+#                 refresh_token = request.COOKIES.get('google_refresh_token')
+#                 if refresh_token:
+#                     try:
+#                         new_token = Helpers.refresh_google_id_token(refresh_token)
+#                         access_token = new_token['access_token']
+#
+#                         headers['Authorization'] = f'Bearer {access_token}'
+#                         response = request.get(youtube_api_url, params=params, headers=headers)
+#
+#                         django_response = Response(response.json(), status=response.status_code)
+#
+#                         django_response.set_cookie(
+#                             'google_access_token',
+#                             access_token,
+#                             httponly=True,
+#                             max_age=new_token['expires_in'],
+#                             samesite='Strict',
+#                             secure=True
+#                         )
+#
+#                         return django_response
+#                     except Exception as err:
+#                         return Response({
+#                             'error': f"Error refreshing google token: {err}",
+#                             'message': 'Please login again'
+#                         }, status=status.HTTP_401_UNAUTHORIZED)
+#                 else:
+#                     return Response({
+#                         'error': 'Google token not found',
+#                         'message': 'Please login again'
+#                     },status=status.HTTP_401_UNAUTHORIZED)
+#
+#             response.raise_for_status()
+#             youtube_data = response.json()
+#
+#             processed_videos  =[]
+#
+#             for  item in youtube_data.get('items',[]):
+#                 video_data = {
+#                     'id': item['id'],
+#                     'title': item['snippet']['title'],
+#                     'description': item['snippet']['description'],
+#                     'published_at': item['snippet']['publishedAt'],
+#                     'thumbnail_url': item['snippet']['thumbnails']['medium']['url'],
+#                     'channel_title': item['snippet']['channelTitle'],
+#                     'view_count': item['statistics'].get('viewCount',0),
+#                     'like_count': item['statistics'].get('likeCount',0),
+#                     'duration': item['contentDetails']['duration']
+#                 }
+#                 processed_videos.append(video_data)
+#
+#             return Response({
+#                 'videos': processed_videos,
+#                 'next_page_token': youtube_data.get('nextPageToken',''),
+#                 'total_results': youtube_data.get('pageInfo',{}).get('totalResults',0),
+#             })
+#
+#         except request.exceptions.RequestException as err:
+#             return Response({
+#                 'error': f"Error fetching youtube data: {err}",
+#                 'message': f"{str(err)}"
+#             },status = status.HTTP_400_BAD_REQUEST)
+#
 
 
 class LogoutView(APIView):
