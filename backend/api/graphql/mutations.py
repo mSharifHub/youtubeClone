@@ -10,10 +10,7 @@ from graphql import GraphQLError
 from api.models import Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
 from api.graphql.object_types import  PostNode, VideoPlaylistEntryNode
 from graphql_relay import from_global_id
-
-
-MAX_TOTAL_SIZE = 10* 1024 * 1024   # 1MB total size allowed
-
+MAX_TOTAL_SIZE = 10* 1024 * 1024
 
 class UserSerializerMutation(SerializerMutation):
     class Meta:
@@ -72,6 +69,10 @@ class EditPost (graphene.Mutation):
         post.content = content
         post.save()
         return EditPost(post=post)
+
+
+class CreateComment(graphene.Mutation):
+    comments = graphene.Field()
 
 
 class SaveVideoPlaylist(graphene.Mutation):

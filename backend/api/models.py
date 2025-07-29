@@ -1,4 +1,6 @@
 import uuid
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -22,17 +24,13 @@ class Video(models.Model):
     thumbnail_default = models.URLField(blank=True, default='')
     thumbnail_medium = models.URLField(blank=True, default='')
     thumbnail_high = models.URLField(blank=True, default='')
-
-
     channel_id = models.CharField(max_length=240)
     channel_title = models.CharField(max_length=240, blank=True, default='')
     channel_description = models.TextField(blank=True, default='')
     channel_logo = models.URLField(max_length=500,blank=True, default='')
-
     published_at = models.DateTimeField()
     subscriber_count = models.BigIntegerField(default=0)
     category_id = models.CharField(max_length=10, blank=True,default='')
-
     view_count = models.BigIntegerField(default=0)
     like_count = models.BigIntegerField(default=0)
     comment_count = models.BigIntegerField(default=0)
@@ -40,6 +38,42 @@ class Video(models.Model):
 
     def __str__(self):
         return self.video_id or self.title
+
+
+class CommentThread(models.Model):
+    thread_id = models.CharField(max_length=500,primary_key=True, editable=False)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='comment_threads')
+    can_reply = models.BooleanField(default=True)
+    total_reply_count = models.IntegerField(default=0)
+    is_public = models.BooleanField(default=True)
+
+    def __str__(self):
+            return self.thread_id or f"{self.video.title} comment thread"
+
+
+class Comment(models.Model):
+    comment_id  = models.CharField(max_length=500,primary_key=True, editable=False)
+    thread = models.ForeignKey(CommentThread, on_delete=models.CASCADE, related_name='comments')
+    parent_id = models.CharField(max_length=500, blank=True, null=True)
+    author_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='comments')
+
+    author_display_name = models.CharField(max_length=240)
+    author_channel_url = models.URLField(blank=True, default='')
+    author_channel_id = models.CharField(max_length=240)
+    channel_id  = models.CharField(max_length=240)
+    text_display = models.TextField(blank=True, default='')
+    text_original = models.TextField(blank=True, default='')
+    can_rate = models.BooleanField(default=True)
+    viewer_rating = models.CharField(max_length=10, default='none')
+    like_count = models.BigIntegerField(default=0)
+    published_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comments by {self.author_display_name}: {self.text_display[:50]}..."
+
+
 
 
 class VideoPlaylist(models.Model):

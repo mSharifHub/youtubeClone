@@ -1,9 +1,11 @@
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from api.graphql.filters import PostFilter, VideoHistoryFilter
-from api.models import User, Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries
+from api.models import User, Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries, Comment, CommentThread
+
 
 class UserTypes(DjangoObjectType):
     class Meta:
@@ -52,6 +54,41 @@ class VideoNode(DjangoObjectType):
         fields = '__all__'
 
 
+class CommentNode(DjangoObjectType):
+    parent_comment = graphene.Field(lambda : CommentNode)
+    replies = graphene.List(lambda : CommentNode)
+    class Meta:
+        model = Comment
+        interfaces = (relay.Node,)
+        fields = '__all__'
+
+    def resolve_parent_comment(self,info):
+        if self.parent_id:
+            try:
+                return Comment.objects.get(comment_id=self.parent_id)
+            except ObjectDoesNotExist:
+                return None
+        return None
+
+    def resolve_replies(self,info):
+        return Comment.objects.filter(parent_id = self.comment_id)
+
+
+class CommentThreadNode(DjangoObjectType):
+        top_level_comment = graphene.Field(CommentNode)
+        replies = graphene.List(CommentNode)
+        class Meta:
+            model = CommentThread
+            interfaces = (relay.Node,)
+            fields = '__all__'
+
+        def resolve_top_level_comment(self,info):
+            return self.comments.filter(is_top_level=True).first()
+
+        def resolve_replies(self,info):
+            return self.comments.filter(is_top_level=False).order_by('created_at')
+
+
 class VideoPlaylistEntryNode(DjangoObjectType):
     class Meta:
         model = VideoPlaylistEntries
@@ -59,7 +96,7 @@ class VideoPlaylistEntryNode(DjangoObjectType):
         fields = '__all__'
 
 class VideoPlaylistNode(DjangoObjectType):
-    video_entries = DjangoFilterConnectionField(VideoPlaylistEntryNode,filterset_class= VideoHistoryFilter)
+    video_entries = DjangoFilterConnectionField(VideoPlaylistEntryNode,filterset_class=VideoHistoryFilter)
     class Meta:
         model = VideoPlaylist
         interfaces = (relay.Node,)
@@ -71,6 +108,11 @@ class YoutubeVideoResponse(graphene.ObjectType):
     total_results = graphene.Int()
     has_next_page = graphene.Boolean()
 
+class YoutubeCommentsResponse(graphene.ObjectType):
+   comments_threads = graphene.List(CommentThreadNode)
+   next_page_token = graphene.String()
+   total_results = graphene.Int()
+   has_next_page = graphene.Boolean()
 
 class PostNode(DjangoObjectType):
     profile_picture = graphene.String()
