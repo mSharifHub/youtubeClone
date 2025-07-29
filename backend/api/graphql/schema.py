@@ -49,6 +49,7 @@ class Query(MeQuery, graphene.ObjectType):
 
     youtube_video_comments = graphene.Field(
         YoutubeCommentsResponse,
+        video_id=graphene.String(required=True),
         page_token = graphene.String(),
         max_results = graphene.Int(default_value=10),
     )
@@ -101,7 +102,7 @@ class Query(MeQuery, graphene.ObjectType):
             if not data.get('items'):
 
                 return {
-                    'comments':[],
+                    'comments_threads':[],
                     'next_page_token': None,
                     'total_results': 0,
                     'has_next_page': False
@@ -123,7 +124,7 @@ class Query(MeQuery, graphene.ObjectType):
                     thread_id = thread_id,
                     defaults = {
                         'video': video_obj,
-                        'can_reply': snippet,
+                        'can_reply': snippet.get('canReply', True),
                         'total_reply_count': snippet.get('totalReplyCount', 0),
                         'is_public': snippet.get('isPublic', True)
                     }
@@ -137,7 +138,7 @@ class Query(MeQuery, graphene.ObjectType):
                         'thread':  thread_obj,
                         'author_display_name': top_comment_snippet.get('authorDisplayName',''),
                         'author_channel_url': top_comment_snippet.get('authorChannelUrl',''),
-                        'parent_id': top_comment_snippet.get('parentId', {}).get('value', ''),
+                        'parent_id': None,
                         'author_channel_id': top_comment_snippet.get('authorChannelId',{}).get('value',''),
                         'channel_id': top_comment_snippet.get('channelId',{}).get('value',''),
                         'viewer_rating': top_comment_snippet.get('viewerRating','none'),

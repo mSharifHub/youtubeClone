@@ -71,9 +71,6 @@ class EditPost (graphene.Mutation):
         return EditPost(post=post)
 
 
-class CreateComment(graphene.Mutation):
-    comments = graphene.Field()
-
 
 class SaveVideoPlaylist(graphene.Mutation):
     video_entry = graphene.Field(VideoPlaylistEntryNode)
