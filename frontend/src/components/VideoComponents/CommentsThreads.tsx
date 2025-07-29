@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { CommentThread } from '../hooks/useYoutubeComments.ts';
+// import { CommentThread } from '../hooks/useYoutubeComments.ts';
 import { UserAvatar } from './UserAvatar.tsx';
 
 interface CommentsThreadsProps {
   handleShowTopLevelReplies: () => void;
   showTopLevelReplies: boolean;
-  comments: CommentThread[];
+  // comments: CommentThread[];
   commentsError: string | null;
 }
 

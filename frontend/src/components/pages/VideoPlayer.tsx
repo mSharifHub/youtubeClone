@@ -1,23 +1,23 @@
 import React, { useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
-import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
-import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
+// import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
+// import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
 import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
-import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
-import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
-import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+// import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
+// import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
+// import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
+// import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
-import CommentLoading from '../VideoComponents/CommentLoading.tsx';
-import { useSearchParams } from 'react-router-dom';
-import { getVideoId } from '../../helpers/getVideoId.ts';
+// import CommentLoading from '../VideoComponents/CommentLoading.tsx';
+// import { useSearchParams } from 'react-router-dom';
+// import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export const VideoPlayer: React.FC = () => {
-  const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
+  // const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
-  const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
+  // const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
 
   const [liked, setLiked] = useState<boolean>(false); // refactor as context dispatch state
   const [dislike, setDislike] = useState<boolean>(false);
@@ -27,9 +27,9 @@ export const VideoPlayer: React.FC = () => {
 
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
 
-  const [searchParams] = useSearchParams();
+  // const [searchParams] = useSearchParams();
 
-  const videoId = searchParams.get('v');
+  // const videoId = searchParams.get('v');
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -54,21 +54,21 @@ export const VideoPlayer: React.FC = () => {
     setExpandVideoDescription((prev) => !prev);
   };
 
-  const handleShowTopLevelReplies = (): void => {
-    setShowTopLevelReplies((prev) => !prev);
-  };
+  // const handleShowTopLevelReplies = (): void => {
+  //   setShowTopLevelReplies((prev) => !prev);
+  // };
 
   const onReady: YouTubeProps['onReady'] = (event) => {
     playerRef.current = event.target;
   };
 
-  const handleSelectedVideo = useHandleSelectedVideo();
+  // const handleSelectedVideo = useHandleSelectedVideo();
 
-  const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
+  // const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
+  //
+  // const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
 
-  const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
-
-  const filteredSelectedVideosList = relatedVideos.filter((video) => getVideoId(video.id) !== videoId);
+  // const filteredSelectedVideosList = relatedVideos.filter((video) => getVideoId(video.id) !== videoId);
 
   const handleLike = () => {
     if (!liked) {
@@ -130,34 +130,34 @@ export const VideoPlayer: React.FC = () => {
           {/* user comment section */}
           <UserMakeComment />
           {/* comments section */}
-          <CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />
+          {/*<CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />*/}
 
           {/*/ sentinel observer */}
-          <div ref={sentinelRef} className="h-2  w-full" />
+          {/*<div ref={sentinelRef} className="h-2  w-full" />*/}
 
           {/* SpinningCircle Circle*/}
-          {commentsLoading && (
-            <div className="flex flex-col p-4 gap-4 ">
-              <ul>
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <li key={index} className="flex flex-row space-x-4">
-                    <CommentLoading />
-                  </li>
-                ))}
-              </ul>
+          {/*{commentsLoading && (*/}
+          {/*  <div className="flex flex-col p-4 gap-4 ">*/}
+          {/*    <ul>*/}
+          {/*      {Array.from({ length: 3 }).map((_, index) => (*/}
+          {/*        <li key={index} className="flex flex-row space-x-4">*/}
+          {/*          <CommentLoading />*/}
+          {/*        </li>*/}
+          {/*      ))}*/}
+          {/*    </ul>*/}
 
-              <SpinningCircle />
-            </div>
-          )}
+          {/*    <SpinningCircle />*/}
+          {/*  </div>*/}
+          {/*)}*/}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">
-          <RelatedVideos
-            relatedVideos={filteredSelectedVideosList}
-            relatedVideosLoading={relatedVideosLoading}
-            handleSelectedVideo={handleSelectedVideo}
-            relatedVideosError={relatedVideosError}
-          />
+          {/*<RelatedVideos*/}
+          {/*  relatedVideos={filteredSelectedVideosList}*/}
+          {/*  relatedVideosLoading={relatedVideosLoading}*/}
+          {/*  handleSelectedVideo={handleSelectedVideo}*/}
+          {/*  relatedVideosError={relatedVideosError}*/}
+          {/*/>*/}
         </div>
       </div>
     </div>

@@ -44,6 +44,36 @@ export const VIEWER_POSTS_QUERY: DocumentNode = gql`
   }
 `;
 
+export const YOUTUBE_SEARCH_VIDEOS: DocumentNode = gql`
+  query YoutubeSearchVideos($query: String, $pageToken: String, $maxResults: Int) {
+    youtubeSearchVideos(query: $query, pageToken: $pageToken, maxResults: $maxResults) {
+      nextPageToken
+      hasNextPage
+      totalResults
+      videos {
+        id
+        videoId
+        title
+        description
+        thumbnailDefault
+        thumbnailMedium
+        thumbnailHigh
+        channelId
+        channelTitle
+        channelDescription
+        channelLogo
+        publishedAt
+        subscriberCount
+        categoryId
+        viewCount
+        likeCount
+        commentCount
+        duration
+      }
+    }
+  }
+`;
+
 export const VIEWER_VIDEO_PLAYLIST: DocumentNode = gql`
   query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
     viewerVideoPlaylist {
@@ -103,6 +133,69 @@ export const GET_YOUTUBE_LIKED_VIDEOS: DocumentNode = gql`
         likeCount
         commentCount
         duration
+      }
+      nextPageToken
+      totalResults
+      hasNextPage
+    }
+  }
+`;
+
+export const VIDEO_COMMENTS: DocumentNode = gql`
+  query VideoComments($videoId: String!, $pageToken: String, $maxResults: Int) {
+    youtubeVideoComments(videoId: $videoId, pageToken: $pageToken, maxResults: $maxResults) {
+      commentsThreads {
+        id
+        threadId
+        canReply
+        totalReplyCount
+        isPublic
+
+        topLevelComment {
+          commentId
+          authorDisplayName
+          authorChannelUrl
+          authorChannelId
+          textDisplay
+          textOriginal
+          likeCount
+          publishedAt
+          updatedAt
+          parentId
+
+          replies {
+            commentId
+            authorDisplayName
+            textDisplay
+            likeCount
+            publishedAt
+            parentId
+          }
+        }
+
+        replies {
+          commentId
+          authorDisplayName
+          textDisplay
+          likeCount
+          publishedAt
+          parentId
+
+          replies {
+            commentId
+            authorDisplayName
+            textDisplay
+            likeCount
+            publishedAt
+            parentId
+          }
+        }
+
+        video {
+          videoId
+          title
+          channelTitle
+        }
       }
       nextPageToken
       totalResults

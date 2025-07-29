@@ -10,13 +10,94 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  DateTime: { input: any; output: any };
-  Upload: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
+  Upload: { input: any; output: any; }
+};
+
+export type CommentNode = Node & {
+  __typename?: 'CommentNode';
+  authorChannelId: Scalars['String']['output'];
+  authorChannelUrl: Scalars['String']['output'];
+  authorDisplayName: Scalars['String']['output'];
+  authorUser?: Maybe<UserTypes>;
+  canRate: Scalars['Boolean']['output'];
+  channelId: Scalars['String']['output'];
+  commentId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  /** The ID of the object. */
+  id: Scalars['ID']['output'];
+  likeCount: Scalars['Int']['output'];
+  parentComment?: Maybe<CommentNode>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  publishedAt: Scalars['DateTime']['output'];
+  replies?: Maybe<Array<Maybe<CommentNode>>>;
+  textDisplay: Scalars['String']['output'];
+  textOriginal: Scalars['String']['output'];
+  thread: CommentThreadNode;
+  updatedAt: Scalars['DateTime']['output'];
+  viewerRating: Scalars['String']['output'];
+};
+
+export type CommentNodeConnection = {
+  __typename?: 'CommentNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<CommentNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `CommentNode` and its cursor. */
+export type CommentNodeEdge = {
+  __typename?: 'CommentNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<CommentNode>;
+};
+
+export type CommentThreadNode = Node & {
+  __typename?: 'CommentThreadNode';
+  canReply: Scalars['Boolean']['output'];
+  comments: CommentNodeConnection;
+  /** The ID of the object. */
+  id: Scalars['ID']['output'];
+  isPublic: Scalars['Boolean']['output'];
+  replies?: Maybe<Array<Maybe<CommentNode>>>;
+  threadId: Scalars['String']['output'];
+  topLevelComment?: Maybe<CommentNode>;
+  totalReplyCount: Scalars['Int']['output'];
+  video: VideoNode;
+};
+
+
+export type CommentThreadNodeCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CommentThreadNodeConnection = {
+  __typename?: 'CommentThreadNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<CommentThreadNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `CommentThreadNode` and its cursor. */
+export type CommentThreadNodeEdge = {
+  __typename?: 'CommentThreadNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<CommentThreadNode>;
 };
 
 export type CreatePost = {
@@ -52,23 +133,28 @@ export type Mutation = {
   userUpdate?: Maybe<UserSerializerMutationPayload>;
 };
 
+
 export type MutationCreatePostArgs = {
   content?: InputMaybe<Scalars['String']['input']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['Upload']['input']>>>;
 };
 
+
 export type MutationDeletePostArgs = {
   postId: Scalars['ID']['input'];
 };
+
 
 export type MutationEditPostArgs = {
   content: Scalars['String']['input'];
   postId: Scalars['ID']['input'];
 };
 
+
 export type MutationSaveVideoPlaylistArgs = {
   video: VideoInput;
 };
+
 
 export type MutationUserUpdateArgs = {
   input: UserSerializerMutationInput;
@@ -136,7 +222,10 @@ export type Query = {
   viewerPosts?: Maybe<PostNodeConnection>;
   viewerVideoPlaylist?: Maybe<VideoPlaylistNode>;
   youtubeLikedVideos?: Maybe<YoutubeVideoResponse>;
+  youtubeSearchVideos?: Maybe<YoutubeVideoResponse>;
+  youtubeVideoComments?: Maybe<YoutubeCommentsResponse>;
 };
+
 
 export type QueryAllPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -152,6 +241,7 @@ export type QueryAllPostsArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type QueryViewerPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   author?: InputMaybe<Scalars['ID']['input']>;
@@ -166,9 +256,24 @@ export type QueryViewerPostsArgs = {
   orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type QueryYoutubeLikedVideosArgs = {
   maxResults?: InputMaybe<Scalars['Int']['input']>;
   pageToken?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryYoutubeSearchVideosArgs = {
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryYoutubeVideoCommentsArgs = {
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
 };
 
 export type SaveVideoPlaylist = {
@@ -193,6 +298,7 @@ export type UserNode = Node & {
   __typename?: 'UserNode';
   archived?: Maybe<Scalars['Boolean']['output']>;
   bio: Scalars['String']['output'];
+  comments: CommentNodeConnection;
   dateJoined: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
@@ -218,6 +324,16 @@ export type UserNode = Node & {
   videoPlaylistHistory?: Maybe<VideoPlaylistNode>;
   youtubeHandler: Scalars['String']['output'];
 };
+
+
+export type UserNodeCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
 
 export type UserNodePostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -288,6 +404,7 @@ export type UserTypes = {
   youtubeHandler: Scalars['String']['output'];
 };
 
+
 export type UserTypesPostsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   author?: InputMaybe<Scalars['ID']['input']>;
@@ -320,6 +437,7 @@ export type VideoNode = Node & {
   channelLogo: Scalars['String']['output'];
   channelTitle: Scalars['String']['output'];
   commentCount: Scalars['Int']['output'];
+  commentThreads: CommentThreadNodeConnection;
   description: Scalars['String']['output'];
   duration: Scalars['String']['output'];
   /** The ID of the object. */
@@ -337,6 +455,16 @@ export type VideoNode = Node & {
   viewCount: Scalars['Int']['output'];
 };
 
+
+export type VideoNodeCommentThreadsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type VideoNodeVideoplaylistSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -344,6 +472,7 @@ export type VideoNodeVideoplaylistSetArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
+
 
 export type VideoNodeVideoplaylistentriesSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -405,6 +534,7 @@ export type VideoPlaylistNode = Node & {
   videos: VideoNodeConnection;
 };
 
+
 export type VideoPlaylistNodeVideoEntriesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -417,6 +547,7 @@ export type VideoPlaylistNodeVideoEntriesArgs = {
   watchedAt_Gt?: InputMaybe<Scalars['DateTime']['input']>;
   watchedAt_Lt?: InputMaybe<Scalars['DateTime']['input']>;
 };
+
 
 export type VideoPlaylistNodeVideosArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -464,6 +595,14 @@ export type VideoStatisticsInput = {
   viewCount?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type YoutubeCommentsResponse = {
+  __typename?: 'YoutubeCommentsResponse';
+  commentsThreads?: Maybe<Array<Maybe<CommentThreadNode>>>;
+  hasNextPage?: Maybe<Scalars['Boolean']['output']>;
+  nextPageToken?: Maybe<Scalars['String']['output']>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type YoutubeVideoResponse = {
   __typename?: 'YoutubeVideoResponse';
   hasNextPage?: Maybe<Scalars['Boolean']['output']>;
@@ -477,118 +616,52 @@ export type CreatePostMutationVariables = Exact<{
   images?: InputMaybe<Array<Scalars['Upload']['input']> | Scalars['Upload']['input']>;
 }>;
 
-export type CreatePostMutation = {
-  __typename?: 'Mutation';
-  createPost?: {
-    __typename?: 'CreatePost';
-    cursor?: string | null;
-    post?: {
-      __typename: 'PostNode';
-      id: string;
-      content: string;
-      createdAt: any;
-      profilePicture?: string | null;
-      author: { __typename?: 'UserTypes'; youtubeHandler: string };
-      images: Array<{ __typename: 'PostImageTypes'; image?: string | null }>;
-    } | null;
-  } | null;
-};
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost?: { __typename?: 'CreatePost', cursor?: string | null, post?: { __typename: 'PostNode', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserTypes', youtubeHandler: string }, images: Array<{ __typename: 'PostImageTypes', image?: string | null }> } | null } | null };
 
 export type EditPostMutationVariables = Exact<{
   postId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
 }>;
 
-export type EditPostMutation = { __typename?: 'Mutation'; editPost?: { __typename?: 'EditPost'; post?: { __typename: 'PostNode'; id: string; content: string } | null } | null };
+
+export type EditPostMutation = { __typename?: 'Mutation', editPost?: { __typename?: 'EditPost', post?: { __typename: 'PostNode', id: string, content: string } | null } | null };
 
 export type DeletePostMutationVariables = Exact<{
   postId: Scalars['ID']['input'];
 }>;
 
-export type DeletePostMutation = {
-  __typename?: 'Mutation';
-  deletePost?: { __typename?: 'DeletePost'; success?: boolean | null; post?: { __typename: 'PostNode'; id: string } | null } | null;
-};
+
+export type DeletePostMutation = { __typename?: 'Mutation', deletePost?: { __typename?: 'DeletePost', success?: boolean | null, post?: { __typename: 'PostNode', id: string } | null } | null };
 
 export type SaveVideoPlaylistMutationVariables = Exact<{
   video: VideoInput;
 }>;
 
-export type SaveVideoPlaylistMutation = {
-  __typename?: 'Mutation';
-  saveVideoPlaylist?: {
-    __typename?: 'SaveVideoPlaylist';
-    cursor?: string | null;
-    videoEntry?: {
-      __typename: 'VideoPlaylistEntryNode';
-      id: string;
-      watchedAt: any;
-      video: {
-        __typename?: 'VideoNode';
-        id: string;
-        videoId: string;
-        title: string;
-        description: string;
-        thumbnailDefault: string;
-        thumbnailMedium: string;
-        channelId: string;
-        channelTitle: string;
-        channelDescription: string;
-        channelLogo: string;
-        publishedAt: any;
-        subscriberCount: number;
-        categoryId: string;
-        viewCount: number;
-        likeCount: number;
-        commentCount: number;
-        duration: string;
-      };
-    } | null;
-  } | null;
-};
 
-export type ViewerQueryVariables = Exact<{ [key: string]: never }>;
+export type SaveVideoPlaylistMutation = { __typename?: 'Mutation', saveVideoPlaylist?: { __typename?: 'SaveVideoPlaylist', cursor?: string | null, videoEntry?: { __typename: 'VideoPlaylistEntryNode', id: string, watchedAt: any, video: { __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailDefault: string, thumbnailMedium: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } } | null } | null };
 
-export type ViewerQuery = {
-  __typename?: 'Query';
-  viewer?: {
-    __typename?: 'UserTypes';
-    firstName: string;
-    lastName: string;
-    username: string;
-    youtubeHandler: string;
-    email: string;
-    profilePicture?: string | null;
-    bio: string;
-    subscribers: Array<{ __typename?: 'UserTypes'; username: string; email: string }>;
-  } | null;
-};
+export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewerQuery = { __typename?: 'Query', viewer?: { __typename?: 'UserTypes', firstName: string, lastName: string, username: string, youtubeHandler: string, email: string, profilePicture?: string | null, bio: string, subscribers: Array<{ __typename?: 'UserTypes', username: string, email: string }> } | null };
 
 export type ViewerPostsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-export type ViewerPostsQuery = {
-  __typename?: 'Query';
-  viewerPosts?: {
-    __typename?: 'PostNodeConnection';
-    edges: Array<{
-      __typename?: 'PostNodeEdge';
-      cursor: string;
-      node?: {
-        __typename?: 'PostNode';
-        id: string;
-        content: string;
-        createdAt: any;
-        profilePicture?: string | null;
-        author: { __typename?: 'UserTypes'; youtubeHandler: string };
-        images: Array<{ __typename?: 'PostImageTypes'; image?: string | null }>;
-      } | null;
-    } | null>;
-    pageInfo: { __typename?: 'PageInfo'; endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean };
-  } | null;
-};
+
+export type ViewerPostsQuery = { __typename?: 'Query', viewerPosts?: { __typename?: 'PostNodeConnection', edges: Array<{ __typename?: 'PostNodeEdge', cursor: string, node?: { __typename?: 'PostNode', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserTypes', youtubeHandler: string }, images: Array<{ __typename?: 'PostImageTypes', image?: string | null }> } | null } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, startCursor?: string | null, hasNextPage: boolean } } | null };
+
+export type YoutubeSearchVideosQueryVariables = Exact<{
+  query?: InputMaybe<Scalars['String']['input']>;
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type YoutubeSearchVideosQuery = { __typename?: 'Query', youtubeSearchVideos?: { __typename?: 'YoutubeVideoResponse', nextPageToken?: string | null, hasNextPage?: boolean | null, totalResults?: number | null, videos?: Array<{ __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailDefault: string, thumbnailMedium: string, thumbnailHigh: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } | null> | null } | null };
 
 export type ViewerVideoPlayListQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -598,99 +671,48 @@ export type ViewerVideoPlayListQueryVariables = Exact<{
   orderBy?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-export type ViewerVideoPlayListQuery = {
-  __typename?: 'Query';
-  viewerVideoPlaylist?: {
-    __typename?: 'VideoPlaylistNode';
-    videoEntries?: {
-      __typename?: 'VideoPlaylistEntryNodeConnection';
-      edges: Array<{
-        __typename?: 'VideoPlaylistEntryNodeEdge';
-        node?: {
-          __typename?: 'VideoPlaylistEntryNode';
-          watchedAt: any;
-          video: {
-            __typename?: 'VideoNode';
-            videoId: string;
-            title: string;
-            description: string;
-            thumbnailDefault: string;
-            thumbnailMedium: string;
-            channelId: string;
-            channelTitle: string;
-            channelDescription: string;
-            channelLogo: string;
-            publishedAt: any;
-            subscriberCount: number;
-            categoryId: string;
-            viewCount: number;
-            likeCount: number;
-            commentCount: number;
-            duration: string;
-          };
-        } | null;
-      } | null>;
-      pageInfo: { __typename?: 'PageInfo'; endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean };
-    } | null;
-  } | null;
-};
+
+export type ViewerVideoPlayListQuery = { __typename?: 'Query', viewerVideoPlaylist?: { __typename?: 'VideoPlaylistNode', videoEntries?: { __typename?: 'VideoPlaylistEntryNodeConnection', edges: Array<{ __typename?: 'VideoPlaylistEntryNodeEdge', node?: { __typename?: 'VideoPlaylistEntryNode', watchedAt: any, video: { __typename?: 'VideoNode', videoId: string, title: string, description: string, thumbnailDefault: string, thumbnailMedium: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } } | null } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, startCursor?: string | null, hasNextPage: boolean } } | null } | null };
 
 export type YoutubeLikedVideosQueryVariables = Exact<{
   pageToken?: InputMaybe<Scalars['String']['input']>;
   maxResults?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
-export type YoutubeLikedVideosQuery = {
-  __typename?: 'Query';
-  youtubeLikedVideos?: {
-    __typename?: 'YoutubeVideoResponse';
-    nextPageToken?: string | null;
-    totalResults?: number | null;
-    hasNextPage?: boolean | null;
-    videos?: Array<{
-      __typename?: 'VideoNode';
-      id: string;
-      videoId: string;
-      title: string;
-      description: string;
-      thumbnailDefault: string;
-      thumbnailMedium: string;
-      thumbnailHigh: string;
-      channelId: string;
-      channelTitle: string;
-      channelDescription: string;
-      channelLogo: string;
-      publishedAt: any;
-      categoryId: string;
-      viewCount: number;
-      likeCount: number;
-      commentCount: number;
-      duration: string;
-    } | null> | null;
-  } | null;
-};
+
+export type YoutubeLikedVideosQuery = { __typename?: 'Query', youtubeLikedVideos?: { __typename?: 'YoutubeVideoResponse', nextPageToken?: string | null, totalResults?: number | null, hasNextPage?: boolean | null, videos?: Array<{ __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailDefault: string, thumbnailMedium: string, thumbnailHigh: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } | null> | null } | null };
+
+export type VideoCommentsQueryVariables = Exact<{
+  videoId: Scalars['String']['input'];
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type VideoCommentsQuery = { __typename?: 'Query', youtubeVideoComments?: { __typename?: 'YoutubeCommentsResponse', nextPageToken?: string | null, totalResults?: number | null, hasNextPage?: boolean | null, commentsThreads?: Array<{ __typename?: 'CommentThreadNode', id: string, threadId: string, canReply: boolean, totalReplyCount: number, isPublic: boolean, topLevelComment?: { __typename?: 'CommentNode', commentId: string, authorDisplayName: string, authorChannelUrl: string, authorChannelId: string, textDisplay: string, textOriginal: string, likeCount: number, publishedAt: any, updatedAt: any, parentId?: string | null, replies?: Array<{ __typename?: 'CommentNode', commentId: string, authorDisplayName: string, textDisplay: string, likeCount: number, publishedAt: any, parentId?: string | null } | null> | null } | null, replies?: Array<{ __typename?: 'CommentNode', commentId: string, authorDisplayName: string, textDisplay: string, likeCount: number, publishedAt: any, parentId?: string | null, replies?: Array<{ __typename?: 'CommentNode', commentId: string, authorDisplayName: string, textDisplay: string, likeCount: number, publishedAt: any, parentId?: string | null } | null> | null } | null> | null, video: { __typename?: 'VideoNode', videoId: string, title: string, channelTitle: string } } | null> | null } | null };
+
 
 export const CreatePostDocument = gql`
-  mutation CreatePost($content: String!, $images: [Upload!]) {
-    createPost(content: $content, images: $images) {
-      cursor
-      post {
+    mutation CreatePost($content: String!, $images: [Upload!]) {
+  createPost(content: $content, images: $images) {
+    cursor
+    post {
+      __typename
+      id
+      content
+      createdAt
+      profilePicture
+      author {
+        youtubeHandler
+      }
+      images {
         __typename
-        id
-        content
-        createdAt
-        profilePicture
-        author {
-          youtubeHandler
-        }
-        images {
-          __typename
-          image
-        }
+        image
       }
     }
   }
-`;
+}
+    `;
 export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
 
 /**
@@ -712,23 +734,23 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * });
  */
 export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const EditPostDocument = gql`
-  mutation EditPost($postId: ID!, $content: String!) {
-    editPost(postId: $postId, content: $content) {
-      post {
-        __typename
-        id
-        content
-      }
+    mutation EditPost($postId: ID!, $content: String!) {
+  editPost(postId: $postId, content: $content) {
+    post {
+      __typename
+      id
+      content
     }
   }
-`;
+}
+    `;
 export type EditPostMutationFn = Apollo.MutationFunction<EditPostMutation, EditPostMutationVariables>;
 
 /**
@@ -750,23 +772,23 @@ export type EditPostMutationFn = Apollo.MutationFunction<EditPostMutation, EditP
  * });
  */
 export function useEditPostMutation(baseOptions?: Apollo.MutationHookOptions<EditPostMutation, EditPostMutationVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<EditPostMutation, EditPostMutationVariables>(EditPostDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditPostMutation, EditPostMutationVariables>(EditPostDocument, options);
+      }
 export type EditPostMutationHookResult = ReturnType<typeof useEditPostMutation>;
 export type EditPostMutationResult = Apollo.MutationResult<EditPostMutation>;
 export type EditPostMutationOptions = Apollo.BaseMutationOptions<EditPostMutation, EditPostMutationVariables>;
 export const DeletePostDocument = gql`
-  mutation DeletePost($postId: ID!) {
-    deletePost(postId: $postId) {
-      post {
-        __typename
-        id
-      }
-      success
+    mutation DeletePost($postId: ID!) {
+  deletePost(postId: $postId) {
+    post {
+      __typename
+      id
     }
+    success
   }
-`;
+}
+    `;
 export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
 
 /**
@@ -787,43 +809,43 @@ export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, D
  * });
  */
 export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+      }
 export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
 export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
 export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
 export const SaveVideoPlaylistDocument = gql`
-  mutation saveVideoPlaylist($video: VideoInput!) {
-    saveVideoPlaylist(video: $video) {
-      cursor
-      videoEntry {
-        __typename
+    mutation saveVideoPlaylist($video: VideoInput!) {
+  saveVideoPlaylist(video: $video) {
+    cursor
+    videoEntry {
+      __typename
+      id
+      watchedAt
+      video {
         id
-        watchedAt
-        video {
-          id
-          videoId
-          title
-          description
-          thumbnailDefault
-          thumbnailMedium
-          channelId
-          channelTitle
-          channelDescription
-          channelLogo
-          publishedAt
-          subscriberCount
-          categoryId
-          viewCount
-          likeCount
-          commentCount
-          duration
-        }
+        videoId
+        title
+        description
+        thumbnailDefault
+        thumbnailMedium
+        channelId
+        channelTitle
+        channelDescription
+        channelLogo
+        publishedAt
+        subscriberCount
+        categoryId
+        viewCount
+        likeCount
+        commentCount
+        duration
       }
     }
   }
-`;
+}
+    `;
 export type SaveVideoPlaylistMutationFn = Apollo.MutationFunction<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>;
 
 /**
@@ -844,29 +866,29 @@ export type SaveVideoPlaylistMutationFn = Apollo.MutationFunction<SaveVideoPlayl
  * });
  */
 export function useSaveVideoPlaylistMutation(baseOptions?: Apollo.MutationHookOptions<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>(SaveVideoPlaylistDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>(SaveVideoPlaylistDocument, options);
+      }
 export type SaveVideoPlaylistMutationHookResult = ReturnType<typeof useSaveVideoPlaylistMutation>;
 export type SaveVideoPlaylistMutationResult = Apollo.MutationResult<SaveVideoPlaylistMutation>;
 export type SaveVideoPlaylistMutationOptions = Apollo.BaseMutationOptions<SaveVideoPlaylistMutation, SaveVideoPlaylistMutationVariables>;
 export const ViewerDocument = gql`
-  query Viewer {
-    viewer {
-      firstName
-      lastName
+    query Viewer {
+  viewer {
+    firstName
+    lastName
+    username
+    youtubeHandler
+    email
+    profilePicture
+    bio
+    subscribers {
       username
-      youtubeHandler
       email
-      profilePicture
-      bio
-      subscribers {
-        username
-        email
-      }
     }
   }
-`;
+}
+    `;
 
 /**
  * __useViewerQuery__
@@ -884,47 +906,47 @@ export const ViewerDocument = gql`
  * });
  */
 export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+      }
 export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+        }
 export function useViewerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
+        }
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export type ViewerSuspenseQueryHookResult = ReturnType<typeof useViewerSuspenseQuery>;
 export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export const ViewerPostsDocument = gql`
-  query ViewerPosts($first: Int, $after: String) {
-    viewerPosts(first: $first, after: $after) {
-      edges {
-        node {
-          id
-          content
-          createdAt
-          profilePicture
-          author {
-            youtubeHandler
-          }
-          images {
-            image
-          }
+    query ViewerPosts($first: Int, $after: String) {
+  viewerPosts(first: $first, after: $after) {
+    edges {
+      node {
+        id
+        content
+        createdAt
+        profilePicture
+        author {
+          youtubeHandler
         }
-        cursor
+        images {
+          image
+        }
       }
-      pageInfo {
-        endCursor
-        startCursor
-        hasNextPage
-      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      startCursor
+      hasNextPage
     }
   }
-`;
+}
+    `;
 
 /**
  * __useViewerPostsQuery__
@@ -944,57 +966,131 @@ export const ViewerPostsDocument = gql`
  * });
  */
 export function useViewerPostsQuery(baseOptions?: Apollo.QueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+      }
 export function useViewerPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+        }
 export function useViewerPostsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerPostsQuery, ViewerPostsQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ViewerPostsQuery, ViewerPostsQueryVariables>(ViewerPostsDocument, options);
+        }
 export type ViewerPostsQueryHookResult = ReturnType<typeof useViewerPostsQuery>;
 export type ViewerPostsLazyQueryHookResult = ReturnType<typeof useViewerPostsLazyQuery>;
 export type ViewerPostsSuspenseQueryHookResult = ReturnType<typeof useViewerPostsSuspenseQuery>;
 export type ViewerPostsQueryResult = Apollo.QueryResult<ViewerPostsQuery, ViewerPostsQueryVariables>;
+export const YoutubeSearchVideosDocument = gql`
+    query YoutubeSearchVideos($query: String, $pageToken: String, $maxResults: Int) {
+  youtubeSearchVideos(
+    query: $query
+    pageToken: $pageToken
+    maxResults: $maxResults
+  ) {
+    nextPageToken
+    hasNextPage
+    totalResults
+    videos {
+      id
+      videoId
+      title
+      description
+      thumbnailDefault
+      thumbnailMedium
+      thumbnailHigh
+      channelId
+      channelTitle
+      channelDescription
+      channelLogo
+      publishedAt
+      subscriberCount
+      categoryId
+      viewCount
+      likeCount
+      commentCount
+      duration
+    }
+  }
+}
+    `;
+
+/**
+ * __useYoutubeSearchVideosQuery__
+ *
+ * To run a query within a React component, call `useYoutubeSearchVideosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useYoutubeSearchVideosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useYoutubeSearchVideosQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *      pageToken: // value for 'pageToken'
+ *      maxResults: // value for 'maxResults'
+ *   },
+ * });
+ */
+export function useYoutubeSearchVideosQuery(baseOptions?: Apollo.QueryHookOptions<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>(YoutubeSearchVideosDocument, options);
+      }
+export function useYoutubeSearchVideosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>(YoutubeSearchVideosDocument, options);
+        }
+export function useYoutubeSearchVideosSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>(YoutubeSearchVideosDocument, options);
+        }
+export type YoutubeSearchVideosQueryHookResult = ReturnType<typeof useYoutubeSearchVideosQuery>;
+export type YoutubeSearchVideosLazyQueryHookResult = ReturnType<typeof useYoutubeSearchVideosLazyQuery>;
+export type YoutubeSearchVideosSuspenseQueryHookResult = ReturnType<typeof useYoutubeSearchVideosSuspenseQuery>;
+export type YoutubeSearchVideosQueryResult = Apollo.QueryResult<YoutubeSearchVideosQuery, YoutubeSearchVideosQueryVariables>;
 export const ViewerVideoPlayListDocument = gql`
-  query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
-    viewerVideoPlaylist {
-      videoEntries(first: $first, after: $after, watchedAt_Gt: $watcheAt_Gt, watchedAt_Lt: $watchedAt_Lt, orderBy: $orderBy) {
-        edges {
-          node {
-            video {
-              videoId
-              title
-              description
-              thumbnailDefault
-              thumbnailMedium
-              channelId
-              channelTitle
-              channelDescription
-              channelLogo
-              publishedAt
-              subscriberCount
-              categoryId
-              viewCount
-              likeCount
-              commentCount
-              duration
-            }
-            watchedAt
+    query ViewerVideoPlayList($first: Int, $after: String, $watcheAt_Gt: DateTime, $watchedAt_Lt: DateTime, $orderBy: String) {
+  viewerVideoPlaylist {
+    videoEntries(
+      first: $first
+      after: $after
+      watchedAt_Gt: $watcheAt_Gt
+      watchedAt_Lt: $watchedAt_Lt
+      orderBy: $orderBy
+    ) {
+      edges {
+        node {
+          video {
+            videoId
+            title
+            description
+            thumbnailDefault
+            thumbnailMedium
+            channelId
+            channelTitle
+            channelDescription
+            channelLogo
+            publishedAt
+            subscriberCount
+            categoryId
+            viewCount
+            likeCount
+            commentCount
+            duration
           }
+          watchedAt
         }
-        pageInfo {
-          endCursor
-          startCursor
-          hasNextPage
-        }
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
       }
     }
   }
-`;
+}
+    `;
 
 /**
  * __useViewerVideoPlayListQuery__
@@ -1017,49 +1113,50 @@ export const ViewerVideoPlayListDocument = gql`
  * });
  */
 export function useViewerVideoPlayListQuery(baseOptions?: Apollo.QueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+      }
 export function useViewerVideoPlayListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+        }
 export function useViewerVideoPlayListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>(ViewerVideoPlayListDocument, options);
+        }
 export type ViewerVideoPlayListQueryHookResult = ReturnType<typeof useViewerVideoPlayListQuery>;
 export type ViewerVideoPlayListLazyQueryHookResult = ReturnType<typeof useViewerVideoPlayListLazyQuery>;
 export type ViewerVideoPlayListSuspenseQueryHookResult = ReturnType<typeof useViewerVideoPlayListSuspenseQuery>;
 export type ViewerVideoPlayListQueryResult = Apollo.QueryResult<ViewerVideoPlayListQuery, ViewerVideoPlayListQueryVariables>;
 export const YoutubeLikedVideosDocument = gql`
-  query YoutubeLikedVideos($pageToken: String, $maxResults: Int) {
-    youtubeLikedVideos(pageToken: $pageToken, maxResults: $maxResults) {
-      videos {
-        id
-        videoId
-        title
-        description
-        thumbnailDefault
-        thumbnailMedium
-        thumbnailHigh
-        channelId
-        channelTitle
-        channelDescription
-        channelLogo
-        publishedAt
-        categoryId
-        viewCount
-        likeCount
-        commentCount
-        duration
-      }
-      nextPageToken
-      totalResults
-      hasNextPage
+    query YoutubeLikedVideos($pageToken: String, $maxResults: Int) {
+  youtubeLikedVideos(pageToken: $pageToken, maxResults: $maxResults) {
+    videos {
+      id
+      videoId
+      title
+      description
+      thumbnailDefault
+      thumbnailMedium
+      thumbnailHigh
+      channelId
+      channelTitle
+      channelDescription
+      channelLogo
+      publishedAt
+      subscriberCount
+      categoryId
+      viewCount
+      likeCount
+      commentCount
+      duration
     }
+    nextPageToken
+    totalResults
+    hasNextPage
   }
-`;
+}
+    `;
 
 /**
  * __useYoutubeLikedVideosQuery__
@@ -1079,18 +1176,114 @@ export const YoutubeLikedVideosDocument = gql`
  * });
  */
 export function useYoutubeLikedVideosQuery(baseOptions?: Apollo.QueryHookOptions<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
-}
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
+      }
 export function useYoutubeLikedVideosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
+        }
 export function useYoutubeLikedVideosSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
-}
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>(YoutubeLikedVideosDocument, options);
+        }
 export type YoutubeLikedVideosQueryHookResult = ReturnType<typeof useYoutubeLikedVideosQuery>;
 export type YoutubeLikedVideosLazyQueryHookResult = ReturnType<typeof useYoutubeLikedVideosLazyQuery>;
 export type YoutubeLikedVideosSuspenseQueryHookResult = ReturnType<typeof useYoutubeLikedVideosSuspenseQuery>;
 export type YoutubeLikedVideosQueryResult = Apollo.QueryResult<YoutubeLikedVideosQuery, YoutubeLikedVideosQueryVariables>;
+export const VideoCommentsDocument = gql`
+    query VideoComments($videoId: String!, $pageToken: String, $maxResults: Int) {
+  youtubeVideoComments(
+    videoId: $videoId
+    pageToken: $pageToken
+    maxResults: $maxResults
+  ) {
+    commentsThreads {
+      id
+      threadId
+      canReply
+      totalReplyCount
+      isPublic
+      topLevelComment {
+        commentId
+        authorDisplayName
+        authorChannelUrl
+        authorChannelId
+        textDisplay
+        textOriginal
+        likeCount
+        publishedAt
+        updatedAt
+        parentId
+        replies {
+          commentId
+          authorDisplayName
+          textDisplay
+          likeCount
+          publishedAt
+          parentId
+        }
+      }
+      replies {
+        commentId
+        authorDisplayName
+        textDisplay
+        likeCount
+        publishedAt
+        parentId
+        replies {
+          commentId
+          authorDisplayName
+          textDisplay
+          likeCount
+          publishedAt
+          parentId
+        }
+      }
+      video {
+        videoId
+        title
+        channelTitle
+      }
+    }
+    nextPageToken
+    totalResults
+    hasNextPage
+  }
+}
+    `;
+
+/**
+ * __useVideoCommentsQuery__
+ *
+ * To run a query within a React component, call `useVideoCommentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVideoCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVideoCommentsQuery({
+ *   variables: {
+ *      videoId: // value for 'videoId'
+ *      pageToken: // value for 'pageToken'
+ *      maxResults: // value for 'maxResults'
+ *   },
+ * });
+ */
+export function useVideoCommentsQuery(baseOptions: Apollo.QueryHookOptions<VideoCommentsQuery, VideoCommentsQueryVariables> & ({ variables: VideoCommentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VideoCommentsQuery, VideoCommentsQueryVariables>(VideoCommentsDocument, options);
+      }
+export function useVideoCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VideoCommentsQuery, VideoCommentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VideoCommentsQuery, VideoCommentsQueryVariables>(VideoCommentsDocument, options);
+        }
+export function useVideoCommentsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<VideoCommentsQuery, VideoCommentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<VideoCommentsQuery, VideoCommentsQueryVariables>(VideoCommentsDocument, options);
+        }
+export type VideoCommentsQueryHookResult = ReturnType<typeof useVideoCommentsQuery>;
+export type VideoCommentsLazyQueryHookResult = ReturnType<typeof useVideoCommentsLazyQuery>;
+export type VideoCommentsSuspenseQueryHookResult = ReturnType<typeof useVideoCommentsSuspenseQuery>;
+export type VideoCommentsQueryResult = Apollo.QueryResult<VideoCommentsQuery, VideoCommentsQueryVariables>;
