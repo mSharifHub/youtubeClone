@@ -1,9 +1,9 @@
 import { createContext, useContext } from 'react';
-import { Video } from '../../types/youtubeVideoInterfaces.ts';
+import { VideoNode } from '../../graphql/types.ts';
 
 interface VideoContextType {
-  selectedVideo: Video | null;
-  setSelectedVideo: (video: Video | null) => void;
+  selectedVideo: VideoNode | null;
+  setSelectedVideo: (video: VideoNode | null) => void;
 }
 
 export const SelectedVideoContext = createContext<VideoContextType | undefined>(undefined);

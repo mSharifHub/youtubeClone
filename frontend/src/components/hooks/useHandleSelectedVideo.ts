@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Video } from '../../types/youtubeVideoInterfaces.ts';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useCallback } from 'react';
-import { useSaveVideoPlaylistMutation, VideoPlaylistEntryNodeEdge } from '../../graphql/types.ts';
+import { useSaveVideoPlaylistMutation, VideoNode, VideoPlaylistEntryNodeEdge } from '../../graphql/types.ts';
 import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export const useHandleSelectedVideo = () => {
@@ -43,7 +42,7 @@ export const useHandleSelectedVideo = () => {
   const { setSelectedVideo } = useSelectedVideo();
 
   return useCallback(
-    async (video: Video | null) => {
+    async (video: VideoNode) => {
       if (!video) return;
 
       setSelectedVideo(video);
@@ -56,26 +55,26 @@ export const useHandleSelectedVideo = () => {
                 videoId: getVideoId(video.id),
               },
               snippet: {
-                title: video.snippet.title ?? '',
-                description: video.snippet.description ?? '',
+                title: video.title ?? '',
+                description: video.description ?? '',
 
                 thumbnails: {
-                  default: { url: video.snippet.thumbnails?.default?.url ?? '' },
-                  medium: { url: video.snippet.thumbnails?.medium?.url ?? '' },
+                  default: { url: video.thumbnailDefault ?? '' },
+                  medium: { url: video.thumbnailMedium ?? '' },
                 },
-                channelId: video.snippet.channelId ?? '',
-                channelTitle: video.snippet.channelTitle ?? '',
-                publishedAt: video.snippet.publishedAt ?? '',
-                categoryId: video.snippet.categoryId ?? '',
-                channelDescription: video.snippet.channelDescription ?? '',
-                subscriberCount: video.snippet.subscriberCount ?? '',
-                channelLogo: video.snippet.channelLogo ?? '',
+                channelId: video.channelId ?? '',
+                channelTitle: video.channelTitle ?? '',
+                publishedAt: video.publishedAt ?? '',
+                categoryId: video.categoryId ?? '',
+                channelDescription: video.channelDescription ?? '',
+                subscriberCount: video.subscriberCount.toString() ?? '',
+                channelLogo: video.channelLogo ?? '',
               },
               statistics: {
-                duration: video.statistics?.duration ?? '',
-                viewCount: video.statistics?.viewCount ?? '',
-                likeCount: video.statistics?.likeCount ?? '',
-                commentCount: video.statistics?.commentCount ?? '',
+                duration: video.duration ?? '',
+                viewCount: video.viewCount.toString() ?? '',
+                likeCount: video.likeCount.toString() ?? '',
+                commentCount: video.commentCount.toString() ?? '',
               },
             },
           },

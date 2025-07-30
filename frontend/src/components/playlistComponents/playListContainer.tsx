@@ -1,14 +1,13 @@
 import React from 'react';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
-import { Video } from '../../types/youtubeVideoInterfaces.ts';
-import { getVideoId } from '../../helpers/getVideoId.ts';
+import { VideoNode } from '../../graphql/types.ts';
 
 interface PlayListContainerProps {
   viewAll: boolean;
   videosPerRow: number;
   playListLength: number;
-  playlist: Video[];
-  HandleSelectedVideo: (video: Video) => void;
+  playlist: VideoNode[];
+  HandleSelectedVideo: (video: VideoNode) => void;
 }
 
 export const PlayListContainer = React.forwardRef<HTMLDivElement, PlayListContainerProps>(({ viewAll, videosPerRow, playListLength, playlist, HandleSelectedVideo }, ref) => {
@@ -23,7 +22,7 @@ export const PlayListContainer = React.forwardRef<HTMLDivElement, PlayListContai
       {playListLength > 0 &&
         playlist.map((video) => (
           <div
-            key={`${getVideoId(video.id)}-${video.id}`}
+            key={`${video.videoId}`}
             className="flex flex-col w-full cursor-pointer overflow-hidden flex-shrink-0 px-2"
             style={{
               ...(!viewAll && { width: `${100 / videosPerRow}%` }),

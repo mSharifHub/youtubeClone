@@ -2,19 +2,12 @@ import { UserProfileCard } from './UserProfileCard.tsx';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import {
-  useViewerVideoPlayListQuery,
-  useYoutubeLikedVideosQuery,
-  VideoNode,
-  VideoPlaylistEntryNode,
-} from '../../graphql/types.ts';
+import { useViewerVideoPlayListQuery, useYoutubeLikedVideosQuery, VideoNode } from '../../graphql/types.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { NavigationControls } from '../playlistComponents/NavigationControls.tsx';
 import { useNavigationControlsOptions } from '../hooks/useNavigationControlsOptions.ts';
 import { PlayListContainer } from '../playlistComponents/playListContainer.tsx';
-import { mapVideoNodeToVideo } from '../../helpers/mapVideoNodeToVideo.ts';
-import { Video } from '../../types/youtubeVideoInterfaces.ts';
 
 export const You = () => {
   const {
@@ -41,13 +34,9 @@ export const You = () => {
 
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues);
 
-  const playlist: Video[] = (playlistHistData?.viewerVideoPlaylist?.videoEntries?.edges ?? [])
-    .filter((edge): edge is { node: VideoPlaylistEntryNode } => !!edge?.node && !!edge.node.video)
-    .map(({ node }) => mapVideoNodeToVideo(node.video));
+  const playlistVideos = (playlistHistData?.viewerVideoPlaylist?.videoEntries?.edges ?? []).map((edge) => edge?.node?.video).filter((video): video is VideoNode => video !== null);
 
-  const likedVideos = (likedVideosData?.youtubeLikedVideos?.videos ?? [])
-    .filter((video): video is NonNullable<typeof video> => video !== null)
-    .map((video) => mapVideoNodeToVideo(video as VideoNode));
+  const likedVideos: VideoNode[] = (likedVideosData?.youtubeLikedVideos?.videos ?? []).filter((video): video is VideoNode => video !== null);
 
   const HandleSelectedVideo = useHandleSelectedVideo();
 
@@ -79,11 +68,11 @@ export const You = () => {
     });
   };
 
-  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playlist.length);
+  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playlistVideos.length);
 
   const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0);
 
-  const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playlist.length });
+  const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playlistVideos.length });
 
   const likeControls = useNavigationControlsOptions({ videosPerRow, playlistLength: 10 });
 
@@ -108,8 +97,8 @@ export const You = () => {
           ref={historyControls.scrollRef}
           viewAll={historyControls.viewAll}
           videosPerRow={videosPerRow}
-          playListLength={playlist.length}
-          playlist={playlist}
+          playListLength={playlistVideos.length}
+          playlist={playlistVideos}
           HandleSelectedVideo={HandleSelectedVideo}
         />
 

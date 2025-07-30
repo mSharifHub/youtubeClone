@@ -42,7 +42,7 @@ export default function NavigationBar() {
   };
 
   // function to change context state based on the screen size
-  const handleMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMenu = (e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
     const isLargeScreen = window.matchMedia('(min-width: 1280px)').matches;
     const isSmallScreen = window.matchMedia('(max-width: 1279px)').matches;

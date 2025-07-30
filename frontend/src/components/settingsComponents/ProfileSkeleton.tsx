@@ -48,7 +48,7 @@ export const ProfileSkeleton: React.FC<ProfileSkeletonProps> = ({ userProfile, u
               subscriber
             </div>
           )}
-          {subscribersCount > 1 && (
+          {subscribersCount && subscribersCount > 1 && (
             <div>
               <span>{subscribersCount}</span>
               subscribers

@@ -1,5 +1,12 @@
-import { InfiniteScrollOptions } from '../../types/youtubeVideoInterfaces.ts';
+
 import { useEffect, useRef } from 'react';
+
+interface InfiniteScrollOptions {
+  root?: HTMLElement | null;
+  rootMargin?: string;
+  threshold?: number;
+  enabled?: boolean;
+}
 
 export const useIntersectionObserver = (callBack: () => Promise<void>, loading: boolean, dataLength: number, limit?: number, options?: InfiniteScrollOptions) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);

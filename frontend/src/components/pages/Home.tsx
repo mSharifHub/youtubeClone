@@ -2,19 +2,31 @@ import React, { useEffect, useRef } from 'react';
 import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
-// import useYoutubeVideos from '../hooks/useYoutubeVideos.ts';
 import { useVideoGrid } from '../hooks/useVideosGrid.ts';
 import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { getVideoId } from '../../helpers/getVideoId.ts';
+import { useYoutubeSearchVideosQuery, VideoNode } from '../../graphql/types.ts';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
+
+const MAX_ITEMS = 50;
+
 export const Home: React.FC = () => {
 
-  // const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-  // const { videos, videosLoading, sentinelRef} = useYoutubeVideos(apiKey, 10)
+  const {data,loading,fetchMore}= useYoutubeSearchVideosQuery({
+    variables: {
+      query: 'trending',
+      maxResults: 10,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  const videos = (data?.youtubeSearchVideos?.videos ?? []).
+    filter((video): video is VideoNode => video !== null)
 
   const handleSelectedVideo = useHandleSelectedVideo()
 
@@ -24,6 +36,21 @@ export const Home: React.FC = () => {
 
   const {state:{isLoggedIn}, loadingQuery} = useUser()
 
+  const handleLoadMoreVideos = async ()=>{
+    if (loading) return;
+
+    if (!data?.youtubeSearchVideos?.hasNextPage || !data?.youtubeSearchVideos?.nextPageToken) return;
+
+    await  fetchMore({
+      variables: {
+        query: 'trending',
+        maxResults: 10,
+        pageToken: data?.youtubeSearchVideos?.nextPageToken,
+      },
+    })
+  }
+
+  const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,MAX_ITEMS)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -41,6 +68,7 @@ export const Home: React.FC = () => {
     isLoggedIn ?
         (
           <div ref={containerRef} className="  h-screen overflow-y-scroll scroll-smooth  px-4 pt-6 ">
+
               <ul className="grid grid-flow-row gap-4 "
                   style={{
                     gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
@@ -48,15 +76,14 @@ export const Home: React.FC = () => {
               >
                 {
                   videos.slice(0,fullRowCount).map((video) => (
-                    <li key={getVideoId(video.id)}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
+                    <li key={getVideoId(video.videoId)}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
                   ))
                 }
               </ul>
 
             {/*/!*Sentinel Observer*!/*/}
               <div className="h-4" ref={sentinelRef}/>
-
-              {videosLoading && (
+              {loading && (
                 <>
                   <ul
                     className=" grid grid-flow-row gap-4"
@@ -86,5 +113,3 @@ export const Home: React.FC = () => {
 
   )
 }
-
-

@@ -197,6 +197,7 @@ export const VIDEO_COMMENTS: DocumentNode = gql`
           channelTitle
         }
       }
+
       nextPageToken
       totalResults
       hasNextPage

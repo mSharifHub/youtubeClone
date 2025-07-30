@@ -1,35 +1,56 @@
 import React, { useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
-// import { useYoutubeComments } from '../hooks/useYoutubeComments.ts';
-// import useYoutubeRelatedVideos from '../hooks/useYoutubeRelatedVideos.ts';
 import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
-// import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
-// import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-// import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
-// import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
-// import CommentLoading from '../VideoComponents/CommentLoading.tsx';
-// import { useSearchParams } from 'react-router-dom';
-// import { getVideoId } from '../../helpers/getVideoId.ts';
+import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
+import CommentLoading from '../VideoComponents/CommentLoading.tsx';
+import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
+import { CommentThreadNode, useVideoCommentsQuery } from '../../graphql/types.ts';
+import { useSearchParams } from 'react-router-dom';
+import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 
 export const VideoPlayer: React.FC = () => {
-  // const apiKey: string = import.meta.env.VITE_YOUTUBE_API_3;
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
-  // const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
-
+  const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
   const [liked, setLiked] = useState<boolean>(false); // refactor as context dispatch state
   const [dislike, setDislike] = useState<boolean>(false);
   const [animateLike, setAnimateLike] = useState<boolean>(false);
   const [subscribed, setSubscribed] = useState<boolean>(false); // refactor as context dispatch state
   const [animateRing, setAnimateRing] = useState<boolean>(false);
-
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
+  const { selectedVideo } = useSelectedVideo();
 
-  // const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  // const videoId = searchParams.get('v');
+  const videoId = searchParams.get('v');
+
+  const { data, loading, fetchMore, error } = useVideoCommentsQuery({
+    variables: {
+      videoId: selectedVideo?.videoId ?? videoId!,
+      maxResults: 10,
+    },
+  });
+
+  const commentsThreads = (data?.youtubeVideoComments?.commentsThreads ?? []).filter((thread): thread is CommentThreadNode => thread !== null);
+
+  const handleFetchMoreComments = async () => {
+    if (loading) return;
+
+    if (!data?.youtubeVideoComments?.hasNextPage || !data?.youtubeVideoComments?.nextPageToken) return;
+
+    await fetchMore({
+      variables: {
+        videoId: selectedVideo?.videoId ?? videoId!,
+        maxResults: 10,
+        pageToken: data?.youtubeVideoComments?.nextPageToken,
+      },
+    });
+  };
+
+  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -54,21 +75,13 @@ export const VideoPlayer: React.FC = () => {
     setExpandVideoDescription((prev) => !prev);
   };
 
-  // const handleShowTopLevelReplies = (): void => {
-  //   setShowTopLevelReplies((prev) => !prev);
-  // };
+  const handleShowTopLevelReplies = (): void => {
+    setShowTopLevelReplies((prev) => !prev);
+  };
 
   const onReady: YouTubeProps['onReady'] = (event) => {
     playerRef.current = event.target;
   };
-
-  // const handleSelectedVideo = useHandleSelectedVideo();
-
-  // const { comments, commentsLoading, commentsError, sentinelRef } = useYoutubeComments(apiKey, 10);
-  //
-  // const { relatedVideos, relatedVideosLoading, relatedVideosError } = useYoutubeRelatedVideos(apiKey);
-
-  // const filteredSelectedVideosList = relatedVideos.filter((video) => getVideoId(video.id) !== videoId);
 
   const handleLike = () => {
     if (!liked) {
@@ -129,26 +142,28 @@ export const VideoPlayer: React.FC = () => {
           />
           {/* user comment section */}
           <UserMakeComment />
-          {/* comments section */}
-          {/*<CommentsThreads comments={comments} handleShowTopLevelReplies={handleShowTopLevelReplies} showTopLevelReplies={showTopLevelReplies} commentsError={commentsError} />*/}
-
-          {/*/ sentinel observer */}
-          {/*<div ref={sentinelRef} className="h-2  w-full" />*/}
-
-          {/* SpinningCircle Circle*/}
-          {/*{commentsLoading && (*/}
-          {/*  <div className="flex flex-col p-4 gap-4 ">*/}
-          {/*    <ul>*/}
-          {/*      {Array.from({ length: 3 }).map((_, index) => (*/}
-          {/*        <li key={index} className="flex flex-row space-x-4">*/}
-          {/*          <CommentLoading />*/}
-          {/*        </li>*/}
-          {/*      ))}*/}
-          {/*    </ul>*/}
-
-          {/*    <SpinningCircle />*/}
-          {/*  </div>*/}
-          {/*)}*/}
+          {/*comments section */}
+          <CommentsThreads
+            commentsThreads={commentsThreads}
+            handleShowTopLevelReplies={handleShowTopLevelReplies}
+            showTopLevelReplies={showTopLevelReplies}
+            commentsError={error?.message ?? null}
+          />
+          / sentinel observer
+          <div ref={sentinelRef} className="h-2  w-full" />
+          SpinningCircle Circle
+          {loading && (
+            <div className="flex flex-col p-4 gap-4 ">
+              <ul>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <li key={index} className="flex flex-row space-x-4">
+                    <CommentLoading />
+                  </li>
+                ))}
+              </ul>
+              <SpinningCircle />
+            </div>
+          )}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">
