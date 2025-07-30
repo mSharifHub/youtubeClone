@@ -8,7 +8,7 @@ class BaseStatisticsFields:
     comment_count = graphene.String()
     duration = graphene.String()
 
-class BaseThumbnailFields:
+class BaseThumbnailsFields:
     url = graphene.String()
     width = graphene.Int()
     height = graphene.Int()

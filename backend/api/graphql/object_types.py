@@ -6,7 +6,6 @@ from graphene_django.filter import DjangoFilterConnectionField
 from api.graphql.filters import PostFilter, VideoHistoryFilter
 from api.models import User, Post, PostImage, VideoPlaylist, Video, VideoPlaylistEntries, Comment, CommentThread
 
-
 class UserTypes(DjangoObjectType):
     class Meta:
         model = User
@@ -34,7 +33,6 @@ class UserTypes(DjangoObjectType):
             return picture_url
         return None
 
-
 class PostImageTypes(DjangoObjectType):
     image = graphene.String()
     class Meta:
@@ -44,7 +42,6 @@ class PostImageTypes(DjangoObjectType):
     def resolve_image(self, info):
         if  self.image and hasattr(self.image, "url"):
             return info.context.build_absolute_uri(self.image.url)
-
         return None
 
 class VideoNode(DjangoObjectType):
@@ -53,10 +50,10 @@ class VideoNode(DjangoObjectType):
         interfaces = (relay.Node,)
         fields = '__all__'
 
-
 class CommentNode(DjangoObjectType):
     parent_comment = graphene.Field(lambda : CommentNode)
     replies = graphene.List(lambda : CommentNode)
+
     class Meta:
         model = Comment
         interfaces = (relay.Node,)
@@ -73,7 +70,6 @@ class CommentNode(DjangoObjectType):
     def resolve_replies(self,info):
         return Comment.objects.filter(parent_id = self.comment_id)
 
-
 class CommentThreadNode(DjangoObjectType):
         top_level_comment = graphene.Field(CommentNode)
         replies = graphene.List(CommentNode)
@@ -83,10 +79,10 @@ class CommentThreadNode(DjangoObjectType):
             fields = '__all__'
 
         def resolve_top_level_comment(self,info):
-            return self.comments.filter(is_top_level=True).first()
+            return self.comments.filter(parent_id__isnull=True).first()
 
         def resolve_replies(self,info):
-            return self.comments.filter(is_top_level=False).order_by('created_at')
+            return self.comments.filter(parent_id__isnull=False).order_by('created_at')
 
 
 class VideoPlaylistEntryNode(DjangoObjectType):
@@ -123,10 +119,8 @@ class PostNode(DjangoObjectType):
         fields = '__all__'
         filterset_class = PostFilter
 
-
     def resolve_images(self,info):
         return  self.images.all()
-
 
     def resolve_profile_picture(self:Post,info):
         if self.author and self.author.profile_picture:

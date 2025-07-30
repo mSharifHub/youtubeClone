@@ -97,9 +97,9 @@ class SaveVideoPlaylist(graphene.Mutation):
             defaults = {
                 'title': snippet.title or '',
                 'description': snippet.description if snippet.description else '',
-                'thumbnail_default': thumbnails_default,
-                'thumbnail_medium': thumbnails_medium,
-                'thumbnail_high': thumbnails_high,
+                'thumbnails_default': thumbnails_default,
+                'thumbnails_medium': thumbnails_medium,
+                'thumbnails_high': thumbnails_high,
                 'channel_id': snippet.channel_id,
                 'channel_title': snippet.channel_title if snippet.channel_title else '',
                 'channel_description': snippet.channel_description if snippet.channel_description else '',

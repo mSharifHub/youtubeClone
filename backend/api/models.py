@@ -1,9 +1,6 @@
 import uuid
-
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
 
 class User(AbstractUser):
     google_sub = models.CharField(max_length=500, primary_key=True, unique=True)
@@ -21,9 +18,9 @@ class Video(models.Model):
     video_id = models.CharField(max_length=500,primary_key=True, editable=False)
     title = models.CharField(max_length=500, blank=True, default='')
     description = models.TextField(blank=True, default='')
-    thumbnail_default = models.URLField(blank=True, default='')
-    thumbnail_medium = models.URLField(blank=True, default='')
-    thumbnail_high = models.URLField(blank=True, default='')
+    thumbnails_default = models.URLField(blank=True, default='')
+    thumbnails_medium = models.URLField(blank=True, default='')
+    thumbnails_high = models.URLField(blank=True, default='')
     channel_id = models.CharField(max_length=240)
     channel_title = models.CharField(max_length=240, blank=True, default='')
     channel_description = models.TextField(blank=True, default='')
@@ -74,8 +71,6 @@ class Comment(models.Model):
         return f"Comments by {self.author_display_name}: {self.text_display[:50]}..."
 
 
-
-
 class VideoPlaylist(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='video_playlist_history')
@@ -95,7 +90,6 @@ class VideoPlaylistEntries(models.Model):
 
     def __str__(self):
         return f"{self.video.title} watched by {self.video_playlist.user.username}"
-
 
 
 class Post(models.Model):

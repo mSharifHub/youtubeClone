@@ -87,16 +87,15 @@ class Query(MeQuery, graphene.ObjectType):
                 'maxResults': max_results,
                 'order': 'time',
                 'textFormat': 'plainText',
-                'key': settings.YOUTUBE_API_KEY
+                'key': settings.GOOGLE_API_KEY
+
             }
 
             if page_token:
                 params['pageToken'] = page_token
 
             comments_response = requests.get(url,params)
-
             comments_response.raise_for_status()
-
             data = comments_response.json()
 
             if not data.get('items'):
@@ -139,8 +138,8 @@ class Query(MeQuery, graphene.ObjectType):
                         'author_display_name': top_comment_snippet.get('authorDisplayName',''),
                         'author_channel_url': top_comment_snippet.get('authorChannelUrl',''),
                         'parent_id': None,
-                        'author_channel_id': top_comment_snippet.get('authorChannelId',{}).get('value',''),
-                        'channel_id': top_comment_snippet.get('channelId',{}).get('value',''),
+                        'author_channel_id': top_comment_snippet.get('authorChannelId',''),
+                        'channel_id': top_comment_snippet.get('channelId',''),
                         'viewer_rating': top_comment_snippet.get('viewerRating','none'),
                         'text_display': top_comment_snippet.get('textDisplay',''),
                         'text_original': top_comment_snippet.get('textOriginal',''),
@@ -160,12 +159,12 @@ class Query(MeQuery, graphene.ObjectType):
                                 'thread':  thread_obj,
                                 'author_display_name': reply_snippet.get('authorDisplayName',''),
                                 'author_channel_url': reply_snippet.get('authorChannelUrl',''),
-                                'author_channel_id': reply_snippet.get('authorChannelId',{}).get('value',''),
-                                'parent_id': reply_snippet.get('parentId', {}).get('value', ''),
+                                'author_channel_id': reply_snippet.get('authorChannelId',''),
+                                'parent_id': reply_snippet.get('parentId', ''),
                                 'text_display': reply_snippet.get('textDisplay',''),
                                 'text_original': reply_snippet.get('textOriginal',''),
                                 'can_rate': reply_snippet.get('canRate',True),
-                                'view_rating': reply_snippet.get('viewRating','none'),
+                                'viewer_rating': reply_snippet.get('viewerRating','none'),
                                 'like_count': reply_snippet.get('likeCount',0),
                                 'published_at': parse_datetime(reply_snippet.get('publishedAt')),
                                 'updated_at': parse_datetime(reply_snippet.get('updatedAt')),
@@ -181,8 +180,8 @@ class Query(MeQuery, graphene.ObjectType):
             return {
                 'comments_threads': comments_threads,
                 'next_page_token': next_page_token,
-                total_results: total_results,
-                has_next_page: has_next_page
+                'total_results': total_results,
+                'has_next_page': has_next_page
             }
 
         except requests.exceptions.RequestException as err:
@@ -193,7 +192,6 @@ class Query(MeQuery, graphene.ObjectType):
 
 
     def resolve_youtube_search_videos(self, info, query='trending', page_token=None, max_results=10, **kwargs):
-        max_results = min(max_results, 50)
         try:
             search_url = 'https://www.googleapis.com/youtube/v3/search'
             search_params = {
@@ -205,7 +203,7 @@ class Query(MeQuery, graphene.ObjectType):
                 'relevanceLanguage': 'en',
                 'safeSearch': 'moderate',
                 'order': 'relevance',
-                'key': settings.YOUTUBE_API_KEY
+                'key': settings.GOOGLE_API_KEY
             }
 
             if page_token:
@@ -228,10 +226,10 @@ class Query(MeQuery, graphene.ObjectType):
 
             stats_url = 'https://www.googleapis.com/youtube/v3/videos'
             stats_params = {
-                'part': 'statistics,contentDetails',
+                'part': 'statistics,contentDetails,snippet',
                 'id': ','.join(video_ids),
                 'regionCode': 'US',
-                'key': settings.YOUTUBE_API_KEY
+                'key': settings.GOOGLE_API_KEY
             }
 
             stats_response = requests.get(url=stats_url, params=stats_params)
@@ -244,7 +242,8 @@ class Query(MeQuery, graphene.ObjectType):
                     'view_count': item['statistics'].get('viewCount', 0),
                     'like_count': item['statistics'].get('likeCount', 0),
                     'comment_count': item['statistics'].get('commentCount', 0),
-                    'duration': item['contentDetails']['duration']
+                    'duration': item['contentDetails']['duration'],
+                    'category_id': item['snippet'].get('categoryId', ''),
                 }
 
             channels_url = 'https://www.googleapis.com/youtube/v3/channels'
@@ -252,7 +251,7 @@ class Query(MeQuery, graphene.ObjectType):
             channels_params = {
                 'part': 'snippet,statistics',
                 'id': ','.join(channel_ids),
-                'key': settings.YOUTUBE_API_KEY
+                'key': settings.GOOGLE_API_KEY
             }
 
             channel_response = requests.get(url=channels_url, params=channels_params)
@@ -295,12 +294,11 @@ class Query(MeQuery, graphene.ObjectType):
                     'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
                     'channel_id': item['snippet']['channelId'],
                     'channel_title': channel_info.get('channel_title', item['snippet']['channelTitle']),
-                    'channel_description': channel_info.get('channel_description',
-                                                            item['snippet'].get('channelDescription', '')),
+                    'channel_description': channel_info.get('channel_description', item['snippet'].get('channelDescription', '')),
                     'channel_logo': channel_info.get('channel_logo', item['snippet'].get('channelLogo', '')),
                     'published_at': published_at,
                     'subscriber_count': channel_info.get('subscriber_count', 0),
-                    'category_id': item['snippet'].get('categoryId'),
+                    'category_id': stats.get('category_id', ''),
                     'view_count': stats.get('view_count', 0),
                     'like_count': stats.get('like_count', 0),
                     'comment_count': stats.get('comment_count', 0),
@@ -403,15 +401,15 @@ class Query(MeQuery, graphene.ObjectType):
                 defaults = {
                     'title': item['snippet']['title'],
                     'description': item['snippet']['description'],
-                    'thumbnail_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
-                    'thumbnail_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
-                    'thumbnail_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
+                    'thumbnails_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
+                    'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
+                    'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
                     'channel_id': item['snippet']['channelId'],
                     'channel_title': item['snippet']['channelTitle'],
                     'channel_description': item['snippet'].get('channelDescription', ''),
                     'channel_logo': item['snippet'].get('channelLogo', ''),
                     'published_at': published_at,
-                    'category_id': item['snippet'].get('categoryId'),
+                    'category_id': item['snippet'].get('categoryId',''),
                     'view_count': item['statistics'].get('viewCount', 0),
                     'like_count': item['statistics'].get('likeCount', 0),
                     'comment_count': item['statistics'].get('commentCount', 0),

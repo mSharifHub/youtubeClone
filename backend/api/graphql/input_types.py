@@ -1,7 +1,7 @@
 
 import graphene
 
-from api.graphql.base_types import BaseStatisticsFields, BaseSnippetFields, BaseIdFields, BaseThumbnailFields
+from api.graphql.base_types import BaseStatisticsFields, BaseSnippetFields, BaseIdFields, BaseThumbnailsFields
 
 class VideoStatisticsInput(graphene.InputObjectType, BaseStatisticsFields):
     pass
@@ -9,7 +9,7 @@ class VideoStatisticsInput(graphene.InputObjectType, BaseStatisticsFields):
 class VideoIdInput(graphene.InputObjectType, BaseIdFields):
     video_id = graphene.String(required=True)
 
-class ThumbnailInput(graphene.InputObjectType, BaseThumbnailFields):
+class ThumbnailInput(graphene.InputObjectType, BaseThumbnailsFields):
     pass
 
 class ThumbnailsInput(graphene.InputObjectType):
