@@ -59,8 +59,8 @@ export const SAVE_VIDEO_PLAYLIST = gql`
           videoId
           title
           description
-          thumbnailDefault
-          thumbnailMedium
+          thumbnailsDefault
+          thumbnailsMedium
           channelId
           channelTitle
           channelDescription

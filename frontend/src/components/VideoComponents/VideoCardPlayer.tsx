@@ -7,7 +7,7 @@ import { faBell as faBellSolid, faShare } from '@fortawesome/free-solid-svg-icon
 import { faBell as faBellRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownRegular, faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
-import { getVideoId } from '../../helpers/getVideoId.ts';
+
 
 export default function VideoCardPlayer({
   YoutubeComponent,
@@ -41,14 +41,13 @@ export default function VideoCardPlayer({
   handleSubscribe: () => void;
 }) {
   const { selectedVideo } = useSelectedVideo();
-  const likeCount = Number(selectedVideo?.statistics?.likeCount);
-  const dislikeCount = Number(selectedVideo?.statistics?.dislikeCount);
+  const likeCount = Number(selectedVideo?.likeCount ?? 0);
 
   return (
     <div className="min-h-fit h-fit w-full flex flex-col justify-start items-start gap-8   rounded-lg">
       <div className="relative flex  flex-none w-full  min-h-[250px]   aspect-video ">
         {selectedVideo ? (
-          <YoutubeComponent videoId={getVideoId(selectedVideo.id)} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
+          <YoutubeComponent videoId={selectedVideo.videoId} opts={opts} onReady={onReady} iframeClassName="absolute inset-0 h-full  w-full rounded-xl" />
         ) : (
           <div className="h-full  w-full bg-neutral-200 dark:dark-modal  animate-wave-opacity rounded-lg" />
         )}
@@ -68,21 +67,21 @@ export default function VideoCardPlayer({
         <section className=" flex flex-col min-h-fit w-full p-4 space-y-4 ">
           {/* first-column */}
           <div className="flex-1 justify-start items-center">
-            <h1 className="font-bold text-lg text-wrap "> {decodeHtmlEntities(selectedVideo?.snippet.title)}</h1>
+            <h1 className="font-bold text-lg text-wrap "> {decodeHtmlEntities(selectedVideo?.title)}</h1>
           </div>
           {/* second-column */}
           <div className=" flex flex-row flex-wrap  gap-3">
             <div className="flex justify-start items-center gap-4 grow ">
               <img
-                src={selectedVideo?.snippet.channelLogo}
-                alt={selectedVideo?.snippet.channelTitle}
+                src={selectedVideo?.channelLogo}
+                alt={selectedVideo?.channelTitle}
                 className="h-14 w-14 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
                 loading="lazy"
               />
               <div className="flex flex-col">
-                <h1 className="font-bold text-base text-gray-800 dark:text-gray-100 truncate">{decodeHtmlEntities(selectedVideo.snippet.channelTitle)}</h1>
+                <h1 className="font-bold text-base text-gray-800 dark:text-gray-100 truncate">{decodeHtmlEntities(selectedVideo.channelTitle)}</h1>
                 <div className=" flex flex-row items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <span>{formatNumber(Number(selectedVideo.snippet.subscriberCount))}</span>
+                  <span>{formatNumber(Number(selectedVideo.subscriberCount))}</span>
                   <span>subscribers</span>
                 </div>
               </div>
@@ -106,7 +105,6 @@ export default function VideoCardPlayer({
                 <div className="w-px h-6 bg-neutral-300 dark:bg-neutral-700" />
                 <button onClick={handleDislike} className=" h-full flex items-center px-3  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
                   <FontAwesomeIcon icon={dislike ? faThumbsDownSolid : faThumbsDownRegular} className="-scale-x-100 text-xl" />
-                  {dislikeCount > 0 && <h3 className="font-bold">{formatNumber(dislikeCount)}</h3>}
                 </button>
               </div>
               <button
@@ -122,8 +120,8 @@ export default function VideoCardPlayer({
           <div className={`relative ${expandVideoDescription ? 'h-fit' : 'h-16'} flex w-full flex-col p-4  overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg `}>
             {/* text container */}
             <div className="h-full flex-wrap text-wrap space-y-4 ">
-              <h2>{decodeHtmlEntities(selectedVideo?.snippet.channelDescription)}</h2>
-              <p>{decodeHtmlEntities(selectedVideo?.snippet?.description)}</p>
+              <h2>{decodeHtmlEntities(selectedVideo?.channelDescription)}</h2>
+              <p>{decodeHtmlEntities(selectedVideo?.description)}</p>
             </div>
             {/*fading overlay*/}
             {!expandVideoDescription && (
@@ -138,7 +136,7 @@ export default function VideoCardPlayer({
           </div>
           {/*Comments && statistics*/}
           <div className="flex flex-row space-x-4 text-xl font-bold">
-            <h1>{formatNumber(selectedVideo?.statistics?.commentCount)}</h1>
+            <h1>{formatNumber(selectedVideo?.commentCount)}</h1>
             <h1>Comments</h1>
           </div>
         </section>

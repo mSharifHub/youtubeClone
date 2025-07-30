@@ -9,21 +9,39 @@ import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { getVideoId } from '../../helpers/getVideoId.ts';
 import { useYoutubeSearchVideosQuery, VideoNode } from '../../graphql/types.ts';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
+import { NetworkStatus } from '@apollo/client';
+// import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
+//
+// const MAX_ITEMS = 50;
 
-const MAX_ITEMS = 50;
 
 export const Home: React.FC = () => {
 
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
-  const {data,loading,fetchMore}= useYoutubeSearchVideosQuery({
+  const {
+    state:{isLoggedIn},
+    loadingQuery} = useUser()
+
+  const {data,loading, networkStatus}= useYoutubeSearchVideosQuery({
     variables: {
       query: 'trending',
       maxResults: 10,
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !isLoggedIn || loadingQuery,
   })
+
+  const isFromCache = networkStatus === NetworkStatus.ready && !loading
+  const isFromNetwork =  networkStatus === NetworkStatus.loading
+
+  console.log(
+    `isFromCache: ${isFromCache},
+    isFromNetwork: ${isFromNetwork}`
+  )
+
+
 
   const videos = (data?.youtubeSearchVideos?.videos ?? []).
     filter((video): video is VideoNode => video !== null)
@@ -34,23 +52,23 @@ export const Home: React.FC = () => {
 
   const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
 
-  const {state:{isLoggedIn}, loadingQuery} = useUser()
 
-  const handleLoadMoreVideos = async ()=>{
-    if (loading) return;
 
-    if (!data?.youtubeSearchVideos?.hasNextPage || !data?.youtubeSearchVideos?.nextPageToken) return;
+  // const handleLoadMoreVideos = async ()=>{
+  //   if (loading) return;
+  //
+  //   if (!data?.youtubeSearchVideos?.hasNextPage || !data?.youtubeSearchVideos?.nextPageToken) return;
+  //
+  //   await  fetchMore({
+  //     variables: {
+  //       query: 'trending',
+  //       maxResults: 10,
+  //       pageToken: data?.youtubeSearchVideos?.nextPageToken,
+  //     },
+  //   })
+  // }
 
-    await  fetchMore({
-      variables: {
-        query: 'trending',
-        maxResults: 10,
-        pageToken: data?.youtubeSearchVideos?.nextPageToken,
-      },
-    })
-  }
-
-  const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,MAX_ITEMS)
+  // const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,MAX_ITEMS)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -82,7 +100,7 @@ export const Home: React.FC = () => {
               </ul>
 
             {/*/!*Sentinel Observer*!/*/}
-              <div className="h-4" ref={sentinelRef}/>
+            {/*  <div className="h-4" ref={sentinelRef}/>*/}
               {loading && (
                 <>
                   <ul

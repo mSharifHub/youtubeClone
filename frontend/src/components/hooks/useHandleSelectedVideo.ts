@@ -52,15 +52,15 @@ export const useHandleSelectedVideo = () => {
           variables: {
             video: {
               id: {
-                videoId: getVideoId(video.id),
+                videoId: getVideoId(video.videoId),
               },
               snippet: {
                 title: video.title ?? '',
                 description: video.description ?? '',
 
                 thumbnails: {
-                  default: { url: video.thumbnailDefault ?? '' },
-                  medium: { url: video.thumbnailMedium ?? '' },
+                  default: { url: video.thumbnailsDefault ?? '' },
+                  medium: { url: video.thumbnailsMedium ?? '' },
                 },
                 channelId: video.channelId ?? '',
                 channelTitle: video.channelTitle ?? '',
@@ -80,7 +80,7 @@ export const useHandleSelectedVideo = () => {
           },
         });
       }
-      navigate(`/watch?v=${getVideoId(video.id)}`);
+      navigate(`/watch?v=${getVideoId(video.videoId)}`);
     },
     [navigate, setSelectedVideo],
   );

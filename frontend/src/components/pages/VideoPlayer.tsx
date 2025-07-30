@@ -32,25 +32,28 @@ export const VideoPlayer: React.FC = () => {
       videoId: selectedVideo?.videoId ?? videoId!,
       maxResults: 10,
     },
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+    skip: !selectedVideo,
   });
 
   const commentsThreads = (data?.youtubeVideoComments?.commentsThreads ?? []).filter((thread): thread is CommentThreadNode => thread !== null);
 
-  const handleFetchMoreComments = async () => {
-    if (loading) return;
+  // const handleFetchMoreComments = async () => {
+  //   if (loading) return;
+  //
+  //   if (!data?.youtubeVideoComments?.hasNextPage || !data?.youtubeVideoComments?.nextPageToken) return;
+  //
+  //   await fetchMore({
+  //     variables: {
+  //       videoId: selectedVideo?.videoId ?? videoId!,
+  //       maxResults: 10,
+  //       pageToken: data?.youtubeVideoComments?.nextPageToken,
+  //     },
+  //   });
+  // };
 
-    if (!data?.youtubeVideoComments?.hasNextPage || !data?.youtubeVideoComments?.nextPageToken) return;
-
-    await fetchMore({
-      variables: {
-        videoId: selectedVideo?.videoId ?? videoId!,
-        maxResults: 10,
-        pageToken: data?.youtubeVideoComments?.nextPageToken,
-      },
-    });
-  };
-
-  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
+  // const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -150,7 +153,7 @@ export const VideoPlayer: React.FC = () => {
             commentsError={error?.message ?? null}
           />
           / sentinel observer
-          <div ref={sentinelRef} className="h-2  w-full" />
+          {/*<div ref={sentinelRef} className="h-2  w-full" />*/}
           SpinningCircle Circle
           {loading && (
             <div className="flex flex-col p-4 gap-4 ">

@@ -55,9 +55,9 @@ export const YOUTUBE_SEARCH_VIDEOS: DocumentNode = gql`
         videoId
         title
         description
-        thumbnailDefault
-        thumbnailMedium
-        thumbnailHigh
+        thumbnailsDefault
+        thumbnailsMedium
+        thumbnailsHigh
         channelId
         channelTitle
         channelDescription
@@ -84,8 +84,8 @@ export const VIEWER_VIDEO_PLAYLIST: DocumentNode = gql`
               videoId
               title
               description
-              thumbnailDefault
-              thumbnailMedium
+              thumbnailsDefault
+              thumbnailsMedium
               channelId
               channelTitle
               channelDescription
@@ -119,9 +119,9 @@ export const GET_YOUTUBE_LIKED_VIDEOS: DocumentNode = gql`
         videoId
         title
         description
-        thumbnailDefault
-        thumbnailMedium
-        thumbnailHigh
+        thumbnailsDefault
+        thumbnailsMedium
+        thumbnailsHigh
         channelId
         channelTitle
         channelDescription
@@ -172,7 +172,6 @@ export const VIDEO_COMMENTS: DocumentNode = gql`
             parentId
           }
         }
-
         replies {
           commentId
           authorDisplayName
@@ -190,14 +189,12 @@ export const VIDEO_COMMENTS: DocumentNode = gql`
             parentId
           }
         }
-
         video {
           videoId
           title
           channelTitle
         }
       }
-
       nextPageToken
       totalResults
       hasNextPage
