@@ -94,6 +94,7 @@ class Helpers:
 
         channel_map = {}
         for item in channel_data.get('items', []):
+            
             thumbnails = item.get('snippet', {}).get('thumbnails', {})
             channel_logo = ''
 
@@ -142,32 +143,32 @@ class Helpers:
             stats = statistic_map.get(video_id, {})
             channel_info = channel_map.get(item['snippet']['channelId'], {})
 
-        defaults = {
-            'title': item['snippet']['title'],
-            'description': item['snippet']['description'],
-            'thumbnails_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
-            'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
-            'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
-            'channel_id': item['snippet']['channelId'],
-            'channel_title': channel_info.get('channel_title', item['snippet']['channelTitle']),
-            'channel_description': channel_info.get('channel_description',
-                                                    item['snippet'].get('channelDescription', '')),
-            'channel_logo': channel_info.get('channel_logo', item['snippet'].get('channelLogo', '')),
-            'published_at': published_at,
-            'subscriber_count': channel_info.get('subscriber_count', 0),
-            'category_id': stats.get('category_id', category_id or ''),
-            'view_count': stats.get('view_count', 0),
-            'like_count': stats.get('like_count', 0),
-            'comment_count': stats.get('comment_count', 0),
-            'duration': stats.get('duration', '')
-        }
+            defaults = {
+                'title': item['snippet']['title'],
+                'description': item['snippet']['description'],
+                'thumbnails_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
+                'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
+                'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
+                'channel_id': item['snippet']['channelId'],
+                'channel_title': channel_info.get('channel_title', item['snippet']['channelTitle']),
+                'channel_description': channel_info.get('channel_description',
+                                                        item['snippet'].get('channelDescription', '')),
+                'channel_logo': channel_info.get('channel_logo', item['snippet'].get('channelLogo', '')),
+                'published_at': published_at,
+                'subscriber_count': channel_info.get('subscriber_count', 0),
+                'category_id': stats.get('category_id', category_id or ''),
+                'view_count': stats.get('view_count', 0),
+                'like_count': stats.get('like_count', 0),
+                'comment_count': stats.get('comment_count', 0),
+                'duration': stats.get('duration', '')
+            }
 
-        video_obj, _ = Video.objects.update_or_create(video_id=video_id, defaults=defaults)
-        videos.append(video_obj)
+            video_obj, _ = Video.objects.update_or_create(video_id=video_id, defaults=defaults)
+            videos.append(video_obj)
 
-        page_info = search_data.get('pageInfo', {})
-        next_page_token = page_info.get('nextPageToken') if "nextPageToken" in page_info else None
-        total_results = page_info.get('totalResults', 0)
+        page_info = search_data.get('pageInfo',{})
+        total_results = page_info.get('totalResults',0)
+        next_page_token = search_data.get('nextPageToken')
         has_next_page = next_page_token is not None
 
         return {
@@ -176,6 +177,7 @@ class Helpers:
             'total_results': total_results,
             'has_next_page': has_next_page
         }
+
 
     @staticmethod
     def process_youtube_video_comments(video_id, page_token=None, max_results=10):
@@ -272,8 +274,10 @@ class Helpers:
                         )
                 comments_threads.append(thread_obj)
 
+
+
             page_info = comments_data.get('pageInfo', {})
-            next_page_token = page_info.get('nextPageToken') if "nextPageToken" in page_info else None
+            next_page_token = comments_data.get('nextPageToken')
             total_results = page_info.get('totalResults', 0)
             has_next_page = next_page_token is not None
 
@@ -283,6 +287,7 @@ class Helpers:
                 'total_results': total_results,
                 'has_next_page': has_next_page
             }
+
 
         except requests.exceptions.RequestException as err:
             raise Exception(f"Youtube API request failed: {str(err)}")
@@ -373,13 +378,3 @@ class Helpers:
             }
         except requests.exceptions.RequestException as err:
             raise GraphQLError(f"Youtube API request failed: {str(err)}")
-
-
-
-
-
-
-
-
-
-

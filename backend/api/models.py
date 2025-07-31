@@ -16,6 +16,7 @@ class User(AbstractUser):
 class Video(models.Model):
     video_id = models.CharField(max_length=500,primary_key=True, editable=False)
     title = models.CharField(max_length=500, blank=True, default='')
+    query = models.CharField(max_length=500, blank=True, default='')
     description = models.TextField(blank=True, default='')
     thumbnails_default = models.URLField(blank=True, default='')
     thumbnails_medium = models.URLField(blank=True, default='')
