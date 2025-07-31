@@ -16,7 +16,6 @@ class UserSerializerMutation(SerializerMutation):
     class Meta:
         serializer_class = UserSerializer
 
-
 class DeletePost(graphene.Mutation):
     success = graphene.Boolean()
     post = graphene.Field(PostNode)

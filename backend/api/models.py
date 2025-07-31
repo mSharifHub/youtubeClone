@@ -13,7 +13,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-
 class Video(models.Model):
     video_id = models.CharField(max_length=500,primary_key=True, editable=False)
     title = models.CharField(max_length=500, blank=True, default='')
