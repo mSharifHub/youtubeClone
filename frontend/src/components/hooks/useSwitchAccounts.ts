@@ -1,6 +1,13 @@
-import { GoogleUserProfile } from './useListAccounts.ts';
+
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+
+interface GoogleUserProfile {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+}
 
 export const useSwitchAccounts = () => {
   const [searchParams] = useSearchParams();

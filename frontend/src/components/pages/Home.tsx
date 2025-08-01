@@ -7,12 +7,8 @@ import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import { getVideoId } from '../../helpers/getVideoId.ts';
 import { useYoutubeSearchVideosQuery, VideoNode } from '../../graphql/types.ts';
-import { NetworkStatus } from '@apollo/client';
-// import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
-//
-// const MAX_ITEMS = 50;
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 
 
 export const Home: React.FC = () => {
@@ -23,7 +19,7 @@ export const Home: React.FC = () => {
     state:{isLoggedIn},
     loadingQuery} = useUser()
 
-  const {data,loading, networkStatus}= useYoutubeSearchVideosQuery({
+  const {data,loading,fetchMore,error}= useYoutubeSearchVideosQuery({
     variables: {
       query: 'trending',
       maxResults: 10,
@@ -32,15 +28,6 @@ export const Home: React.FC = () => {
     notifyOnNetworkStatusChange: true,
     skip: !isLoggedIn || loadingQuery,
   })
-
-  const isFromCache = networkStatus === NetworkStatus.ready && !loading
-  const isFromNetwork =  networkStatus === NetworkStatus.loading
-
-  console.log(
-    `isFromCache: ${isFromCache},
-    isFromNetwork: ${isFromNetwork}`
-  )
-
 
 
   const videos = (data?.youtubeSearchVideos?.videos ?? []).
@@ -52,23 +39,25 @@ export const Home: React.FC = () => {
 
   const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
 
+  const hasMore = data?.youtubeSearchVideos?.hasNextPage && data?.youtubeSearchVideos?.nextPageToken;
+
+  const handleLoadMoreVideos = async ()=>{
+    if (loading || error) return;
+
+    if (!hasMore) return;
+
+    await  fetchMore({
+      variables: {
+        query:'trending',
+        maxResults: 10,
+        pageToken: data?.youtubeSearchVideos?.nextPageToken,
+      },
+
+    })
+  }
 
 
-  // const handleLoadMoreVideos = async ()=>{
-  //   if (loading) return;
-  //
-  //   if (!data?.youtubeSearchVideos?.hasNextPage || !data?.youtubeSearchVideos?.nextPageToken) return;
-  //
-  //   await  fetchMore({
-  //     variables: {
-  //       query: 'trending',
-  //       maxResults: 10,
-  //       pageToken: data?.youtubeSearchVideos?.nextPageToken,
-  //     },
-  //   })
-  // }
-
-  // const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,MAX_ITEMS)
+  const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -94,14 +83,13 @@ export const Home: React.FC = () => {
               >
                 {
                   videos.slice(0,fullRowCount).map((video) => (
-                    <li key={getVideoId(video.videoId)}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
+                    <li key={video.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
                   ))
                 }
               </ul>
-
             {/*/!*Sentinel Observer*!/*/}
-            {/*  <div className="h-4" ref={sentinelRef}/>*/}
-              {loading && (
+              <div className="h-4" ref={sentinelRef}/>
+              {!error && loading && hasMore && (
                 <>
                   <ul
                     className=" grid grid-flow-row gap-4"

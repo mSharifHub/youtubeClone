@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useCallback } from 'react';
 import { useSaveVideoPlaylistMutation, VideoNode, VideoPlaylistEntryNodeEdge } from '../../graphql/types.ts';
-import { getVideoId } from '../../helpers/getVideoId.ts';
 
 export const useHandleSelectedVideo = () => {
   const navigate = useNavigate();
@@ -52,7 +51,7 @@ export const useHandleSelectedVideo = () => {
           variables: {
             video: {
               id: {
-                videoId: getVideoId(video.videoId),
+                videoId: video.videoId,
               },
               snippet: {
                 title: video.title ?? '',
@@ -80,7 +79,7 @@ export const useHandleSelectedVideo = () => {
           },
         });
       }
-      navigate(`/watch?v=${getVideoId(video.videoId)}`);
+      navigate(`/watch?v=${video.videoId}`);
     },
     [navigate, setSelectedVideo],
   );

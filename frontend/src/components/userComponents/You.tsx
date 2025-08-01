@@ -16,7 +16,7 @@ export const You = () => {
     fetchMore: fetchMorePlaylistHist,
   } = useViewerVideoPlayListQuery({
     variables: { first: 10 },
-    nextFetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
   });
 
@@ -28,13 +28,18 @@ export const You = () => {
     variables: {
       maxResults: 10,
     },
-    nextFetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
   });
 
   const videosPerRow = useVideoGrid(videosPerRowDisplayValues);
 
-  const playlistVideos = (playlistHistData?.viewerVideoPlaylist?.videoEntries?.edges ?? []).map((edge) => edge?.node?.video).filter((video): video is VideoNode => video !== null);
+  const playListVideos = (playlistHistData?.viewerVideoPlaylist?.videoEntries?.edges ?? [])
+    .map((edge) => ({
+      video: edge?.node?.video,
+      watchedAt: edge?.node?.watchedAt,
+    }))
+    .filter((item): item is { video: VideoNode; watchedAt: string } => item.video !== null);
 
   const likedVideos: VideoNode[] = (likedVideosData?.youtubeLikedVideos?.videos ?? []).filter((video): video is VideoNode => video !== null);
 
@@ -68,11 +73,11 @@ export const You = () => {
     });
   };
 
-  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playlistVideos.length);
+  const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playListVideos.length);
 
-  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0);
+  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0, 20);
 
-  const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playlistVideos.length });
+  const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playListVideos.length });
 
   const likeControls = useNavigationControlsOptions({ videosPerRow, playlistLength: 10 });
 
@@ -97,8 +102,8 @@ export const You = () => {
           ref={historyControls.scrollRef}
           viewAll={historyControls.viewAll}
           videosPerRow={videosPerRow}
-          playListLength={playlistVideos.length}
-          playlist={playlistVideos}
+          playListLength={playListVideos.length}
+          playlist={playListVideos}
           HandleSelectedVideo={HandleSelectedVideo}
         />
 

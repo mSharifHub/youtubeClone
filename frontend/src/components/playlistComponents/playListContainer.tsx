@@ -1,14 +1,24 @@
 import React from 'react';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoNode } from '../../graphql/types.ts';
+import timeSince from '../../helpers/timeSince.ts';
+
+interface PlayListItem {
+  video: VideoNode;
+  watchedAt?: string;
+}
 
 interface PlayListContainerProps {
   viewAll: boolean;
   videosPerRow: number;
   playListLength: number;
-  playlist: VideoNode[];
+  playlist: PlayListItem[] | VideoNode[];
   HandleSelectedVideo: (video: VideoNode) => void;
 }
+
+const isPlayListItem = (item: PlayListItem | VideoNode): item is PlayListItem => {
+  return 'video' in item;
+};
 
 export const PlayListContainer = React.forwardRef<HTMLDivElement, PlayListContainerProps>(({ viewAll, videosPerRow, playListLength, playlist, HandleSelectedVideo }, ref) => {
   return (
@@ -20,18 +30,24 @@ export const PlayListContainer = React.forwardRef<HTMLDivElement, PlayListContai
       }}
     >
       {playListLength > 0 &&
-        playlist.map((video) => (
-          <div
-            key={`${video.videoId}`}
-            className="flex flex-col w-full cursor-pointer overflow-hidden flex-shrink-0 px-2"
-            style={{
-              ...(!viewAll && { width: `${100 / videosPerRow}%` }),
-            }}
-            onClick={() => HandleSelectedVideo(video)}
-          >
-            <VideoCard video={video} />
-          </div>
-        ))}
+        playlist.map((item) => {
+          const video = isPlayListItem(item) ? item.video : item;
+          const watchedAt = isPlayListItem(item) ? item.watchedAt : undefined;
+
+          return (
+            <div
+              key={`${video.videoId}`}
+              className="flex flex-col w-full cursor-pointer overflow-hidden flex-shrink-0 px-2"
+              style={{
+                ...(!viewAll && { width: `${100 / videosPerRow}%` }),
+              }}
+              onClick={() => HandleSelectedVideo(video)}
+            >
+              <VideoCard video={video} />
+              {watchedAt && <div> viewed {timeSince(watchedAt)}</div>}
+            </div>
+          );
+        })}
     </div>
   );
 });

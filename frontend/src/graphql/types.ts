@@ -223,6 +223,7 @@ export type Query = {
   viewerVideoPlaylist?: Maybe<VideoPlaylistNode>;
   youtubeLikedVideos?: Maybe<YoutubeVideoResponse>;
   youtubeSearchVideos?: Maybe<YoutubeVideoResponse>;
+  youtubeVideoCategories?: Maybe<YoutubeVideoResponse>;
   youtubeVideoComments?: Maybe<YoutubeCommentsResponse>;
 };
 
@@ -267,6 +268,13 @@ export type QueryYoutubeSearchVideosArgs = {
   maxResults?: InputMaybe<Scalars['Int']['input']>;
   pageToken?: InputMaybe<Scalars['String']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryYoutubeVideoCategoriesArgs = {
+  categoryId: Scalars['String']['input'];
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+  pageToken?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -444,6 +452,7 @@ export type VideoNode = Node & {
   id: Scalars['ID']['output'];
   likeCount: Scalars['Int']['output'];
   publishedAt: Scalars['DateTime']['output'];
+  query: Scalars['String']['output'];
   subscriberCount: Scalars['Int']['output'];
   thumbnailsDefault: Scalars['String']['output'];
   thumbnailsHigh: Scalars['String']['output'];
@@ -654,6 +663,15 @@ export type ViewerPostsQueryVariables = Exact<{
 
 export type ViewerPostsQuery = { __typename?: 'Query', viewerPosts?: { __typename?: 'PostNodeConnection', edges: Array<{ __typename?: 'PostNodeEdge', cursor: string, node?: { __typename?: 'PostNode', id: string, content: string, createdAt: any, profilePicture?: string | null, author: { __typename?: 'UserTypes', youtubeHandler: string }, images: Array<{ __typename?: 'PostImageTypes', image?: string | null }> } | null } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, startCursor?: string | null, hasNextPage: boolean } } | null };
 
+export type YoutubeVideoCategoriesQueryVariables = Exact<{
+  categoryId: Scalars['String']['input'];
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type YoutubeVideoCategoriesQuery = { __typename?: 'Query', youtubeVideoCategories?: { __typename?: 'YoutubeVideoResponse', nextPageToken?: string | null, hasNextPage?: boolean | null, totalResults?: number | null, videos?: Array<{ __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailsDefault: string, thumbnailsMedium: string, thumbnailsHigh: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } | null> | null } | null };
+
 export type YoutubeSearchVideosQueryVariables = Exact<{
   query?: InputMaybe<Scalars['String']['input']>;
   pageToken?: InputMaybe<Scalars['String']['input']>;
@@ -661,7 +679,7 @@ export type YoutubeSearchVideosQueryVariables = Exact<{
 }>;
 
 
-export type YoutubeSearchVideosQuery = { __typename?: 'Query', youtubeSearchVideos?: { __typename?: 'YoutubeVideoResponse', nextPageToken?: string | null, hasNextPage?: boolean | null, totalResults?: number | null, videos?: Array<{ __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailsDefault: string, thumbnailsMedium: string, thumbnailsHigh: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } | null> | null } | null };
+export type YoutubeSearchVideosQuery = { __typename?: 'Query', youtubeSearchVideos?: { __typename?: 'YoutubeVideoResponse', nextPageToken?: string | null, hasNextPage?: boolean | null, videos?: Array<{ __typename?: 'VideoNode', id: string, videoId: string, title: string, description: string, thumbnailsDefault: string, thumbnailsMedium: string, thumbnailsHigh: string, channelId: string, channelTitle: string, channelDescription: string, channelLogo: string, publishedAt: any, subscriberCount: number, categoryId: string, viewCount: number, likeCount: number, commentCount: number, duration: string } | null> | null } | null };
 
 export type ViewerVideoPlayListQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -981,6 +999,74 @@ export type ViewerPostsQueryHookResult = ReturnType<typeof useViewerPostsQuery>;
 export type ViewerPostsLazyQueryHookResult = ReturnType<typeof useViewerPostsLazyQuery>;
 export type ViewerPostsSuspenseQueryHookResult = ReturnType<typeof useViewerPostsSuspenseQuery>;
 export type ViewerPostsQueryResult = Apollo.QueryResult<ViewerPostsQuery, ViewerPostsQueryVariables>;
+export const YoutubeVideoCategoriesDocument = gql`
+    query YoutubeVideoCategories($categoryId: String!, $pageToken: String, $maxResults: Int) {
+  youtubeVideoCategories(
+    categoryId: $categoryId
+    pageToken: $pageToken
+    maxResults: $maxResults
+  ) {
+    nextPageToken
+    hasNextPage
+    totalResults
+    videos {
+      id
+      videoId
+      title
+      description
+      thumbnailsDefault
+      thumbnailsMedium
+      thumbnailsHigh
+      channelId
+      channelTitle
+      channelDescription
+      channelLogo
+      publishedAt
+      subscriberCount
+      categoryId
+      viewCount
+      likeCount
+      commentCount
+      duration
+    }
+  }
+}
+    `;
+
+/**
+ * __useYoutubeVideoCategoriesQuery__
+ *
+ * To run a query within a React component, call `useYoutubeVideoCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useYoutubeVideoCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useYoutubeVideoCategoriesQuery({
+ *   variables: {
+ *      categoryId: // value for 'categoryId'
+ *      pageToken: // value for 'pageToken'
+ *      maxResults: // value for 'maxResults'
+ *   },
+ * });
+ */
+export function useYoutubeVideoCategoriesQuery(baseOptions: Apollo.QueryHookOptions<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables> & ({ variables: YoutubeVideoCategoriesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>(YoutubeVideoCategoriesDocument, options);
+      }
+export function useYoutubeVideoCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>(YoutubeVideoCategoriesDocument, options);
+        }
+export function useYoutubeVideoCategoriesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>(YoutubeVideoCategoriesDocument, options);
+        }
+export type YoutubeVideoCategoriesQueryHookResult = ReturnType<typeof useYoutubeVideoCategoriesQuery>;
+export type YoutubeVideoCategoriesLazyQueryHookResult = ReturnType<typeof useYoutubeVideoCategoriesLazyQuery>;
+export type YoutubeVideoCategoriesSuspenseQueryHookResult = ReturnType<typeof useYoutubeVideoCategoriesSuspenseQuery>;
+export type YoutubeVideoCategoriesQueryResult = Apollo.QueryResult<YoutubeVideoCategoriesQuery, YoutubeVideoCategoriesQueryVariables>;
 export const YoutubeSearchVideosDocument = gql`
     query YoutubeSearchVideos($query: String, $pageToken: String, $maxResults: Int) {
   youtubeSearchVideos(
@@ -990,7 +1076,6 @@ export const YoutubeSearchVideosDocument = gql`
   ) {
     nextPageToken
     hasNextPage
-    totalResults
     videos {
       id
       videoId

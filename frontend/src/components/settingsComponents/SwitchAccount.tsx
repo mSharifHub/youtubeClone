@@ -5,8 +5,7 @@ import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { useUserLogout } from '../hooks/useUserLogout.ts';
 import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useGoogleAuthList } from '../hooks/useListAccounts.ts';
-import { useSwitchAccounts } from '../hooks/useSwitchAccounts.ts';
+
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
 
 import { faArrowLeft, faCheck, faUserPlus } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +17,7 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     state: { user, isLoggedIn },
   } = useUser();
 
-  const { usersAuthList, loading, error } = useGoogleAuthList();
+
 
   const logout = useUserLogout();
 
@@ -32,15 +31,11 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
     event.stopPropagation();
   };
 
-  /**
-   * @param  {GoogleUserProfile}  account - The Google user profile to switch to
-   */
-  const switchAccount = useSwitchAccounts();
 
-  const listOfNotLoggedAccounts = usersAuthList.filter((profile) => profile.email !== user?.email);
+
 
   return (
-    <div>
+    <div className="p-2">
       {/* Row-1 return to main menu section */}
       <section className="p-2 border-b-[0.5px] ">
         <button onClick={onCLickAccounts} className=" flex justify-start items-center h-10 px-2 space-x-2  w-60">
@@ -71,48 +66,22 @@ export const SwitchAccount: React.FC = (): JSX.Element => {
             userProfile={user.profilePicture ?? undefined}
             firstName={user.firstName}
             lastName={user.lastName}
-            youtubeHandler={user.youtubeHandler}
-            subscribersCount={user.subscribers.length}
+            youtubeHandler={`@${user.youtubeHandler}`}
+            subscribersCount={Number(user.subscribers)}
           >
             <FontAwesomeIcon icon={faCheck} />
           </ProfileSkeleton>
         )}
       </section>
-      {/* Row-4 View All Channels*/}
-      <section className="flex justify-start items-center border-b-[0.5px] ">
-        <div className=" w-full flex justify-start items-center p-2 text-sm  transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer ">
-          View all channels
-        </div>
-      </section>
 
-      {/* Row-5 Other Accounts Authenticated List */}
-      <section className="flex flex-col justify-start items-start">
-        <div className=" w-full  p-2 text-xs font-bold "> other accounts</div>
-        {loading && <ProfileSkeleton skeleton={loading} />}
-        {!error &&
-          listOfNotLoggedAccounts.length > 0 &&
-          listOfNotLoggedAccounts.map((account, index) => (
-            <ul onClick={() => switchAccount(account)} className="min-w-full" key={`${account.id}-${index}`}>
-              <li>
-                <div className="px-2 text-xs">{account.email} </div>
-                <ProfileSkeleton
-                  userProfile={account.imageUrl}
-                  firstName={account.name.split(' ').shift()}
-                  lastName={account.name.split(' ').pop()}
-                />
-              </li>
-            </ul>
-          ))}
-      </section>
-
-      {/*Row-5 Add Account And Sign out*/}
+      {/*Row-4 Add Account And Sign out*/}
       <section className="flex  flex-col justify-start items-center p-2">
         <div
           onClick={() => redirectGoogleAuth()}
           className="h-10 w-full flex justify-start items-center  px-2 text-sm rounded-lg space-x-4 transition-colors duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer "
         >
           <FontAwesomeIcon icon={faUserPlus} className="text-sm" />
-          <span>Add account</span>
+          <span>Switch account</span>
         </div>
 
         <div

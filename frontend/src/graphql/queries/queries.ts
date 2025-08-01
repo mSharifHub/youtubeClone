@@ -44,12 +44,41 @@ export const VIEWER_POSTS_QUERY: DocumentNode = gql`
   }
 `;
 
+export const YOUTUBE_VIDEO_CATEGORIES: DocumentNode = gql`
+  query YoutubeVideoCategories($categoryId: String!, $pageToken: String, $maxResults: Int) {
+    youtubeVideoCategories(categoryId: $categoryId, pageToken: $pageToken, maxResults: $maxResults) {
+      nextPageToken
+      hasNextPage
+      totalResults
+      videos {
+        id
+        videoId
+        title
+        description
+        thumbnailsDefault
+        thumbnailsMedium
+        thumbnailsHigh
+        channelId
+        channelTitle
+        channelDescription
+        channelLogo
+        publishedAt
+        subscriberCount
+        categoryId
+        viewCount
+        likeCount
+        commentCount
+        duration
+      }
+    }
+  }
+`;
+
 export const YOUTUBE_SEARCH_VIDEOS: DocumentNode = gql`
   query YoutubeSearchVideos($query: String, $pageToken: String, $maxResults: Int) {
     youtubeSearchVideos(query: $query, pageToken: $pageToken, maxResults: $maxResults) {
       nextPageToken
       hasNextPage
-      totalResults
       videos {
         id
         videoId

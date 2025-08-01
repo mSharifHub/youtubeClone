@@ -3,8 +3,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
-import { Video } from '../types/youtubeVideoInterfaces.ts';
-import { getVideoId } from '../helpers/getVideoId.ts';
+import { VideoNode } from './types.ts';
 
 const httpLink = createUploadLink({
   uri: 'http://localhost:8000/graphql/',
@@ -62,18 +61,84 @@ const client = new ApolloClient({
               };
             },
           },
+
           youtubeLikedVideos: {
             keyArgs: false,
             merge(existing, incoming) {
               if (!existing) return incoming;
+
+              const getVideoId = (video) => {
+                if ('__ref' in video && video.__ref) {
+                  return video.__ref.split(':')[1] || video.__ref;
+                }
+                return video.videoId;
+              };
+
+              const existingVideoId = new Set((existing.videos || []).map((video) => getVideoId(video)));
+
+              const newVideos = (incoming.videos ?? []).filter((video) => {
+                const videoId = getVideoId(video);
+                const isDuplicate = existingVideoId.has(videoId);
+                return !isDuplicate;
+              });
+
               return {
                 ...incoming,
-                videos: [
-                  ...(existing.videos || []),
-                  ...(incoming.videos || []).filter(
-                    (video: Video) => !(existing.videos || []).some((existingVideo: Video) => getVideoId(existingVideo.id) === getVideoId(video.id)),
-                  ),
-                ],
+                videos: [...(existing.videos || []), ...newVideos],
+              };
+            },
+          },
+
+          youtubeVideoComments: {
+            keyArgs: ['videoId'],
+            merge(existing: any, incoming: any) {
+              if (!existing) return incoming;
+
+              const getThreadId = (thread: any): string => {
+                if ('__ref' in thread && thread.__ref) {
+                  return thread.__ref.split(':')[1] || thread.__ref;
+                }
+                return thread.id;
+              };
+
+              const existingThreadIds = new Set((existing.commentsThreads ?? []).map((thread: any) => getThreadId(thread)));
+
+              const newComments = (incoming.commentsThreads ?? []).filter((thread: any) => {
+                const threadId = getThreadId(thread);
+                const isDuplicate = existingThreadIds.has(threadId);
+                return !isDuplicate;
+              });
+
+              return {
+                ...incoming,
+                commentsThreads: [...(existing.commentsThreads || []), ...newComments],
+              };
+            },
+          },
+
+          youtubeSearchVideos: {
+            keyArgs: ['query'],
+            merge(existing, incoming) {
+              if (!existing) return incoming;
+
+              const getVideoId = (video: VideoNode | { __ref: string }): string => {
+                if ('__ref' in video && video.__ref) {
+                  return video.__ref.split(':')[1] || video.__ref;
+                }
+                return (video as VideoNode).videoId;
+              };
+
+              const existingVideoIds = new Set((existing.videos || []).map((video) => getVideoId(video)));
+
+              const newVideos = (incoming.videos || []).filter((video: VideoNode | { __ref: string }) => {
+                const videoId = getVideoId(video);
+                const isDuplicate = existingVideoIds.has(videoId);
+                return !isDuplicate;
+              });
+
+              return {
+                ...incoming,
+                videos: [...(existing.videos || []), ...newVideos],
               };
             },
           },

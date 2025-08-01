@@ -4,7 +4,6 @@ import timeSince from '../../helpers/timeSince.ts';
 import { convertISO } from '../../helpers/convertISO.ts';
 import decrementTime from '../../helpers/decrementTime.ts';
 
-import { getVideoId } from '../../helpers/getVideoId.ts';
 import { formatNumber } from '../../helpers/formatNumber.ts';
 import { VideoNode } from '../../graphql/types.ts';
 
@@ -26,7 +25,7 @@ export const VideoCard = ({ video }: { video: VideoNode }) => {
   const timerRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
-  const videoURL = `https://www.youtube.com/embed/${getVideoId(video.videoId)}?autoplay=1&mute=1&controls=0`;
+  const videoURL = `https://www.youtube.com/embed/${video.videoId}?autoplay=1&mute=1&controls=0`;
 
   const videoTitle = sliceText({ s: video.title });
 

@@ -8,10 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { faMoon } from '@fortawesome/free-regular-svg-icons';
-import youtubeStudioIcon from '../../assets/menu_bar_icons/youtube-studio.png';
-import coin from '../../assets/menu_bar_icons/coin.png';
 import signOut from '../../assets/menu_bar_icons/sign-out.png';
-import settings from '../../assets/menu_bar_icons/settings.png';
 import switchAccount from '../../assets/menu_bar_icons/switchAccounts.png';
 import { useSettingsModal } from '../../contexts/SetttingsModalsContext/SettingsModalsContext.ts';
 
@@ -104,25 +101,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
               </div>
             </div>
           </section>
-          {/* row 3 [ youtubeStudio, purchase and membership ]*/}
-          <section className={` ${!isLoggedIn ? 'hidden' : 'row-span-1 row-start-3 border-b '} text-sm`}>
-            <div className="flex flex-col justify-center items-start space-y-4 px-2 py-2">
-              <button
-                title="YouTube Studio"
-                className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              >
-                <img src={youtubeStudioIcon} alt="youtube-studio" className=" min-h-6 min-w-6 w-6 h-6 dark:invert" />
-                <span className="capitalize text-sm">youtube studio</span>
-              </button>
-              <button
-                title="Purchase And Membership"
-                className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              >
-                <img src={coin} alt="purchase-and-memberships" className="min-h-6 min-w-6 w-6 h-6 dark:invert" />
-                <h3 className="capitalize whitespace-nowrap">purchases and membership</h3>
-              </button>
-            </div>
-          </section>
 
           {/* row 4  [ dark mode, settings] */}
           <section className="row-span-1 row-start-4 text-sm mt-2">
@@ -136,13 +114,6 @@ export const SettingsModal: React.FC<LoginModalProps> = ({ isOpen, onClickOutsid
                 <span className="capitalize">Appearance: {theme} </span>
                 <FontAwesomeIcon icon={faChevronRight} className="text-lg" />
               </div>
-              <button
-                title="Settings"
-                className="flex w-full h-10  px-2 items-center space-x-4  rounded-lg transition-colors transform duration-75 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              >
-                <img src={settings} alt="settings" className="min-h-6 min-w-6 w-6 h-6 dark:invert" />
-                <h3 className="capitalize">settings</h3>
-              </button>
             </div>
           </section>
         </div>

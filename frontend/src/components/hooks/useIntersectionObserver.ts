@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 
 interface InfiniteScrollOptions {
@@ -23,6 +22,7 @@ export const useIntersectionObserver = (callBack: () => Promise<void>, loading: 
 
         if (target.isIntersecting && !loading) {
           if (sentinelRef.current) {
+            console.log('intersecting');
             observerRef.current?.unobserve(sentinelRef.current);
             await callBack();
           }

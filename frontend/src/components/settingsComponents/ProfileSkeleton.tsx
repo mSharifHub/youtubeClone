@@ -41,19 +41,18 @@ export const ProfileSkeleton: React.FC<ProfileSkeletonProps> = ({ userProfile, u
         <div className={`h-4 flex justify-start items-center text-neutral-400 text-[12px] ${skeleton && 'bg-neutral-100 dark:bg-neutral-700'} `}>{youtubeHandler}</div>
 
         <div className={`h-4 flex justify-start items-center text-neutral-400 text-[12px] ${skeleton && 'bg-neutral-100 dark:bg-neutral-700'} `}>
-          {subscribersCount === 0 && <div> no subscribers</div>}
-          {subscribersCount === 1 && (
+          {subscribersCount === 0 ? (
+            <div>no subscribers</div>
+          ) : subscribersCount === 1 ? (
             <div>
-              <span>{subscribersCount}</span>
-              subscriber
+              <span>{subscribersCount}</span> subscriber
             </div>
-          )}
-          {subscribersCount && subscribersCount > 1 && (
+          ) : subscribersCount > 1 ? (
             <div>
-              <span>{subscribersCount}</span>
-              subscribers
+              <span>{subscribersCount}</span> subscribers
             </div>
-          )}
+          ) : null}
+
         </div>
       </div>
       <div className="absolute right-4 top-1/2 -translate-y-1/2">{children}</div>

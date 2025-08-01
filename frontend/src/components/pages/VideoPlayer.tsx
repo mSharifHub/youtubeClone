@@ -4,12 +4,13 @@ import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
-import CommentLoading from '../VideoComponents/CommentLoading.tsx';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-import { CommentThreadNode, useVideoCommentsQuery } from '../../graphql/types.ts';
+import { CommentThreadNode, useVideoCommentsQuery, useYoutubeVideoCategoriesQuery, VideoNode } from '../../graphql/types.ts';
 import { useSearchParams } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
+import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+import { RelatedVideos } from '../VideoComponents/RelatedVideos.tsx';
 
 export const VideoPlayer: React.FC = () => {
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -27,33 +28,49 @@ export const VideoPlayer: React.FC = () => {
 
   const videoId = searchParams.get('v');
 
-  const { data, loading, fetchMore, error } = useVideoCommentsQuery({
+  const {
+    data: commentsData,
+    loading,
+    fetchMore,
+    error,
+  } = useVideoCommentsQuery({
     variables: {
       videoId: selectedVideo?.videoId ?? videoId!,
       maxResults: 10,
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
     skip: !selectedVideo,
   });
 
-  const commentsThreads = (data?.youtubeVideoComments?.commentsThreads ?? []).filter((thread): thread is CommentThreadNode => thread !== null);
+  const { data: relData, loading: relLoading } = useYoutubeVideoCategoriesQuery({
+    variables: {
+      categoryId: selectedVideo?.categoryId ?? '',
+    },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    skip: !selectedVideo,
+  });
 
-  // const handleFetchMoreComments = async () => {
-  //   if (loading) return;
-  //
-  //   if (!data?.youtubeVideoComments?.hasNextPage || !data?.youtubeVideoComments?.nextPageToken) return;
-  //
-  //   await fetchMore({
-  //     variables: {
-  //       videoId: selectedVideo?.videoId ?? videoId!,
-  //       maxResults: 10,
-  //       pageToken: data?.youtubeVideoComments?.nextPageToken,
-  //     },
-  //   });
-  // };
+  const commentsThreads = (commentsData?.youtubeVideoComments?.commentsThreads ?? []).filter((thread): thread is CommentThreadNode => thread !== null);
 
-  // const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
+  const relatedVideos = (relData?.youtubeVideoCategories?.videos ?? []).filter((video): video is VideoNode => video !== null);
+
+  const hasMore = commentsData?.youtubeVideoComments?.hasNextPage && commentsData?.youtubeVideoComments?.nextPageToken;
+
+  const handleFetchMoreComments = async () => {
+    if (loading || !hasMore) return;
+
+    await fetchMore({
+      variables: {
+        videoId: selectedVideo?.videoId ?? videoId!,
+        maxResults: 10,
+        pageToken: commentsData?.youtubeVideoComments?.nextPageToken,
+      },
+    });
+  };
+
+  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -65,6 +82,8 @@ export const VideoPlayer: React.FC = () => {
       origin: window.location.origin, // must check during deployment
     },
   };
+
+  const handleSelectedVideo = useHandleSelectedVideo();
 
   const handleOpenShareModal = () => {
     setopenShareModal(true);
@@ -152,30 +171,13 @@ export const VideoPlayer: React.FC = () => {
             showTopLevelReplies={showTopLevelReplies}
             commentsError={error?.message ?? null}
           />
-          / sentinel observer
-          {/*<div ref={sentinelRef} className="h-2  w-full" />*/}
-          SpinningCircle Circle
-          {loading && (
-            <div className="flex flex-col p-4 gap-4 ">
-              <ul>
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <li key={index} className="flex flex-row space-x-4">
-                    <CommentLoading />
-                  </li>
-                ))}
-              </ul>
-              <SpinningCircle />
-            </div>
-          )}
+          {/*/ sentinel observer*/}
+          <div ref={sentinelRef} className="h-2  w-full" />
+          {loading && hasMore && <SpinningCircle />}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">
-          {/*<RelatedVideos*/}
-          {/*  relatedVideos={filteredSelectedVideosList}*/}
-          {/*  relatedVideosLoading={relatedVideosLoading}*/}
-          {/*  handleSelectedVideo={handleSelectedVideo}*/}
-          {/*  relatedVideosError={relatedVideosError}*/}
-          {/*/>*/}
+          <RelatedVideos relatedVideos={relatedVideos} relatedVideosLoading={relLoading} handleSelectedVideo={handleSelectedVideo} />
         </div>
       </div>
     </div>
