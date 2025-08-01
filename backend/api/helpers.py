@@ -7,6 +7,59 @@ import requests
 from backend import settings
 
 class Helpers:
+
+    @staticmethod
+    def handle_api_error(response):
+        if response.status_code == 403:
+            try:
+                error_data = response.json()
+                error_reason = error_data.get('error', {}).get('errors', [{}])[0].get('reason', '')
+                if error_reason:
+                    raise GraphQLError(
+                        f"YouTube API access denied: {error_reason}. Please check your OAuth scopes and API configuration.")
+            except Exception as err:
+                raise GraphQLError(f"An error occurred while fetching YouTube data: {str(err)}")
+
+    @staticmethod
+    def fetch_channel_details(channel_ids):
+        if not channel_ids:
+            return {}
+
+        channels_url = 'https://www.googleapis.com/youtube/v3/channels'
+        channels_params = {
+            'part': 'snippet,statistics',
+            'id': ','.join(channel_ids),
+            'key': settings.GOOGLE_API_KEY
+        }
+
+        try:
+            channel_response = requests.get(url=channels_url, params=channels_params)
+            channel_response.raise_for_status()
+            channel_data = channel_response.json()
+        except requests.exceptions.RequestException as e:
+            raise GraphQLError(f"Failed to fetch channel details: {str(e)}")
+
+        channel_map = {}
+        for item in channel_data.get('items', []):
+            thumbnails = item.get('snippet', {}).get('thumbnails', {})
+            channel_logo = ''
+
+            if thumbnails.get('high') and thumbnails['high'].get('url'):
+                channel_logo = thumbnails['high']['url']
+            elif thumbnails.get('medium') and thumbnails['medium'].get('url'):
+                channel_logo = thumbnails['medium']['url']
+            else:
+                channel_logo = thumbnails.get('default', {}).get('url', '')
+
+            channel_map[item['id']] = {
+                'channel_title': item.get('snippet', {}).get('title', ''),
+                'channel_description': item.get('snippet', {}).get('description', ''),
+                'channel_logo': channel_logo,
+                'subscriber_count': item.get('statistics', {}).get('subscriberCount', 0)
+            }
+
+        return channel_map
+
     @staticmethod
     def get_profile_picture(user: User, first_name: str, last_name: str, profile_picture_url: str):
 
@@ -67,7 +120,7 @@ class Helpers:
 
 
     @staticmethod
-    def process_youtube_videos(search_data,category_id=None):
+    def process_youtube_videos(search_data, query, category_id:None):
         if not search_data.get('items'):
             return{
                 'videos': [],
@@ -81,36 +134,7 @@ class Helpers:
         video_ids = [item['id']['videoId'] for item in video_items]
         channel_ids = list(set([item['snippet']['channelId'] for item in video_items]))
 
-        channels_url = 'https://www.googleapis.com/youtube/v3/channels'
-        channels_params = {
-            'part': 'snippet,statistics',
-            'id': ','.join(channel_ids),
-            'key': settings.GOOGLE_API_KEY
-        }
-
-        channel_response = requests.get(url=channels_url, params=channels_params)
-        channel_response.raise_for_status()
-        channel_data = channel_response.json()
-
-        channel_map = {}
-        for item in channel_data.get('items', []):
-            
-            thumbnails = item.get('snippet', {}).get('thumbnails', {})
-            channel_logo = ''
-
-            if thumbnails.get('high') and thumbnails['high'].get('url'):
-                channel_logo = thumbnails['high']['url']
-            elif thumbnails.get('medium') and thumbnails['medium'].get('url'):
-                channel_logo = thumbnails['medium']['url']
-            else:
-                channel_logo = thumbnails.get('default', {}).get('url', '')
-
-            channel_map[item['id']] = {
-                'channel_title': item.get('snippet', {}).get('title', ''),
-                'channel_description': item.get('snippet', {}).get('description', ''),
-                'channel_logo': channel_logo,
-                'subscriber_count': item.get('statistics', {}).get('subscriberCount', 0)
-            }
+        channel_map = Helpers.fetch_channel_details(channel_ids)
 
         stats_url = 'https://www.googleapis.com/youtube/v3/videos'
         stats_params = {
@@ -160,7 +184,8 @@ class Helpers:
                 'view_count': stats.get('view_count', 0),
                 'like_count': stats.get('like_count', 0),
                 'comment_count': stats.get('comment_count', 0),
-                'duration': stats.get('duration', '')
+                'duration': stats.get('duration', ''),
+                'query': query
             }
 
             video_obj, _ = Video.objects.update_or_create(video_id=video_id, defaults=defaults)
@@ -181,7 +206,10 @@ class Helpers:
 
     @staticmethod
     def process_youtube_video_comments(video_id, page_token=None, max_results=10):
-        max_results = min(max_results, 50)
+        if not video_id or not isinstance(video_id, str):
+            raise GraphQLError("Invalid video_id provided ")
+
+        max_results = min(max(max_results,1), 50)
 
         try:
             url = 'https://www.googleapis.com/youtube/v3/commentThreads'
@@ -199,6 +227,7 @@ class Helpers:
                 params['pageToken'] = page_token
 
             comments_response = requests.get(url, params)
+            Helpers.handle_api_error(comments_response)
             comments_response.raise_for_status()
             comments_data = comments_response.json()
 
@@ -274,8 +303,6 @@ class Helpers:
                         )
                 comments_threads.append(thread_obj)
 
-
-
             page_info = comments_data.get('pageInfo', {})
             next_page_token = comments_data.get('nextPageToken')
             total_results = page_info.get('totalResults', 0)
@@ -331,22 +358,19 @@ class Helpers:
                 else:
                     raise GraphQLError("Authentication expired. Please log in again.")
 
-            if response.status_code == 403:
-                try:
-                    error_data = response.json()
-                    error_reason = error_data.get('error', {}).get('errors', [{}])[0].get('reason', '')
-                    if error_reason:
-                        raise GraphQLError(
-                            f"YouTube API access denied: {error_reason}. Please check your OAuth scopes and API configuration.")
-                except Exception as err:
-                    raise GraphQLError(f"An error occurred while fetching YouTube data: {str(err)}")
+            Helpers.handle_api_error(response)
 
             response.raise_for_status()
             youtube_data = response.json()
+            video_items =youtube_data.get('items', [])
+            channel_ids = list(set([item['snippet']['channelId'] for item in video_items]))
+            channel_map = Helpers.fetch_channel_details(channel_ids)
+
             videos = []
             for item in youtube_data.get('items', []):
                 published_at_str = item['snippet']['publishedAt']
                 published_at = parse_datetime(published_at_str)
+                channel_info = channel_map.get(item['snippet']['channelId'], {})
                 defaults = {
                     'title': item['snippet']['title'],
                     'description': item['snippet']['description'],
@@ -354,9 +378,10 @@ class Helpers:
                     'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
                     'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
                     'channel_id': item['snippet']['channelId'],
-                    'channel_title': item['snippet']['channelTitle'],
-                    'channel_description': item['snippet'].get('channelDescription', ''),
+                    'channel_title': channel_info.get('channel_title', ''),
+                    'channel_description': channel_info.get('channel_description', ''),
                     'channel_logo': item['snippet'].get('channelLogo', ''),
+                    'subscriber_count': channel_info.get('subscriber_count', 0),
                     'published_at': published_at,
                     'category_id': item['snippet'].get('categoryId', ''),
                     'view_count': item['statistics'].get('viewCount', 0),
@@ -372,7 +397,7 @@ class Helpers:
 
             return {
                 'videos': videos,
-                'next_page_token': youtube_data.get('nextPageToken', '') if youtube_data.get('nextPageToken') else None,
+                'next_page_token': youtube_data.get('nextPageToken', '') ,
                 'total_results': youtube_data.get('pageInfo', {}).get('totalResults', 0),
                 'has_next_page': 'nextPageToken' in youtube_data
             }
