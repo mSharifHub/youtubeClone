@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 import VideoCardPlayer from '../VideoComponents/VideoCardPlayer.tsx';
 import { ShareModal } from '../VideoComponents/ShareModal.tsx';
@@ -36,7 +36,7 @@ export const VideoPlayer: React.FC = () => {
   } = useVideoCommentsQuery({
     variables: {
       videoId: selectedVideo?.videoId ?? videoId!,
-      maxResults: 10,
+      maxResults: 1,
     },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
@@ -46,8 +46,9 @@ export const VideoPlayer: React.FC = () => {
   const { data: relData, loading: relLoading } = useYoutubeVideoCategoriesQuery({
     variables: {
       categoryId: selectedVideo?.categoryId ?? '',
+      maxResults: 2,
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
     skip: !selectedVideo,
   });
@@ -56,8 +57,19 @@ export const VideoPlayer: React.FC = () => {
 
   const relatedVideos = (relData?.youtubeVideoCategories?.videos ?? []).filter((video): video is VideoNode => video !== null);
 
-  const hasMore = commentsData?.youtubeVideoComments?.hasNextPage && commentsData?.youtubeVideoComments?.nextPageToken;
+  const seenVideosIds = new Set<string>();
 
+  const filteredRelatedVideos = relatedVideos.reduce((acc, video) => {
+    if (video.videoId !== selectedVideo?.videoId && !seenVideosIds.has(video.videoId)) {
+      seenVideosIds.add(video.videoId);
+      acc.push(video);
+    }
+    return acc;
+  }, [] as VideoNode[]);
+
+
+
+  const hasMore = commentsData?.youtubeVideoComments?.hasNextPage && commentsData?.youtubeVideoComments?.nextPageToken;
 
   const handleFetchMoreComments = async () => {
     if (loading) return;
@@ -73,7 +85,7 @@ export const VideoPlayer: React.FC = () => {
     });
   };
 
-  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 50);
+  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 1);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {
@@ -140,6 +152,12 @@ export const VideoPlayer: React.FC = () => {
     setSubscribed((prev) => !prev);
   };
 
+  useEffect(() => {
+    if (relData) {
+      console.log(relData);
+    }
+  }, [relData]);
+
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">
       {/* share Modal*/}
@@ -176,11 +194,11 @@ export const VideoPlayer: React.FC = () => {
           />
           {/*/ sentinel observer*/}
           <div ref={sentinelRef} className="h-2  w-full" />
-          {loading && hasMore && <SpinningCircle />}
+          {loading && hasMore && <SpinningCircle style={'min-h-16 min-w-16  h-16 w-16 border-2 '} />}
         </div>
         {/* column-2 */}
         <div className="hidden lg:flex flex-col w-[400px] flex-shrink-0">
-          <RelatedVideos relatedVideos={relatedVideos} relatedVideosLoading={relLoading} handleSelectedVideo={handleSelectedVideo} />
+          <RelatedVideos relatedVideos={filteredRelatedVideos} relatedVideosLoading={relLoading} handleSelectedVideo={handleSelectedVideo} />
         </div>
       </div>
     </div>
