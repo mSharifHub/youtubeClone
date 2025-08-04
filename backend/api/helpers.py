@@ -4,10 +4,10 @@ from django.utils.dateparse import parse_datetime
 from graphql import GraphQLError
 from api.models import User, Video, CommentThread, Comment
 import requests
+from django.core.cache import cache
 from backend import settings
 
 class Helpers:
-
     @staticmethod
     def handle_api_error(response):
         if response.status_code == 403:
@@ -21,14 +21,43 @@ class Helpers:
                 raise GraphQLError(f"An error occurred while fetching YouTube data: {str(err)}")
 
     @staticmethod
+    def build_youtube_api_params(base_params, page_token=None, max_results=10):
+        params = {
+            'max_results': max_results,
+            'regionCode': 'US',
+            'key': settings.GOOGLE_API_KEY,
+            **base_params
+        }
+
+        if page_token:
+            params['page_token'] = page_token
+        return params
+
+
+    @staticmethod
     def fetch_channel_details(channel_ids):
         if not channel_ids:
             return {}
 
+        cached_channels = {}
+        uncached_channel_ids = []
+
+        for channel_id in channel_ids:
+            cache_key = f'channel_details_{channel_id}'
+            cache_data = cache.get(cache_key)
+
+            if cache_data:
+                cached_channels[channel_id] = cache_data
+            else:
+                uncached_channel_ids.append(channel_id)
+
+        if not uncached_channel_ids:
+            return cached_channels
+
         channels_url = 'https://www.googleapis.com/youtube/v3/channels'
         channels_params = {
             'part': 'snippet,statistics',
-            'id': ','.join(channel_ids),
+            'id': ','.join(uncached_channel_ids),
             'key': settings.GOOGLE_API_KEY
         }
 
@@ -39,7 +68,8 @@ class Helpers:
         except requests.exceptions.RequestException as e:
             raise GraphQLError(f"Failed to fetch channel details: {str(e)}")
 
-        channel_map = {}
+        channel_map = cached_channels.copy()
+
         for item in channel_data.get('items', []):
             thumbnails = item.get('snippet', {}).get('thumbnails', {})
             channel_logo = ''
@@ -51,12 +81,15 @@ class Helpers:
             else:
                 channel_logo = thumbnails.get('default', {}).get('url', '')
 
-            channel_map[item['id']] = {
+            channel_info ={
                 'channel_title': item.get('snippet', {}).get('title', ''),
                 'channel_description': item.get('snippet', {}).get('description', ''),
                 'channel_logo': channel_logo,
                 'subscriber_count': item.get('statistics', {}).get('subscriberCount', 0)
             }
+            channel_map[item['id']] = channel_info
+            cache_key = f"channel_details_{item['id']}"
+            cache.set(cache_key, channel_info, 3600)
 
         return channel_map
 
@@ -81,7 +114,7 @@ class Helpers:
 
             new_profile_picture_content = response.content
 
-            if not current_profile_picture_content == new_profile_picture_content:
+            if  current_profile_picture_content != new_profile_picture_content:
                 if user.profile_picture:
                     user.profile_picture.delete(save=False)
 
@@ -90,8 +123,6 @@ class Helpers:
                 user.profile_picture.save(file_name, profile_picture, save=False)
                 user.save()
 
-            else:
-                return None
         return None
 
     @staticmethod
@@ -105,7 +136,6 @@ class Helpers:
         }
 
         try:
-
             response = requests.post(token_url, data=data)
             response.raise_for_status()
             token_data = response.json()
@@ -120,79 +150,44 @@ class Helpers:
 
 
     @staticmethod
-    def process_youtube_videos(search_data, query, category_id:None):
-        if not search_data.get('items'):
-            return{
-                'videos': [],
-                'next_page_token': None,
-                'total_results': 0,
-                'has_next_page': False
-
-            }
-
-        video_items = search_data['items']
-        video_ids = [item['id']['videoId'] for item in video_items]
-        channel_ids = list(set([item['snippet']['channelId'] for item in video_items]))
-
-        channel_map = Helpers.fetch_channel_details(channel_ids)
-
-        stats_url = 'https://www.googleapis.com/youtube/v3/videos'
-        stats_params = {
+    def fetch_video_statistics(video_ids):
+        url = 'https://www.googleapis.com/youtube/v3/videos'
+        params = {
             'part': 'statistics,contentDetails,snippet',
-            'id': ','.join(video_ids),
-            'regionCode': 'US',
+            'id': video_ids,
             'key': settings.GOOGLE_API_KEY
         }
 
-        stats_response = requests.get(url=stats_url, params=stats_params)
+        stats_response = requests.get(url=url, params=params)
         stats_response.raise_for_status()
-        stats_data = stats_response.json()
+        return stats_response.json()
 
-        statistic_map = {}
+    @staticmethod
+    def build_video_defaults(item,stats,channel_info,query,category_id):
+        return {
+            'title': item['snippet']['title'],
+            'description': item['snippet']['description'],
+            'thumbnails_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
+            'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
+            'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
+            'channel_id': item['snippet']['channelId'],
+            'channel_title': channel_info.get('channel_title', item['snippet']['channelTitle']),
+            'channel_description': channel_info.get('channel_description',item['snippet'].get('channelDescription', '')),
+            'channel_logo': channel_info.get('channel_logo', item['snippet'].get('channelLogo', '')),
+            'published_at': parse_datetime(item['snippet']['publishedAt']),
+            'subscriber_count': channel_info.get('subscriber_count', 0),
+            'category_id': category_id,
+            'view_count': stats.get('view_count', 0),
+            'like_count': stats.get('like_count', 0),
+            'comment_count': stats.get('comment_count', 0),
+            'duration': stats.get('duration', ''),
+            'query': query
+        }
 
-        for item in stats_data.get('items', []):
-            statistic_map[item['id']] = {
-                'view_count': item['statistics'].get('viewCount', 0),
-                'like_count': item['statistics'].get('likeCount', 0),
-                'comment_count': item['statistics'].get('commentCount', 0),
-                'duration': item['contentDetails']['duration'],
-                'category_id': item['snippet'].get('categoryId', category_id or ''),
-            }
-
-        videos = []
-
-        for item in video_items:
-            video_id = item['id']['videoId']
-            published_at = parse_datetime(item['snippet']['publishedAt'])
-            stats = statistic_map.get(video_id, {})
-            channel_info = channel_map.get(item['snippet']['channelId'], {})
-
-            defaults = {
-                'title': item['snippet']['title'],
-                'description': item['snippet']['description'],
-                'thumbnails_default': item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),
-                'thumbnails_medium': item['snippet'].get('thumbnails', {}).get('medium', {}).get('url', ''),
-                'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
-                'channel_id': item['snippet']['channelId'],
-                'channel_title': channel_info.get('channel_title', item['snippet']['channelTitle']),
-                'channel_description': channel_info.get('channel_description',
-                                                        item['snippet'].get('channelDescription', '')),
-                'channel_logo': channel_info.get('channel_logo', item['snippet'].get('channelLogo', '')),
-                'published_at': published_at,
-                'subscriber_count': channel_info.get('subscriber_count', 0),
-                'category_id': stats.get('category_id', category_id or ''),
-                'view_count': stats.get('view_count', 0),
-                'like_count': stats.get('like_count', 0),
-                'comment_count': stats.get('comment_count', 0),
-                'duration': stats.get('duration', ''),
-                'query': query
-            }
-
-            video_obj, _ = Video.objects.update_or_create(video_id=video_id, defaults=defaults)
-            videos.append(video_obj)
-
-        page_info = search_data.get('pageInfo',{})
-        total_results = page_info.get('totalResults',0)
+    @staticmethod
+    def build_response(search_data, videos):
+        page_info = search_data.get('pageInfo', {})
+        total_results = page_info.get('totalResults', 0)
         next_page_token = search_data.get('nextPageToken')
         has_next_page = next_page_token is not None
 
@@ -203,32 +198,83 @@ class Helpers:
             'has_next_page': has_next_page
         }
 
+    @staticmethod
+    def process_youtube_videos(search_data, query=None, category_id=None):
+        if not search_data.get('items'):
+            return{
+                'videos': [],
+                'next_page_token': None,
+                'total_results': 0,
+                'has_next_page': False
+            }
+
+        video_items = search_data['items']
+        video_ids = list(set([item['id']['videoId'] for item in video_items]))
+        channel_ids = list(set([item['snippet']['channelId'] for item in video_items]))
+
+        cached_videos = {}
+        uncached_video_ids = []
+
+        for video_id in video_ids:
+            cache_key = f"video_details_{video_id}"
+            cached_details = cache.get(cache_key)
+
+            if cached_details:
+                cached_videos[video_id] = cached_details
+            else:
+                uncached_video_ids.append(video_id)
+
+        channel_map = Helpers.fetch_channel_details(channel_ids)
+        statistic_map = cached_videos.copy()
+
+        if uncached_video_ids:
+            stats_data = Helpers.fetch_video_statistics(uncached_video_ids)
+
+            for item in stats_data.get('items', []):
+                video_stats ={
+                    'view_count': int(item['statistics'].get('viewCount', 0)),
+                    'like_count': int(item['statistics'].get('likeCount', 0)),
+                    'comment_count': int(item['statistics'].get('commentCount', 0)),
+                    'duration': item['contentDetails']['duration'],
+                    'category_id': item['snippet'].get('categoryId', ''),
+
+                }
+
+                statistic_map[item['id']] = video_stats
+                cache_key = f"video_details_{item['id']}"
+                cache.set(cache_key, video_stats, 3600)
+
+        videos = []
+
+        for item in video_items:
+            video_id = item['id']['videoId']
+            stats = statistic_map.get(video_id, {})
+            channel_info = channel_map.get(item['snippet']['channelId'], {})
+            video_category_id =  stats.get('category_id')
+            defaults = Helpers.build_video_defaults(item,stats,channel_info,query,video_category_id)
+            video_obj, _ = Video.objects.update_or_create(video_id=video_id,defaults=defaults)
+            videos.append(video_obj)
+        return Helpers.build_response(search_data, videos)
+
+
 
     @staticmethod
     def process_youtube_video_comments(video_id, page_token=None, max_results=10):
         if not video_id or not isinstance(video_id, str):
             raise GraphQLError("Invalid video_id provided ")
 
-        max_results = min(max(max_results,1), 50)
-
         try:
             url = 'https://www.googleapis.com/youtube/v3/commentThreads'
-            params = {
+            params = Helpers.build_youtube_api_params({
                 'part': 'snippet,replies',
                 'videoId': video_id,
-                'maxResults': max_results,
                 'order': 'time',
                 'textFormat': 'plainText',
-                'key': settings.GOOGLE_API_KEY
+            }, page_token, max_results)
 
-            }
-
-            if page_token:
-                params['pageToken'] = page_token
 
             comments_response = requests.get(url, params)
             Helpers.handle_api_error(comments_response)
-            comments_response.raise_for_status()
             comments_data = comments_response.json()
 
             if not comments_data.get('items'):
@@ -304,17 +350,16 @@ class Helpers:
                 comments_threads.append(thread_obj)
 
             page_info = comments_data.get('pageInfo', {})
+            total_results = comments_data.get('totalResults', 0)
             next_page_token = comments_data.get('nextPageToken')
-            total_results = page_info.get('totalResults', 0)
             has_next_page = next_page_token is not None
 
-            return {
+            return{
                 'comments_threads': comments_threads,
                 'next_page_token': next_page_token,
                 'total_results': total_results,
                 'has_next_page': has_next_page
             }
-
 
         except requests.exceptions.RequestException as err:
             raise Exception(f"Youtube API request failed: {str(err)}")
@@ -322,7 +367,7 @@ class Helpers:
 
     @staticmethod
     def process_youtube_liked_videos(request,access_token, page_token=None, max_results=10):
-        max_results = min(max_results, 50)
+        max_results = min(max(max_results,1) ,50)
         try:
             youtube_api_url = 'https://www.googleapis.com/youtube/v3/videos'
             params = {
@@ -362,6 +407,15 @@ class Helpers:
 
             response.raise_for_status()
             youtube_data = response.json()
+
+            if not youtube_data.get('items'):
+                return {
+                    'videos': [],
+                    'next_page_token': None,
+                    'total_results': 0,
+                    'has_next_page': False
+                }
+
             video_items =youtube_data.get('items', [])
             channel_ids = list(set([item['snippet']['channelId'] for item in video_items]))
             channel_map = Helpers.fetch_channel_details(channel_ids)
@@ -379,8 +433,8 @@ class Helpers:
                     'thumbnails_high': item['snippet'].get('thumbnails', {}).get('high', {}).get('url', ''),
                     'channel_id': item['snippet']['channelId'],
                     'channel_title': channel_info.get('channel_title', ''),
-                    'channel_description': channel_info.get('channel_description', ''),
-                    'channel_logo': item['snippet'].get('channelLogo', ''),
+                    'channel_description': channel_info.get('channel_description', item['snippet'].get('channelDescription', '')),
+                    'channel_logo': channel_info.get('channel_logo',item['snippet'].get('channelLogo', '')),
                     'subscriber_count': channel_info.get('subscriber_count', 0),
                     'published_at': published_at,
                     'category_id': item['snippet'].get('categoryId', ''),

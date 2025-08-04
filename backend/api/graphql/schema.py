@@ -1,12 +1,10 @@
-import base64
-import json
+
 from functools import wraps
 import requests
 import graphene
 import requests.exceptions
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.query_utils import Q
 from django.views.decorators.debug import sensitive_variables
 from graphql_auth.schema import MeQuery
 from graphene_django.filter import DjangoFilterConnectionField
@@ -36,12 +34,6 @@ class Query(MeQuery, graphene.ObjectType):
     all_posts = DjangoFilterConnectionField(PostNode)
     viewer_video_playlist = graphene.Field(VideoPlaylistNode)
 
-    # youtube_search_videos = graphene.Field(
-    #     YoutubeVideoResponse,
-    #     query=graphene.String(default_value='trending'),
-    #     after = graphene.String(),
-    #     max_results=graphene.Int(default_value=10),
-    # )
 
     youtube_search_videos = graphene.Field(
         YoutubeVideoResponse,
@@ -49,7 +41,6 @@ class Query(MeQuery, graphene.ObjectType):
         page_token = graphene.String(),
         max_results=graphene.Int(default_value=10),
     )
-
 
 
     youtube_liked_videos = graphene.Field(
@@ -104,14 +95,14 @@ class Query(MeQuery, graphene.ObjectType):
     def resolve_youtube_video_categories(self,info, category_id, page_token=None, max_results=10, **kwargs):
         max_results = min(max(max_results,1), 50)
         try:
-            url = 'https://www.googleapis.com/youtube/v3/videoCategories'
+            url = 'https://www.googleapis.com/youtube/v3/search'
             search_params = {
                 'part': 'snippet',
                 'type': 'video',
                 'videoCategoryId': category_id,
                 'maxResults': max_results,
-                'q': 'trending',
                 'regionCode': 'US',
+                'q': 'trending',
                 'relevanceLanguage': 'en',
                 'safeSearch': 'moderate',
                 'order': 'relevance',
@@ -150,16 +141,12 @@ class Query(MeQuery, graphene.ObjectType):
                 search_params['pageToken'] = page_token
 
             search_response = requests.get(url=search_url, params=search_params)
-
             Helpers.handle_api_error(search_response)
-
-            search_response.raise_for_status()
             search_data = search_response.json()
-            return Helpers.process_youtube_videos(search_data)
+            return Helpers.process_youtube_videos(search_data,query,None)
 
         except Exception as err:
             raise GraphQLError(f"An error occurred: {str(err)}")
-
 
 
     @require_auth
