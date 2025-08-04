@@ -4,12 +4,15 @@ import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions
 import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
 import { useViewerVideoPlayListQuery, useYoutubeLikedVideosQuery, VideoNode } from '../../graphql/types.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
-import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { NavigationControls } from '../playlistComponents/NavigationControls.tsx';
 import { useNavigationControlsOptions } from '../hooks/useNavigationControlsOptions.ts';
 import { PlayListContainer } from '../playlistComponents/playListContainer.tsx';
+import { useState } from 'react';
+import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 
 export const You = () => {
+  const [isFtchMoreLike, setIsFtchMoreLike] = useState<boolean>(false);
+  const [isFtchMoreHist, setIsFtchMoreHist] = useState<boolean>(false);
   const {
     data: playlistHistData,
     loading: playlistHistLoading,
@@ -26,7 +29,7 @@ export const You = () => {
     fetchMore: fetchMoreLikedVideos,
   } = useYoutubeLikedVideosQuery({
     variables: {
-      maxResults: 10,
+      maxResults: 1,
     },
     nextFetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
@@ -50,12 +53,17 @@ export const You = () => {
 
     if (!playlistHistData?.viewerVideoPlaylist?.videoEntries?.pageInfo || !playlistHistData?.viewerVideoPlaylist?.videoEntries.pageInfo.endCursor) return;
 
-    await fetchMorePlaylistHist({
-      variables: {
-        first: 10,
-        after: playlistHistData?.viewerVideoPlaylist?.videoEntries?.pageInfo?.endCursor,
-      },
-    });
+    setIsFtchMoreHist(true);
+    try {
+      await fetchMorePlaylistHist({
+        variables: {
+          first: 10,
+          after: playlistHistData?.viewerVideoPlaylist?.videoEntries?.pageInfo?.endCursor,
+        },
+      });
+    } finally {
+      setIsFtchMoreHist(false);
+    }
   };
 
   const handleLoadMoreLikedVideos = async () => {
@@ -65,21 +73,27 @@ export const You = () => {
 
     if (!nextPage) return;
 
-    await fetchMoreLikedVideos({
-      variables: {
-        maxResults: 10,
-        pageToken: nextPage,
-      },
-    });
+    setIsFtchMoreLike(true);
+
+    try {
+      await fetchMoreLikedVideos({
+        variables: {
+          maxResults: 1,
+          pageToken: nextPage,
+        },
+      });
+    } finally {
+      setIsFtchMoreLike(false);
+    }
   };
 
   const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playListVideos.length);
 
-  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0, 20);
+  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0, 1);
 
   const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playListVideos.length });
 
-  const likeControls = useNavigationControlsOptions({ videosPerRow, playlistLength: 10 });
+  const likeControls = useNavigationControlsOptions({ videosPerRow, playlistLength: likedVideos.length });
 
   return (
     <div className="h-full w-full flex flex-col overflow-y-scroll scroll-smooth  p-8 gap-8  ">
@@ -106,14 +120,12 @@ export const You = () => {
           playlist={playListVideos}
           HandleSelectedVideo={HandleSelectedVideo}
         />
-
-        {playlistHistLoading && <SpinningCircle />}
         {historyControls.viewAll && <div ref={sentinelRefHist} />}
+        {isFtchMoreHist && <SpinningCircle />}
       </div>
 
       <div className="w-full flex flex-col gap-2 p-2">
         <h1 className="text-2xl font-medium">Liked</h1>
-
         <NavigationControls
           viewAll={likeControls.viewAll}
           currentIndex={likeControls.currentIndex}
@@ -134,8 +146,8 @@ export const You = () => {
           playlist={likedVideos}
           HandleSelectedVideo={HandleSelectedVideo}
         />
-        {likedVideosLoading && <SpinningCircle />}
         {likeControls.viewAll && <div ref={sentinelRefLiked} />}
+        {isFtchMoreLike && <SpinningCircle />}
       </div>
     </div>
   );

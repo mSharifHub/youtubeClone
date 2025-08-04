@@ -7,7 +7,7 @@ import decrementTime from '../../helpers/decrementTime.ts';
 import { formatNumber } from '../../helpers/formatNumber.ts';
 import { VideoNode } from '../../graphql/types.ts';
 
-export const VideoCard = ({ video }: { video: VideoNode }) => {
+export const VideoCard = ({ video, watchedAt }: { video: VideoNode; watchedAt?: string | undefined }) => {
   const [hover, setHover] = useState<boolean>(false);
 
   const [remainingTime, setRemainingTime] = useState<{
@@ -104,9 +104,11 @@ export const VideoCard = ({ video }: { video: VideoNode }) => {
                 {publishedTime}
               </h3>
             </div>
+
           </div>
         </div>
       </section>
+      {watchedAt && <h3 className="justify-start">viewed {timeSince(watchedAt)}</h3>}
     </div>
   );
 };

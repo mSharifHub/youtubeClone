@@ -4,9 +4,9 @@ import { faX, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-import { useUserViewerPosts } from '../hooks/useUserViewerPosts.ts';
 import { PostCard } from './PostCard.tsx';
-import { PostNode, PostNodeEdge, useCreatePostMutation } from '../../graphql/types.ts';
+import { PostNode, PostNodeEdge, useCreatePostMutation, useViewerPostsQuery } from '../../graphql/types.ts';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 
 type ImagePreviews = {
   file: File;
@@ -19,7 +19,7 @@ export default function UserChannel() {
   const [imagePreviews, setImagePreviews] = useState<ImagePreviews[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const [clickedInput, setClickedInput] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [errorCreatePost, setErrorCreatePost] = useState<string | undefined>(undefined);
 
   const mainDivRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -53,9 +53,36 @@ export default function UserChannel() {
     },
   });
 
-  const { data, loading: userPostsLoading, sentinelRef } = useUserViewerPosts();
+  const {
+    data,
+    loading: loadingQueryPosts,
+    fetchMore,
+    error: errorQueryPosts,
+  } = useViewerPostsQuery({
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
+    variables: {
+      first: 10,
+    },
+  });
+
+  const handleLoadMorePosts = async () => {
+    if (loadingQueryPosts || errorQueryPosts) return;
+
+    const hasMore = data?.viewerPosts?.pageInfo?.hasNextPage;
+
+    if (!hasMore) return;
+
+    await fetchMore({
+      variables: {
+        after: data?.viewerPosts?.pageInfo?.endCursor,
+      },
+    });
+  };
 
   const posts = data?.viewerPosts?.edges?.map((edge) => edge?.node).filter((node): node is PostNode => !!node) || [];
+
+  const sentinelRef = useIntersectionObserver(handleLoadMorePosts, loadingQueryPosts, posts.length, 50);
 
   const MAX_MB = 10 * 1024 * 1024;
 
@@ -78,7 +105,6 @@ export default function UserChannel() {
     setShowUploadImagesModal(false);
     setUserInput('');
     setImagePreviews([]);
-    setError(undefined);
   };
 
   const handlePost = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +120,7 @@ export default function UserChannel() {
         },
       });
     } catch {
-      setError(createPostError?.message);
+      setErrorCreatePost(createPostError?.message);
     }
 
     clearPost();
@@ -143,9 +169,9 @@ export default function UserChannel() {
     }
 
     if (rejectedFiles.length > 0) {
-      setError(`Rejected ${rejectedFiles.length} file${rejectedFiles.length > 1 ? 's' : ''}: ${rejectedFiles.join('\n ')}`);
+      setErrorCreatePost(`Rejected ${rejectedFiles.length} file${rejectedFiles.length > 1 ? 's' : ''}: ${rejectedFiles.join('\n ')}`);
     } else {
-      setError(undefined);
+      setErrorCreatePost(undefined);
     }
 
     setImagePreviews([...previews, ...acceptedFiles]);
@@ -236,7 +262,7 @@ export default function UserChannel() {
               placeholder={clickedInput ? 'Share an image to start a caption contest' : ''}
               className={`w-full h-12 bg-transparent border-b border-neutral-300 dark:border-neutral-600 focus:outline-none text-base placeholder-neutral-400 dark:placeholder-neutral-500`}
             />
-            {error && <div className="flex justify-center items-center text-sm  font-thin text-neutral-500">{error}</div>}
+            {errorCreatePost && <div className="flex justify-center items-center text-sm  font-thin text-neutral-500">{errorCreatePost}</div>}
 
             {!showUploadImagesModal && (
               <section className="flex  flex-row h-10   gap-5 justify-start items-center">
@@ -339,7 +365,7 @@ export default function UserChannel() {
         ))}
         {/* sentinel Ref*/}
         <div ref={sentinelRef} />
-        {userPostsLoading && <SpinningCircle />}
+        {loadingQueryPosts && <SpinningCircle />}
       </div>
     </div>
   );

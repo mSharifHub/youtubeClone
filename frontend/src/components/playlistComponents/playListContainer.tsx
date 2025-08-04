@@ -1,7 +1,6 @@
 import React from 'react';
 import { VideoCard } from '../VideoComponents/VideoCard.tsx';
 import { VideoNode } from '../../graphql/types.ts';
-import timeSince from '../../helpers/timeSince.ts';
 
 interface PlayListItem {
   video: VideoNode;
@@ -43,8 +42,7 @@ export const PlayListContainer = React.forwardRef<HTMLDivElement, PlayListContai
               }}
               onClick={() => HandleSelectedVideo(video)}
             >
-              <VideoCard video={video} />
-              {watchedAt && <div> viewed {timeSince(watchedAt)}</div>}
+              <VideoCard video={video} watchedAt={watchedAt} />
             </div>
           );
         })}

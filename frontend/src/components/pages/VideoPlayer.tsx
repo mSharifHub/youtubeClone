@@ -58,8 +58,11 @@ export const VideoPlayer: React.FC = () => {
 
   const hasMore = commentsData?.youtubeVideoComments?.hasNextPage && commentsData?.youtubeVideoComments?.nextPageToken;
 
+
   const handleFetchMoreComments = async () => {
-    if (loading || !hasMore) return;
+    if (loading) return;
+
+    if (!hasMore) return;
 
     await fetchMore({
       variables: {

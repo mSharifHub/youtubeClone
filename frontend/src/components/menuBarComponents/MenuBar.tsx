@@ -15,12 +15,13 @@ import { useUser } from '../../contexts/userContext/UserContext.tsx';
 import { useUserLogin } from '../hooks/useUserLogin.ts';
 import { LoginComponent } from '../authenticationComponent/LoginComponent.tsx';
 import { useMenuBar } from '../../contexts/menuBarContext/MenuBarContext.ts';
-import { useToolTip } from '../hooks/useToolTip.ts';
+
 import { ToolTip } from '../../helpers/ToolTip.tsx';
 import { visited } from '../../helpers/visited.ts';
 import { useQuery } from '@apollo/client';
 import { ViewerQuery } from '../../graphql/types.ts';
 import { VIEWER_QUERY } from '../../graphql/queries/queries.ts';
+import { useHandleMenuComponents } from '../hooks/useHandleMenuComponents.ts';
 
 export default function MenuBar() {
   const {
@@ -34,9 +35,7 @@ export default function MenuBar() {
 
   const { loading } = useQuery<ViewerQuery>(VIEWER_QUERY, {});
 
-  const { showTooltip, toolTipText, tooltipPosition, mouseEnter, mouseLeave } = useToolTip();
-
-  const aboutArr = ['git repository', 'linkedin'];
+  const { handleMenuItemMouseEnter, handleMenuItemMouseLeave, menuItemHovered, tooltipPosition, toolTipText, showTooltip, aboutArr } = useHandleMenuComponents();
 
   if (loading) return null;
 
@@ -47,8 +46,24 @@ export default function MenuBar() {
       {/* row-1*/}
 
       <section className={` flex flex-col space-y-3  ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'} `}>
-        <MenuComponent customIconSrc={homeIconPath} isPath={visited} title="Home" link="/" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent title="Subscriptions" isPath={visited} customIconSrc={subscriptionIconPath} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={homeIconPath}
+          isPath={visited}
+          title="Home"
+          link="/"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          title="Subscriptions"
+          isPath={visited}
+          customIconSrc={subscriptionIconPath}
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
       </section>
 
       {isLoggedIn ? (
@@ -63,11 +78,21 @@ export default function MenuBar() {
               isPath={visited}
               reverse={true}
               link="#"
-              onMouseEnter={mouseEnter}
-              onMouseLeave={mouseLeave}
+              onMouseEnter={handleMenuItemMouseEnter}
+              onMouseLeave={handleMenuItemMouseLeave}
+              menuItemHovered={menuItemHovered}
             />
 
-            <MenuComponent customIconSrc={yourChannelPath} title="Your channel" isPath={visited} link="#" hidden={toggler} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+            <MenuComponent
+              customIconSrc={yourChannelPath}
+              title="Your channel"
+              isPath={visited}
+              link="#"
+              hidden={toggler}
+              onMouseEnter={handleMenuItemMouseEnter}
+              onMouseLeave={handleMenuItemMouseLeave}
+              menuItemHovered={menuItemHovered}
+            />
           </section>
           {/* row-3*/}
         </>
@@ -86,13 +111,69 @@ export default function MenuBar() {
       {/* row-4 Explore */}
       <section className={` ${toggler ? 'hidden' : 'flex'}  flex-col space-y-3 ${!toggler ? 'border-b-[0.5px] pb-4 flex-initial w-[12rem] ' : 'w-16'}`}>
         <h1 className="capitalize mx-4">explore</h1>
-        <MenuComponent customIconSrc={trendingIconPath} title="Trending" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={musicIconPath} isPath={visited} title="Music" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={moviesIconPath} title="Movies" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={gamingIconPath} isPath={visited} title="Gaming" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={newsIconPath} title="News" link="#" isPath={visited} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={sportsIconPath} title="Sports" isPath={visited} link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
-        <MenuComponent customIconSrc={fashionBeautyIconPath} isPath={visited} title="Fashion" link="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} />
+        <MenuComponent
+          customIconSrc={trendingIconPath}
+          title="Trending"
+          isPath={visited}
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={musicIconPath}
+          isPath={visited}
+          title="Music"
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={moviesIconPath}
+          title="Movies"
+          isPath={visited}
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={gamingIconPath}
+          isPath={visited}
+          title="Gaming"
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={newsIconPath}
+          title="News"
+          link="#"
+          isPath={visited}
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={sportsIconPath}
+          title="Sports"
+          isPath={visited}
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
+        <MenuComponent
+          customIconSrc={fashionBeautyIconPath}
+          isPath={visited}
+          title="Fashion"
+          link="#"
+          onMouseEnter={handleMenuItemMouseEnter}
+          onMouseLeave={handleMenuItemMouseLeave}
+          menuItemHovered={menuItemHovered}
+        />
       </section>
       {/* row-5 */}
 

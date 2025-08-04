@@ -1,63 +1,62 @@
 import React, { useEffect, useRef } from 'react';
 import { NotLoggedInBanner } from '../bannerComponents/NotLoggedInBanner.tsx';
-import { VideoCard } from '../VideoComponents/VideoCard.tsx';
-import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
-import { useVideoGrid } from '../hooks/useVideosGrid.ts';
-import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
-import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
+// import { VideoCard } from '../VideoComponents/VideoCard.tsx';
+// import { VideoCardLoading } from '../VideoComponents/VideoCardLoading.tsx';
+// import { useVideoGrid } from '../hooks/useVideosGrid.ts';
+// import { videosPerRowDisplayValues } from '../../helpers/homeVideoDisplayOptions.ts';
+// import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
 import { useUser } from '../../contexts/userContext/UserContext.tsx';
-import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
-import { useYoutubeSearchVideosQuery, VideoNode } from '../../graphql/types.ts';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
-
+// import { useHandleSelectedVideo } from '../hooks/useHandleSelectedVideo.ts';
+// import { useYoutubeSearchVideosQuery, VideoNode } from '../../graphql/types.ts';
+// import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
 
 export const Home: React.FC = () => {
-
-  const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
+  // const videosPerRow = useVideoGrid(videosPerRowDisplayValues)
 
   const {
     state:{isLoggedIn},
-    loadingQuery} = useUser()
+    loadingQuery
+  } = useUser()
 
-  const {data,loading,fetchMore,error}= useYoutubeSearchVideosQuery({
-    variables: {
-      query: 'trending',
-      maxResults: 10,
-    },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: true,
-    skip: !isLoggedIn || loadingQuery,
-  })
+  // const {data,loading,fetchMore,error}= useYoutubeSearchVideosQuery({
+  //   variables: {
+  //     query: 'trending',
+  //     maxResults: 10,
+  //   },
+  //   fetchPolicy: 'cache-first',
+  //   notifyOnNetworkStatusChange: true,
+  //   skip: !isLoggedIn || loadingQuery,
+  // })
 
 
-  const videos = (data?.youtubeSearchVideos?.videos ?? []).
-    filter((video): video is VideoNode => video !== null)
-
-  const handleSelectedVideo = useHandleSelectedVideo()
+  // const videos = (data?.youtubeSearchVideos?.videos ?? []).
+  //   filter((video): video is VideoNode => video !== null)
+  //
+  // const handleSelectedVideo = useHandleSelectedVideo()
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
+  // const fullRowCount = Math.floor(videos.length / (videosPerRow ?? 1)) * (videosPerRow ?? 1);
 
-  const hasMore = data?.youtubeSearchVideos?.hasNextPage && data?.youtubeSearchVideos?.nextPageToken;
+  // const hasMore = data?.youtubeSearchVideos?.hasNextPage && data?.youtubeSearchVideos?.nextPageToken;
 
-  const handleLoadMoreVideos = async ()=>{
-    if (loading || error) return;
+  // const handleLoadMoreVideos = async ()=>{
+  //   if (loading || error) return;
+  //
+  //   if (!hasMore) return;
+  //
+  //   await  fetchMore({
+  //     variables: {
+  //       query:'trending',
+  //       maxResults: 10,
+  //       pageToken: data?.youtubeSearchVideos?.nextPageToken,
+  //     },
+  //
+  //   })
+  // }
 
-    if (!hasMore) return;
 
-    await  fetchMore({
-      variables: {
-        query:'trending',
-        maxResults: 10,
-        pageToken: data?.youtubeSearchVideos?.nextPageToken,
-      },
-
-    })
-  }
-
-
-  const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length)
+  // const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,20)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -76,38 +75,38 @@ export const Home: React.FC = () => {
         (
           <div ref={containerRef} className="  h-screen overflow-y-scroll scroll-smooth  px-4 pt-6 ">
 
-              <ul className="grid grid-flow-row gap-4 "
-                  style={{
-                    gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-                  }}
-              >
-                {
-                  videos.slice(0,fullRowCount).map((video) => (
-                    <li key={video.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>
-                  ))
-                }
-              </ul>
+              {/*<ul className="grid grid-flow-row gap-4 "*/}
+              {/*    style={{*/}
+              {/*      gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,*/}
+              {/*    }}*/}
+              {/*>*/}
+              {/*  {*/}
+              {/*    videos.slice(0,fullRowCount).map((video) => (*/}
+              {/*      <li key={video.videoId}   onClick={() => handleSelectedVideo(video)} ><VideoCard video={video} /></li>*/}
+              {/*    ))*/}
+              {/*  }*/}
+              {/*</ul>*/}
             {/*/!*Sentinel Observer*!/*/}
-              <div className="h-4" ref={sentinelRef}/>
-              {!error && loading && hasMore && (
-                <>
-                  <ul
-                    className=" grid grid-flow-row gap-4"
-                    style={{
-                      gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,
-                    }}
-                  >
-                    {Array.from({
-                      length: videosPerRow * 2,
-                    }).map((_, index) => (
-                      <li key={`loading-${index}`}>
-                        <VideoCardLoading  />
-                      </li>
-                    ))}
-                  </ul>
-                  <SpinningCircle/>
-                </>
-              )}
+            {/*  <div className="h-4" ref={sentinelRef}/>*/}
+            {/*  {!error && loading && hasMore && (*/}
+            {/*    <>*/}
+            {/*      <ul*/}
+            {/*        className=" grid grid-flow-row gap-4"*/}
+            {/*        style={{*/}
+            {/*          gridTemplateColumns: `repeat(${videosPerRow}, minmax(0, 1fr))`,*/}
+            {/*        }}*/}
+            {/*      >*/}
+            {/*        {Array.from({*/}
+            {/*          length: videosPerRow * 2,*/}
+            {/*        }).map((_, index) => (*/}
+            {/*          <li key={`loading-${index}`}>*/}
+            {/*            <VideoCardLoading  />*/}
+            {/*          </li>*/}
+            {/*        ))}*/}
+            {/*      </ul>*/}
+            {/*      <SpinningCircle/>*/}
+            {/*    </>*/}
+            {/*  )}*/}
             </div>
         )
       :

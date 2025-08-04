@@ -33,7 +33,7 @@ export const MenuBarProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   useEffect(() => {
     if (windowWidth > 1280) {
-      dispatch({ type: 'RESET_STATE_MENU' });
+      dispatch({ type: 'RESET_STATE_TOGGLE_MENU' });
     }
   }, [windowWidth]);
 
