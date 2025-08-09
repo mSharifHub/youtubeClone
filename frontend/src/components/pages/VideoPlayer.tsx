@@ -28,6 +28,8 @@ export const VideoPlayer: React.FC = () => {
 
   const videoId = searchParams.get('v');
 
+  const MESSAGE_THREADS_FETCH_LIMIT = 50;
+
   const {
     data: commentsData,
     loading,
@@ -36,7 +38,7 @@ export const VideoPlayer: React.FC = () => {
   } = useVideoCommentsQuery({
     variables: {
       videoId: selectedVideo?.videoId ?? videoId!,
-      maxResults: 1,
+      maxResults: 10,
     },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
@@ -46,7 +48,7 @@ export const VideoPlayer: React.FC = () => {
   const { data: relData, loading: relLoading } = useYoutubeVideoCategoriesQuery({
     variables: {
       categoryId: selectedVideo?.categoryId ?? '',
-      maxResults: 2,
+      maxResults: 10,
     },
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
@@ -85,7 +87,7 @@ export const VideoPlayer: React.FC = () => {
     });
   };
 
-  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, 1);
+  const sentinelRef = useIntersectionObserver(handleFetchMoreComments, loading, commentsThreads.length, MESSAGE_THREADS_FETCH_LIMIT);
 
   const opts: YouTubeProps['opts'] = {
     playerVars: {

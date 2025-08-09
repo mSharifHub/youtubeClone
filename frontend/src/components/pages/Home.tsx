@@ -55,8 +55,7 @@ export const Home: React.FC = () => {
     })
   }
 
-
-  // const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,20)
+  const sentinelRef = useIntersectionObserver(handleLoadMoreVideos,loading,videos.length,50)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -87,7 +86,7 @@ export const Home: React.FC = () => {
                 }
               </ul>
             {/*Sentinel Observer*/}
-            {/*  <div className="h-4" ref={sentinelRef}/>*/}
+              <div className="h-4" ref={sentinelRef}/>
               {!error && loading && hasMore && (
                 <>
                   <ul

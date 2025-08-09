@@ -11,7 +11,21 @@ export const PostCard = ({ post }: { post: PostNode }) => {
   const [showEditInput, setShowEditInput] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string>('');
 
-  const [editPost] = useEditPostMutation();
+  const [editPost] = useEditPostMutation({
+    update(cache, { data }) {
+      const updatedPost = data?.editPost?.post;
+
+      if (!updatedPost?.id) return;
+
+      cache.modify({
+        fields: {
+          content() {
+            return updatedPost.content;
+          },
+        },
+      });
+    },
+  });
 
   const [deletePost] = useDeletePostMutation({
     update(cache, { data }) {

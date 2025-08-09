@@ -29,7 +29,7 @@ export const You = () => {
     fetchMore: fetchMoreLikedVideos,
   } = useYoutubeLikedVideosQuery({
     variables: {
-      maxResults: 1,
+      maxResults: 10,
     },
     nextFetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
@@ -89,7 +89,7 @@ export const You = () => {
 
   const sentinelRefHist = useIntersectionObserver(handleLoadMorePlaylistHist, playlistHistLoading, playListVideos.length);
 
-  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0, 1);
+  const sentinelRefLiked = useIntersectionObserver(handleLoadMoreLikedVideos, likedVideosLoading, likedVideosData?.youtubeLikedVideos?.videos?.length ?? 0, 20);
 
   const historyControls = useNavigationControlsOptions({ videosPerRow, playlistLength: playListVideos.length });
 
