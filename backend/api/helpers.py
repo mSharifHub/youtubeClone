@@ -1,3 +1,4 @@
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.utils.dateparse import parse_datetime
@@ -8,17 +9,34 @@ from django.core.cache import cache
 from backend import settings
 
 class Helpers:
+
     @staticmethod
-    def handle_api_error(response):
-        if response.status_code == 403:
-            try:
-                error_data = response.json()
-                error_reason = error_data.get('error', {}).get('errors', [{}])[0].get('reason', '')
-                if error_reason:
-                    raise GraphQLError(
-                        f"YouTube API access denied: {error_reason}. Please check your OAuth scopes and API configuration.")
-            except Exception as err:
-                raise GraphQLError(f"An error occurred while fetching YouTube data: {str(err)}")
+    def authenticate_user(info):
+        user = info.context.user
+        if not user or not user.is_authenticated:
+            raise GraphQLError("Authentication required")
+
+        return user
+
+    @staticmethod
+    def retry_access_token(info):
+        request = info.context
+        access_token = request.COOKIES.get('google_access_token')
+        if not access_token:
+            refresh_token = request.COOKIES.get('google_refresh_token')
+            if refresh_token:
+                try:
+                    token_data = Helpers.refresh_google_id_token(refresh_token)
+                    access_token = token_data['access_token']
+                except Exception as err:
+                    raise GraphQLError("Authentication required. Please log in with Google to access YouTube data.")
+            else:
+                raise GraphQLError("Authentication required. Please log in with Google to access YouTube data.")
+        return {
+            'access_token': access_token,
+            'request': request
+        }
+
 
     @staticmethod
     def build_youtube_api_params(base_params, page_token=None, max_results=10):
@@ -257,7 +275,52 @@ class Helpers:
         return Helpers.build_response(search_data, videos)
 
 
+    @staticmethod
+    def get_youtube_video_rating(info,video_id, access_token):
+        if not video_id:
+            raise GraphQLError("video id is required ")
 
+        try:
+            url = 'https://www.googleapis.com/youtube/v3/videos/getRating'
+
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/json'
+            }
+
+            params = {
+                'id': video_id,
+                'key': settings.GOOGLE_API_KEY
+            }
+
+            response = requests.get(url=url, headers=headers, params=params)
+            response.raise_for_status()
+            data= response.json()
+
+            items = data.get('items',[])
+
+            if items:
+                item = items[0]
+
+                rating_data = {
+                    'video_id': item.get('videoId', ''),
+                    'rating': item.get('rating', ''),
+                }
+
+            else:
+                rating_data = {
+                    'video_id': video_id,
+                    'rating':  'none'
+                }
+
+            return{
+                'rating': rating_data,
+                'etag': data.get('etag', '')
+            }
+        except Exception as err:
+            raise GraphQLError(f"An error occurred: {str(err)}")
+
+      
     @staticmethod
     def process_youtube_video_comments(video_id, page_token=None, max_results=10):
         if not video_id or not isinstance(video_id, str):
@@ -274,7 +337,7 @@ class Helpers:
 
 
             comments_response = requests.get(url, params)
-            Helpers.handle_api_error(comments_response)
+            comments_response.raise_for_status()
             comments_data = comments_response.json()
 
             if not comments_data.get('items'):
@@ -403,8 +466,6 @@ class Helpers:
                 else:
                     raise GraphQLError("Authentication expired. Please log in again.")
 
-            Helpers.handle_api_error(response)
-
             response.raise_for_status()
             youtube_data = response.json()
 
@@ -457,3 +518,30 @@ class Helpers:
             }
         except requests.exceptions.RequestException as err:
             raise GraphQLError(f"Youtube API request failed: {str(err)}")
+
+    @staticmethod
+    def apply_rating(info, video_id, rating, access_token):
+        if not video_id:
+            raise GraphQLError("video id is required ")
+
+        url = 'https://www.googleapis.com/youtube/v3/videos/rate'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        params = {
+            'id': video_id,
+            'rating': rating,
+            'key': settings.GOOGLE_API_KEY
+        }
+        
+        response = requests.post(url=url, headers=headers, params=params)
+
+        if response.status_code == 204:
+            return {
+                'success': True
+            }
+
+        else:
+            response.raise_for_status()
+            return {
+                'success': False
+            }
+

@@ -50,6 +50,19 @@ class VideoNode(DjangoObjectType):
         interfaces = (relay.Node,)
         fields = '__all__'
 
+
+class YoutubeVideoRating(graphene.ObjectType):
+    video_id = graphene.String()
+    rating = graphene.String()
+
+class YoutubeVideoRatingResponse(graphene.ObjectType):
+    rating = graphene.Field(YoutubeVideoRating)
+    etag= graphene.String()
+
+class YoutubeVideoRateResponse(graphene.ObjectType):
+    succcess: graphene.Boolean()
+    message: graphene.String()
+
 class CommentNode(DjangoObjectType):
     parent_comment = graphene.Field(lambda : CommentNode)
     replies = graphene.List(lambda : CommentNode)

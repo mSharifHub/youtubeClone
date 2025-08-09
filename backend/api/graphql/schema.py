@@ -11,8 +11,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 from api.helpers import Helpers
 from api.models import User, Post, VideoPlaylist, Video, CommentThread, Comment
 from graphql import GraphQLError
-from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost, DeletePost, SaveVideoPlaylist
-from api.graphql.object_types import UserTypes, PostNode, VideoPlaylistNode, YoutubeVideoResponse, YoutubeCommentsResponse
+from api.graphql.mutations import UserSerializerMutation, CreatePost, EditPost, DeletePost, SaveVideoPlaylist,RateYoutubeVideo
+from api.graphql.object_types import UserTypes, PostNode, VideoPlaylistNode, YoutubeVideoResponse, YoutubeCommentsResponse, YoutubeVideoRatingResponse
 
 DEFAULT_POST_ORDERING = '-created_at'
 
@@ -33,6 +33,7 @@ class Query(MeQuery, graphene.ObjectType):
     viewer_posts = DjangoFilterConnectionField(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
     viewer_video_playlist = graphene.Field(VideoPlaylistNode)
+
 
 
     youtube_search_videos = graphene.Field(
@@ -61,6 +62,11 @@ class Query(MeQuery, graphene.ObjectType):
         video_id=graphene.String(required=True),
         page_token = graphene.String(),
         max_results = graphene.Int(default_value=10),
+    )
+
+    youtube_video_rating = graphene.Field(
+        YoutubeVideoRatingResponse,
+        video_id = graphene.String( required=True),
     )
 
     @require_auth
@@ -141,7 +147,7 @@ class Query(MeQuery, graphene.ObjectType):
                 search_params['pageToken'] = page_token
 
             search_response = requests.get(url=search_url, params=search_params)
-            Helpers.handle_api_error(search_response)
+            search_response.raise_for_status()
             search_data = search_response.json()
             return Helpers.process_youtube_videos(search_data,query,None)
 
@@ -152,24 +158,23 @@ class Query(MeQuery, graphene.ObjectType):
     @require_auth
     @sensitive_variables('access_token')
     def resolve_youtube_liked_videos(self, info, page_token=None, max_results=10, **kwargs):
-        request = info.context
-        access_token = request.COOKIES.get('google_access_token')
-
-        if not access_token:
-            refresh_token = request.COOKIES.get('google_refresh_token')
-            if refresh_token:
-                try:
-                    token_data = Helpers.refresh_google_id_token(refresh_token)
-                    access_token = token_data['access_token']
-                except Exception as err:
-                    raise GraphQLError("Authentication required.Please log in with Google to access YouTube data.")
-            else:
-                raise GraphQLError("Authentication required.Please log in with Google to access YouTube data.")
+        auth_data = Helpers.retry_access_token(info)
+        request = auth_data['request']
+        access_token = auth_data['access_token']
 
         try:
             return Helpers.process_youtube_liked_videos(request,access_token, page_token, max_results)
         except Exception as err:
             raise GraphQLError(f"An error occurred: {str(err)}")
+
+
+    @require_auth
+    @sensitive_variables('access_token')
+    def resolve_youtube_video_rating(self, info, video_id, **kwargs):
+        auth_data = Helpers.retry_access_token(info)
+        access_token = auth_data['access_token']
+        return Helpers.get_youtube_video_rating(info,video_id,access_token)
+
 
 class Mutation(graphene.ObjectType):
     user_update = UserSerializerMutation.Field()
@@ -177,6 +182,7 @@ class Mutation(graphene.ObjectType):
     edit_post = EditPost.Field()
     delete_post = DeletePost.Field()
     save_video_playlist = SaveVideoPlaylist.Field()
+    rate_youtube_video = graphene.Mutation( RateYoutubeVideo)
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
