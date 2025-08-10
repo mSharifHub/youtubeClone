@@ -21,7 +21,7 @@ export const Home: React.FC = () => {
   const {data,loading,fetchMore,error}= useYoutubeSearchVideosQuery({
     variables: {
       query: 'trending',
-      maxResults: 1,
+      maxResults: 20,
     },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
@@ -48,7 +48,7 @@ export const Home: React.FC = () => {
     await  fetchMore({
       variables: {
         query:'trending',
-        maxResults: 10,
+        maxResults: 20,
         pageToken: data?.youtubeSearchVideos?.nextPageToken,
       },
 

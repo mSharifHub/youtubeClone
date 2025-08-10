@@ -40,6 +40,10 @@ export const VideoCard = ({ video, watchedAt }: { video: VideoNode; watchedAt?: 
   const publishedTime = useMemo(() => timeSince(video.publishedAt), [video.publishedAt]);
 
   const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     timeoutRef.current = window.setTimeout(() => {
       setHover(true);
     }, 350);
@@ -49,8 +53,8 @@ export const VideoCard = ({ video, watchedAt }: { video: VideoNode; watchedAt?: 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
-      setHover(false);
     }
+    setHover(false);
   };
 
   useEffect(() => {
@@ -77,21 +81,36 @@ export const VideoCard = ({ video, watchedAt }: { video: VideoNode; watchedAt?: 
     };
   }, [hover, originalTime]);
 
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <div className=" rounded-xl flex flex-col cursor-pointer  group ">
       <div className=" relative aspect-video rounded-xl overflow-hidden bg-black" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {!hover ? (
           <img src={video.thumbnailsMedium || video.thumbnailsDefault} alt={video.title} className="w-full h-full object-cover rounded-xl" draggable={false} />
         ) : (
-          <iframe className="absolute inset-0 w-full h-full rounded-xl " src={`${videoURL}`} allow="autoplay; encrypted-media; gyroscope; picture-in-picture" title={video.title} />
+          <iframe
+            key={hover ? 'playing' : 'stopped'}
+            className="absolute inset-0 w-full h-full rounded-xl "
+            src={`${videoURL}`}
+            allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+            title={video.title}
+          />
         )}
         <span className="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-semibold px-1.5 py-0.5 rounded">{formatDuration()}</span>
       </div>
-      <section className="flex flex-row h-28 mt-4 gap-4 ">
+      <section className="flex flex-row min-h-fit  mt-4 gap-4 ">
         <div className="flex-shrink-0  flex justify-center items-start">
           <img src={video.channelLogo || '../src/assets/thumbnails/icons8-video-100.png'} alt={video.channelTitle} className="h-12 w-12 object-cover rounded-full" />
         </div>
-        <div className=" flex flex-col gap-1 flex-grow">
+        <div className=" flex flex-col gap-1 flex-grow ">
           <div className=" flex min-h-fit  text-sm  md:text-md xl:text-lg text-wrap">{videoTitle}</div>
           <div className="flex  flex-col min-h-fit text-sm dark:text-neutral-400 ">
             <h3> {video.channelTitle}</h3>
@@ -104,11 +123,10 @@ export const VideoCard = ({ video, watchedAt }: { video: VideoNode; watchedAt?: 
                 {publishedTime}
               </h3>
             </div>
-
           </div>
         </div>
       </section>
-      {watchedAt && <h3 className="justify-start">viewed {timeSince(watchedAt)}</h3>}
+      {watchedAt && <h3 className="flex justify-start mt-4 font-semibold text-sm">viewed {timeSince(watchedAt)}</h3>}
     </div>
   );
 };

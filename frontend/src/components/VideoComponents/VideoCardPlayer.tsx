@@ -8,7 +8,6 @@ import { faBell as faBellRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownRegular, faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
 import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
 
-
 export default function VideoCardPlayer({
   YoutubeComponent,
   opts,
@@ -16,7 +15,8 @@ export default function VideoCardPlayer({
   handleExpandVideoDescription,
   handleOpenShareModal,
   expandVideoDescription,
-  liked,
+  loadingRating,
+  like,
   dislike,
   handleLike,
   animateLike,
@@ -31,7 +31,8 @@ export default function VideoCardPlayer({
   handleExpandVideoDescription: () => void;
   handleOpenShareModal: () => void;
   expandVideoDescription: boolean;
-  liked: boolean;
+  loadingRating: boolean;
+  like: boolean;
   dislike: boolean;
   animateLike: boolean;
   animateRing: boolean;
@@ -94,19 +95,24 @@ export default function VideoCardPlayer({
               </button>
             </div>
             <div className="flex justify-end items-center gap-4 ">
-              <div className={'flex items-center bg-neutral-100 h-10 dark:bg-neutral-800 rounded-full overflow-hidden border   border-neutral-200 dark:border-neutral-700'}>
-                <button
-                  onClick={handleLike}
-                  className={`h-full flex  justify-center text-center p-2  items-center px-3  gap-2  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition`}
-                >
-                  <FontAwesomeIcon icon={liked ? faThumbsUpSolid : faThumbsUpRegular} className={`text-xl ${animateLike ? 'animate-thumbs-up ' : ''}`} />
-                  {likeCount > 0 && <h3 className="font-bold h-full flex justify-center items-center">{formatNumber(likeCount)}</h3>}
-                </button>
-                <div className="w-px h-6 bg-neutral-300 dark:bg-neutral-700" />
-                <button onClick={handleDislike} className=" h-full flex items-center px-3  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
-                  <FontAwesomeIcon icon={dislike ? faThumbsDownSolid : faThumbsDownRegular} className="-scale-x-100 text-xl" />
-                </button>
-              </div>
+              {!loadingRating ? (
+                <div className={'flex items-center bg-neutral-100 h-10 dark:bg-neutral-800 rounded-full overflow-hidden border   border-neutral-200 dark:border-neutral-700'}>
+                  <button
+                    onClick={handleLike}
+                    className={`h-full flex  justify-center text-center p-2  items-center px-3  gap-2  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition`}
+                  >
+                    <FontAwesomeIcon icon={like ? faThumbsUpSolid : faThumbsUpRegular} className={`text-xl ${animateLike ? 'animate-thumbs-up ' : ''}`} />
+                    {likeCount > 0 && <h3 className="font-bold h-full flex justify-center items-center">{formatNumber(likeCount)}</h3>}
+                  </button>
+                  <div className="w-px h-6 bg-neutral-300 dark:bg-neutral-700" />
+                  <button onClick={handleDislike} className=" h-full flex items-center px-3  hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">
+                    <FontAwesomeIcon icon={dislike ? faThumbsDownSolid : faThumbsDownRegular} className="-scale-x-100 text-xl" />
+                  </button>
+                </div>
+              ) : (
+                <div className="h-10 w-32 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+              )}
+
               <button
                 onClick={handleOpenShareModal}
                 className="px-4 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"

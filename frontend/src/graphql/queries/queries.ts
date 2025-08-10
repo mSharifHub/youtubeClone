@@ -170,6 +170,18 @@ export const GET_YOUTUBE_LIKED_VIDEOS: DocumentNode = gql`
   }
 `;
 
+export const YOUTUBE_VIDEO_RATING: DocumentNode = gql`
+  query YoutubeVideoRating($videoId: String!) {
+    youtubeVideoRating(videoId: $videoId) {
+      rating {
+        videoId
+        rating
+      }
+      etag
+    }
+  }
+`;
+
 export const VIDEO_COMMENTS: DocumentNode = gql`
   query VideoComments($videoId: String!, $pageToken: String, $maxResults: Int) {
     youtubeVideoComments(videoId: $videoId, pageToken: $pageToken, maxResults: $maxResults) {

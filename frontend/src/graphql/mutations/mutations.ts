@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { DocumentNode, gql } from '@apollo/client';
 
 export const CREATE_POST = gql`
   mutation CreatePost($content: String!, $images: [Upload!]) {
@@ -42,6 +42,15 @@ export const DELETE_POST = gql`
         id
       }
       success
+    }
+  }
+`;
+
+export const RATE_YOUTUBE_VIDEO: DocumentNode = gql`
+  mutation rateYoutubeVideo($videoId: String!, $action: String!) {
+    rateYoutubeVideo(videoId: $videoId, action: $action) {
+      success
+      newRating
     }
   }
 `;

@@ -5,7 +5,15 @@ import { ShareModal } from '../VideoComponents/ShareModal.tsx';
 import { UserMakeComment } from '../VideoComponents/UserMakeComment.tsx';
 import { CommentsThreads } from '../VideoComponents/CommentsThreads.tsx';
 import SpinningCircle from '../VideoComponents/SpinningCircle.tsx';
-import { CommentThreadNode, useVideoCommentsQuery, useYoutubeVideoCategoriesQuery, VideoNode } from '../../graphql/types.ts';
+import {
+  CommentThreadNode,
+  useRateYoutubeVideoMutation,
+  useVideoCommentsQuery,
+  useYoutubeVideoCategoriesQuery,
+  useYoutubeVideoRatingQuery,
+  VideoNode,
+  YoutubeVideoRatingDocument,
+} from '../../graphql/types.ts';
 import { useSearchParams } from 'react-router-dom';
 import { useSelectedVideo } from '../../contexts/selectedVideoContext/SelectedVideoContext.ts';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
@@ -16,10 +24,10 @@ export const VideoPlayer: React.FC = () => {
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [expandVideoDescription, setExpandVideoDescription] = useState<boolean>(false);
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
-  const [liked, setLiked] = useState<boolean>(false); // refactor as context dispatch state
+  const [like, setLike] = useState<boolean>(false);
   const [dislike, setDislike] = useState<boolean>(false);
-  const [animateLike, setAnimateLike] = useState<boolean>(false);
-  const [subscribed, setSubscribed] = useState<boolean>(false); // refactor as context dispatch state
+  // const [animateLike, setAnimateLike] = useState<boolean>(false);
+  const [subscribed, setSubscribed] = useState<boolean>(false);
   const [animateRing, setAnimateRing] = useState<boolean>(false);
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
   const { selectedVideo } = useSelectedVideo();
@@ -55,6 +63,59 @@ export const VideoPlayer: React.FC = () => {
     skip: !selectedVideo,
   });
 
+  const { data: ratingData, loading: loadingRating } = useYoutubeVideoRatingQuery({
+    variables: {
+      videoId: selectedVideo?.videoId ?? videoId!,
+    },
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const [rateYoutubeVideo] = useRateYoutubeVideoMutation({
+    update(cache, { data }) {
+      const newRating = data?.rateYoutubeVideo?.newRating;
+      const success = data?.rateYoutubeVideo?.success;
+
+      if (!success || !selectedVideo?.videoId) return;
+
+      cache.updateQuery(
+        {
+          query: YoutubeVideoRatingDocument,
+          variables: { videoId: selectedVideo.videoId },
+        },
+        (existingData) => {
+          if (!existingData.youtubeVideoRating) {
+            return {
+              youtubeVideoRating: {
+                __typename: 'YoutubeVideoRatingResponse',
+                etag: '',
+                rating: {
+                  __typename: 'YoutubeVideoRating',
+                  videoId: selectedVideo.videoId,
+                  rating: newRating,
+                },
+              },
+            };
+          }
+
+          return {
+            ...existingData,
+            youtubeVideoRating: {
+              ...existingData.youtubeVideoRating,
+              rating: {
+                ...existingData.youtubeVideoRating.rating,
+                __typename: 'YoutubeVideoRating',
+                rating: newRating,
+              },
+            },
+          };
+        },
+      );
+    },
+  });
+
+  const rating = ratingData?.youtubeVideoRating?.rating?.rating;
+
   const commentsThreads = (commentsData?.youtubeVideoComments?.commentsThreads ?? []).filter((thread): thread is CommentThreadNode => thread !== null);
 
   const relatedVideos = (relData?.youtubeVideoCategories?.videos ?? []).filter((video): video is VideoNode => video !== null);
@@ -68,8 +129,6 @@ export const VideoPlayer: React.FC = () => {
     }
     return acc;
   }, [] as VideoNode[]);
-
-
 
   const hasMore = commentsData?.youtubeVideoComments?.hasNextPage && commentsData?.youtubeVideoComments?.nextPageToken;
 
@@ -122,27 +181,59 @@ export const VideoPlayer: React.FC = () => {
     playerRef.current = event.target;
   };
 
-  const handleLike = () => {
-    if (!liked) {
-      setAnimateLike(false);
-      setTimeout(() => {
-        setAnimateLike(true);
-        setDislike(false);
-      }, 10);
+  const handleLike = async () => {
+    if (like) {
+      setLike(false);
+      setDislike(false);
+    } else {
+      setLike(true);
+      setDislike(false);
     }
-    setLiked((prev) => !prev);
-    if (dislike) setDislike(false);
+    await rateYoutubeVideo({
+      variables: {
+        videoId: selectedVideo?.videoId ?? videoId!,
+        action: 'like',
+      },
+    });
   };
 
-  const handleDislike = () => {
-    if (!dislike) {
-      setTimeout(() => {
-        setLiked(false);
-      }, 10);
+  const handleDislike = async () => {
+    if (dislike) {
+      setLike(false);
+      setDislike(false);
+    } else {
+      setLike(false);
+      setDislike(true);
     }
-    setDislike((prev) => !prev);
-    if (liked) setLiked(false);
+    await rateYoutubeVideo({
+      variables: {
+        videoId: selectedVideo?.videoId ?? videoId!,
+        action: 'dislike',
+      },
+    });
   };
+
+  // const handleLike = () => {
+  //   if (!like) {
+  //     setAnimateLike(false);
+  //     setTimeout(() => {
+  //       setAnimateLike(true);
+  //       setDislike(false);
+  //     }, 10);
+  //   }
+  //   setLiked((prev) => !prev);
+  //   if (dislike) setDislike(false);
+  // };
+
+  // const handleDislike = () => {
+  //   if (!dislike) {
+  //     setTimeout(() => {
+  //       setLiked(false);
+  //     }, 10);
+  //   }
+  //   setDislike((prev) => !prev);
+  //   if (like) setLiked(false);
+  // };
 
   const handleSubscribe = () => {
     if (!subscribed) {
@@ -155,10 +246,22 @@ export const VideoPlayer: React.FC = () => {
   };
 
   useEffect(() => {
-    if (relData) {
-      console.log(relData);
+    if (rating) {
+      switch (rating) {
+        case 'like':
+          setLike(true);
+          setDislike(false);
+          break;
+        case 'dislike':
+          setLike(false);
+          setDislike(true);
+          break;
+        default:
+          setDislike(false);
+          setLike(false);
+      }
     }
-  }, [relData]);
+  }, [rating]);
 
   return (
     <div className="h-screen w-full overflow-y-scroll scroll-smooth  no-scrollbar flex flex-col">
@@ -175,10 +278,11 @@ export const VideoPlayer: React.FC = () => {
             onReady={onReady}
             handleExpandVideoDescription={handleExpandVideoDescription}
             expandVideoDescription={expandVideoDescription}
-            liked={liked}
+            loadingRating={loadingRating}
+            like={like}
             dislike={dislike}
             handleLike={handleLike}
-            animateLike={animateLike}
+            animateLike={false}
             subscribed={subscribed}
             handleDislike={handleDislike}
             handleOpenShareModal={handleOpenShareModal}
