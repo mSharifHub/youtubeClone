@@ -182,7 +182,7 @@ class Mutation(graphene.ObjectType):
     edit_post = EditPost.Field()
     delete_post = DeletePost.Field()
     save_video_playlist = SaveVideoPlaylist.Field()
-    rate_youtube_video = graphene.Mutation( RateYoutubeVideo)
+    rate_youtube_video = RateYoutubeVideo.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
