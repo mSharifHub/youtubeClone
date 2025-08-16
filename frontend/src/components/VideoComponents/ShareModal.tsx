@@ -23,7 +23,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpenShareModal, onClos
       isOpen={isOpenShareModal}
       onRequestClose={onClose}
       closeTimeoutMS={100}
-      overlayClassName={`fixed inset-0 flex justify-center items-center bg-neutral-950  transition duration-500 ease-in-out ${isOpenShareModal ? 'bg-opacity-30' : 'bg-opacity-0'}  z-10 `}
+      overlayClassName={`fixed inset-0 flex justify-center items-center bg-neutral-950  transition duration-500 ease-in-out ${isOpenShareModal ? 'bg-opacity-30' : 'bg-opacity-0'}  z-20`}
       style={{ content: { outline: 'none' } }}
       className={'flex flex-col  relative justify-start items-start bg-white  p-10  gap-4 dark:bg-neutral-800  h-[80vh] max-h-[450px] w-[80vw] max-w-[500px] rounded-xl'}
     >

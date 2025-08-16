@@ -7,7 +7,6 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { VideoPlayer } from './components/pages/VideoPlayer.tsx';
 import { useEffect } from 'react';
 config.autoAddCss = false;
-import 'nprogress/nprogress.css';
 import { ProtectedUserRoute } from './routerProtectors/ProtectedUserRoute.tsx';
 import { useUser } from './contexts/userContext/UserContext.tsx';
 import UserChannel from './components/userComponents/UserChannel.tsx';
@@ -33,7 +32,7 @@ function App() {
           <Route path="/you" element={<You />} />
         </Route>
 
-        {/**  //TODO ADD router protector */}
+        {/** //TODO ADD router protector **/}
 
         <Route
           path=":youtubeHandler"

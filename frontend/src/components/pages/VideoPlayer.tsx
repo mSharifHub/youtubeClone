@@ -26,7 +26,7 @@ export const VideoPlayer: React.FC = () => {
   const [showTopLevelReplies, setShowTopLevelReplies] = useState<boolean>(false);
   const [like, setLike] = useState<boolean>(false);
   const [dislike, setDislike] = useState<boolean>(false);
-  // const [animateLike, setAnimateLike] = useState<boolean>(false);
+  const [animateLike, setAnimateLike] = useState<boolean>(false);
   const [subscribed, setSubscribed] = useState<boolean>(false);
   const [animateRing, setAnimateRing] = useState<boolean>(false);
   const [openShareModal, setopenShareModal] = useState<boolean>(false);
@@ -37,6 +37,7 @@ export const VideoPlayer: React.FC = () => {
   const videoId = searchParams.get('v');
 
   const MESSAGE_THREADS_FETCH_LIMIT = 50;
+
 
   const {
     data: commentsData,
@@ -181,30 +182,17 @@ export const VideoPlayer: React.FC = () => {
     playerRef.current = event.target;
   };
 
-  const handleLike = async () => {
-    if (like) {
-      setLike(false);
-      setDislike(false);
-    } else {
-      setLike(true);
-      setDislike(false);
-    }
-    await rateYoutubeVideo({
-      variables: {
-        videoId: selectedVideo?.videoId ?? videoId!,
-        action: 'like',
-      },
-    });
-  };
-
   const handleDislike = async () => {
-    if (dislike) {
-      setLike(false);
-      setDislike(false);
+    if (!dislike) {
+      setTimeout(() => {
+        setDislike(true);
+        setLike(false);
+      }, 10);
     } else {
       setLike(false);
-      setDislike(true);
+      setDislike(false);
     }
+
     await rateYoutubeVideo({
       variables: {
         videoId: selectedVideo?.videoId ?? videoId!,
@@ -213,27 +201,27 @@ export const VideoPlayer: React.FC = () => {
     });
   };
 
-  // const handleLike = () => {
-  //   if (!like) {
-  //     setAnimateLike(false);
-  //     setTimeout(() => {
-  //       setAnimateLike(true);
-  //       setDislike(false);
-  //     }, 10);
-  //   }
-  //   setLiked((prev) => !prev);
-  //   if (dislike) setDislike(false);
-  // };
+  const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!like) {
+      setAnimateLike(false);
+      setTimeout(() => {
+        setAnimateLike(true);
+        setDislike(false);
+      }, 10);
+      setLike(true);
+    } else {
+      setLike(false);
+      setAnimateLike(false);
+      setDislike(false);
+    }
 
-  // const handleDislike = () => {
-  //   if (!dislike) {
-  //     setTimeout(() => {
-  //       setLiked(false);
-  //     }, 10);
-  //   }
-  //   setDislike((prev) => !prev);
-  //   if (like) setLiked(false);
-  // };
+    await rateYoutubeVideo({
+      variables: {
+        videoId: selectedVideo?.videoId ?? videoId!,
+        action: 'like',
+      },
+    });
+  };
 
   const handleSubscribe = () => {
     if (!subscribed) {
@@ -282,7 +270,7 @@ export const VideoPlayer: React.FC = () => {
             like={like}
             dislike={dislike}
             handleLike={handleLike}
-            animateLike={false}
+            animateLike={animateLike}
             subscribed={subscribed}
             handleDislike={handleDislike}
             handleOpenShareModal={handleOpenShareModal}

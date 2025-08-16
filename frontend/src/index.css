@@ -19,3 +19,52 @@ ol[class] {
 #nprogress .spinner{
   display: none !important;
 }
+
+
+@keyframes  ring-particles {
+    0% {
+        transform: var(--rotation) translateY(0) scale(0);
+        opacity: 1;
+
+    }
+
+    100% {
+        transform: var(--rotation) translateY(-40px) scale(1.5);
+        opacity: 0;
+    }
+
+}
+
+@keyframes fade-particles {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+@keyframes particles-expand {
+    0% {
+        transform: var(--rotation) translateY(-4px);
+
+    }
+    100% {
+        transform: var(--rotation) translateY(-12px);
+
+    }
+}
+
+
+.animate-particles {
+    animation:  particles-expand 0.5s ease-out forwards;
+}
+
+.fade-particles {
+    animation: fade-particles 1s ease-out forwards;
+}
+
+.animate-ring-particles{
+    animation: ring-particles 1s ease-out forwards;
+}

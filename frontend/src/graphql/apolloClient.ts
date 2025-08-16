@@ -3,7 +3,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
-import { VideoNode } from './types.ts';
+import { GetUniqueVideosCache } from '../helpers/GetUniqueVideosCache.ts';
 
 const httpLink = createUploadLink({
   uri: 'http://localhost:8000/graphql/',
@@ -67,20 +67,7 @@ const client = new ApolloClient({
             merge(existing, incoming) {
               if (!existing) return incoming;
 
-              const getVideoId = (video) => {
-                if ('__ref' in video && video.__ref) {
-                  return video.__ref.split(':')[1] || video.__ref;
-                }
-                return video.videoId;
-              };
-
-              const existingVideoId = new Set((existing.videos || []).map((video) => getVideoId(video)));
-
-              const newVideos = (incoming.videos ?? []).filter((video) => {
-                const videoId = getVideoId(video);
-                const isDuplicate = existingVideoId.has(videoId);
-                return !isDuplicate;
-              });
+              const newVideos = GetUniqueVideosCache(existing, incoming);
 
               return {
                 ...incoming,
@@ -91,19 +78,19 @@ const client = new ApolloClient({
 
           youtubeVideoComments: {
             keyArgs: ['videoId'],
-            merge(existing: any, incoming: any) {
+            merge(existing, incoming) {
               if (!existing) return incoming;
 
-              const getThreadId = (thread: any): string => {
+              const getThreadId = (thread): string => {
                 if ('__ref' in thread && thread.__ref) {
                   return thread.__ref.split(':')[1] || thread.__ref;
                 }
                 return thread.id;
               };
 
-              const existingThreadIds = new Set((existing.commentsThreads ?? []).map((thread: any) => getThreadId(thread)));
+              const existingThreadIds = new Set((existing.commentsThreads ?? []).map((thread) => getThreadId(thread)));
 
-              const newComments = (incoming.commentsThreads ?? []).filter((thread: any) => {
+              const newComments = (incoming.commentsThreads ?? []).filter((thread) => {
                 const threadId = getThreadId(thread);
                 const isDuplicate = existingThreadIds.has(threadId);
                 return !isDuplicate;
@@ -121,20 +108,7 @@ const client = new ApolloClient({
             merge(existing, incoming) {
               if (!existing) return incoming;
 
-              const getVideoId = (video: VideoNode | { __ref: string }): string => {
-                if ('__ref' in video && video.__ref) {
-                  return video.__ref.split(':')[1] || video.__ref;
-                }
-                return (video as VideoNode).videoId;
-              };
-
-              const existingVideoIds = new Set((existing.videos || []).map((video) => getVideoId(video)));
-
-              const newVideos = (incoming.videos || []).filter((video: VideoNode | { __ref: string }) => {
-                const videoId = getVideoId(video);
-                const isDuplicate = existingVideoIds.has(videoId);
-                return !isDuplicate;
-              });
+              const newVideos = GetUniqueVideosCache(existing, incoming);
 
               return {
                 ...incoming,
